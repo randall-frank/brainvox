@@ -1,0 +1,102 @@
+
+Iblast voxlib demo program
+
+	This program is a general library exercising utility.  It is
+command line based with no graphical display.  It allows the user to
+render and save images to disk as well as script simple animations.
+
+Notes:
+	The palette and opacity files are in the same format as their
+Voxblast equivalents.  The data volumes must be in 8bit raw headerless
+one slice per file (old style Voxblast ".fb" format).  This program uses
+the older style vl_render call (opposed to the vl_m_render multi-cpu call
+and the output image MUST be large enough to store the entire volume
+rendered at any angle (ie vl_render does not clip to the output buffer
+bounds, vl_m_render does).  Thus, if one loads a "512x512x512" dataset
+(diagonal = 890) one MUST also issue an "image 890 890" command as well
+to guarantee the output image bounds are large enough to hold the             
+rendering at any angle.
+	Most commands are simple wrappers around individual voxlib calls.
+See the source in cmdline.c and the voxlib SDD for details on each call.
+
+Example usage:
+
+% cd heart                              cd to the data directory
+% ../iblast/iblast                      Start the program
+
+...
+
+Iblast ver 2.0 interactive.
+
+pwd: VoxLibDemo/iblast/heart
+Output template: image_%%%.rgb
+Iblast> data saved.fb                  Load the volume
+nterp = 0  squf = 1.000000 
+Allocating 3839616 bytes of memory.
+Reading:hogheart_001.pic
+Reading:hogheart_002.pic
+Reading:hogheart_003.pic
+Reading:hogheart_004.pic
+Reading:hogheart_005.pic
+Reading:hogheart_006.pic
+
+...
+
+Reading:hogheart_141.pic
+Reading:hogheart_142.pic
+Reading:hogheart_143.pic
+Reading:hogheart_144.pic
+Iblast> rot 270 90 0                    Set the rotation
+Iblast> ropac _solid.opac               Load an opacity file
+Reading palette file:_solid.opac
+Reading palette file:_vlut
+Iblast> rlut _solid.pal                 Load a color palette
+Reading palette file:_solid.opac
+Reading palette file:_solid.pal
+Iblast> render                          Render the volume
+Rendering...
+Renderer returned:0
+3839616 voxels in 1.675546 seconds = 2291561.250000 voxels per sec
+Iblast> ?                               List all the available commands
+Commands:
+ROT X Y Z
+DROT X Y Z
+TRANS X Y Z
+DTRANS X Y Z
+RLUT filename
+LLUT filename
+ROPAC filename
+LOPAC filename
+QUALITY int
+RENDER or BGRENDER
+LRENDER
+NCRENDER
+POLYRENDER filename
+BACKGROUND
+FOREGROUND
+AVERAGE
+ZAVERAGE
+MEDIAN
+ZMEDIAN
+SAVERGB [filename]
+SAVEGS [filename]
+TEMPLATE filename
+COLOR R G B
+CLEAR
+DATA filename
+COUNT int
+STEP int
+LIMITS xs xe ys ye zs ze
+IMAGE dx dy
+LIGHT dx dy dz inten
+PLANEON px py pz nx ny nz
+PLANEOFF
+CHAIN filename
+UNDO [ON]|[OFF]
+PRINT
+CD filename
+! system command
+EXIT
+Iblast> exit
+ 
+%

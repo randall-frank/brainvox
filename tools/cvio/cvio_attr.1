@@ -1,0 +1,21 @@
+.TH cvio_attr 1
+.SH NAME
+cvio_attr - manipulate CVIO file user defined attributes
+.SH SYNOPSIS
+cvio_attr file [attrib [value]]
+.SH DESCRIPTION
+This program may be called with from one to three command line
+parameters.  FILE is the name of an existing CVIO file.  By
+default, the program simply prints out all of the user defined attributes in
+the CVIO file.  If the ATTRIB parameter is specified, the attribute
+specified by ATTRIB will be removed from the file.  If both ATTRIB and
+VALUE are specified, a new user defined attribute named ATTRIB with
+the string value given by VALUE will be added to the CVIO file.
+Output will be in ASCII form to stdout.
+.SH SEE ALSO
+cvio_intro(1), cvio_info(1)
+.SH NOTES
+See cvio_info for displaying required attributes.
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

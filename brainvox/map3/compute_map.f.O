@@ -1,0 +1,138 @@
+C    ======================================================================     
+C    THIS SOFTWARE IS THE PROPERTY OF:                                          
+C         The Image Analysis Facility                                     
+C         71 HBRF     
+C         The University of Iowa, Iowa City, Iowa                               
+C    ======================================================================     
+C       Copyright (C) 1989 Image Analysis Facility, University of Iowa
+C    ======================================================================     
+C                                                                               
+C    -- OVERVIEW --------------                                                 
+C                                                                               
+C    MODULE NAME    : compute_map
+C    VERSION        : 1.0 
+C    LOCATION       :  
+C    LAST EDIT      :  
+C    STATUS         :  (Development,Testing,Production,Obsolete)
+C    LANGUAGE       : FORTRAN
+C    PACKAGE        : brainvox_map3
+C
+C
+C    -- CREATION --------------                                                 
+C                                                                               
+C    PROGRAMMER     : rjf
+C    DATE           : 1 Mar 96        
+C    LINE-BY-LINER  :    
+C    APPROVAL       : 
+C
+C    DESCRIPTION    :  	Routines to compute a MAP-3 (to texture RAM) from a
+C			setup.
+C                                                                               
+C    -- REVISION HISTORY --------------                                         
+C
+C                                                                               
+C    -- GENERAL --------------                                                  
+C                                                                               
+C    SYNTAX         :     
+C    INPUTS         :          
+C    OUTPUTS        : 
+C
+C    LIMITATIONS    :      
+C    NOTES          :      
+C                 
+C                                                                               
+C    ====================================================================== 
+	Subroutine compute_map3(map)
+
+	Implicit None
+
+	Include 'fgl.h'
+	Include 'fdevice.h'
+	Include 'sgiuif.h'  
+        Include '../libs/vt_inc.f'
+        Include '../libs/vt_protos.f'
+        Include 'map3uif.inc'
+        Include 'map3.inc'
+
+	Record /MAP3/   map
+C
+	Integer*4	i,j
+	Integer*4	fp
+	Character*256	cmd
+	Character*80	tmp1,tmp2
+C
+	Integer*4	strlen
+	External	strlen
+C
+C	Show progress
+C
+	Call draw_status_bar(float(0)/float(map.num),
+     +		"Computing MAP-3...}")
+C
+C	Open the painting application
+C
+C	Select output destinations
+C
+5	Format("BV_SHMEM",I12.12)
+	write(tmp1,5) shm_texture
+
+	If (map.n_image .eq. 1) Then
+		tmp2 = "-"
+	Else
+		tmp2 = " "
+	Endif
+C
+C	Build the command
+C
+	i = strlen(tmp1)
+	j = strlen(tmp2)
+	write(cmd,10) map.exp,map.offset,tmp1(1:i),tmp2(1:j),char(0)
+10	Format("brainvox_arb_roi_paint _patient junk.tag ",F9.4,
+     +		" ",F9.4," ",A," ",A," ",A)
+
+	Call p_open(cmd,"w"//char(0),fp)
+	If (fp .eq. 0) Then
+		Call bv_error("Unable to start MAP-3 generation.}",0)
+		Return
+	Endif
+C
+C	Do the work...
+C
+	Do i=1,map.num
+C
+C	For each volume
+C
+		Call draw_status_bar(float(i)/float(map.num),
+     +			"Computing MAP-3...}")
+C
+C	Send the messages
+C
+C	New tagfile
+C
+		Call p_write_line("NEWTAGFILE"//char(0),fp)
+		cmd = map.dir(i)
+		j=strlen(cmd)
+		cmd = cmd(1:j)//"/Trace_Slicing.tag"//char(0)
+		Call p_write_line(cmd,fp)
+C
+C	ROIname
+C
+20	Format(A,F8.4,A)
+30	Format(A,F8.4," ARB",A)
+		tmp1 = map.roi(i)
+		j = strlen(tmp1)
+		If (map.arb_mode(i) .eq. 1) Then
+			write(cmd,30) tmp1(1:j),map.value(i),char(0)
+		Else
+			write(cmd,20) tmp1(1:j),map.value(i),char(0)
+		Endif
+		Call p_write_line(cmd,fp)
+C
+	Enddo
+C
+C	Done (close the painting application)
+C
+	Call p_close(fp)
+C
+	Return
+	End

@@ -1,0 +1,61 @@
+.TH cvio_cp 1
+.SH NAME
+cvio_cp - copy a CVIO file
+.SH SYNOPSIS
+cvio_cp [options] src dst
+.SH DESCRIPTION
+This program allows the user to copy a CVIO file with a single
+command.  This includes the ability to copy a file from disk to
+shared memory and back.  The file specified by SRC is copied to
+DST.  The program includes the ability to copy the data in the
+file in a timed fashion (-d), allowing it to simulate actual
+data generation.  Options for controlling attributes are included
+as well.  Note: all three disk files are copied properly with
+this command and data is written in the native Endian setting
+for the host system.
+.PP
+Options:
+.TP
+-v
+Selects verbose mode.
+.TP
+-c
+Selects the output file should be in compressed form.
+.TP
+-a
+Append the input file to the end of the output file.  This is only
+legal if the timestamps of the input file exceed the last timestamp
+in the (existing) output file.  Note: by default, user specified
+attributes will be copied to the output file as well (see -A).
+.TP
+-A
+If this flag is set, user specified attributes (non-REQ_ attributes)
+will not be copied.
+.TP
+-b(blocksize)
+Sets the number of samples to be copied at once.  This option
+sets the number of bytes to be used to buffer samples.  The
+actual number of samples is this number divided by the sample
+size.  The copy operation
+will copy this many samples at once until the entire file has been
+copied.  The default: 1000000.
+.TP
+-d(delay)
+In this mode, the number of samples specified by (-b) will be
+copied and then there will be a delay of (delay) seconds.  This
+is repeated as needed to copy the file.  This option can be 
+used to simulate the timed production of samples.  A delay
+value of -1 will cause the program to read a line from stdin
+between each block of samples.
+.TP
+-m(maxsize)
+This allows the user to specify the maximum number of output samples,
+used generally by shared memory files. If not specified, the system
+attempts to ascertain this from the input src file.
+.PP
+.SH SEE ALSO
+cvio_intro(1)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

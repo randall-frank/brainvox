@@ -1,0 +1,18 @@
+Convert depth bits on draw properly...(in draw_image.c and above)
+
+Length of filenames > 80!!!
+
+!lighting fragment programs...!!
+!"autorender" for intrinsic lighting... partial
+!re-organize the "quality" menu
+!"shade" points behind the brain
+!speed of point "removal" (backup)
+!need for brainvox_* to be in the search path
+!launch in a directory (Drag N Drop)
+!buttons remapped
+
+OSX:
+voxel
+"flush"?
+tal_ programs
+cvio?

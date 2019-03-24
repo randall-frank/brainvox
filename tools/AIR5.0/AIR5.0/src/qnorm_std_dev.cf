@@ -1,0 +1,208 @@
+/* Copyright 1995-2001 Roger P. Woods, M.D. */
+/* Modified 11/11/01 */
+
+/* norm_std_dev.cf 
+ * 
+ * This is a code fragment used for computing the normalized standard deviation by routines
+ * such as uvderivN12, uvderivsN6, 
+ *
+ * It is meant to be included in other .c files]
+ *
+ * The macros PARAM_INT and PARAM_INT_H should NOT be defined within this fragment
+ * Instead, they should be defined in the code that includes this fragment
+ */
+
+
+
+	/*Calculate the weighted, normalized standard deviation and its derivatives*/
+
+	/*Initialize values*/
+	{
+		double meantotal=0;
+		unsigned long int counttotal=0;
+		cf=0;
+
+
+		{
+			double *dcft=dcf;
+			unsigned int t;
+			
+			for(t=0;t<PARAM_INT;t++, dcft++){
+			
+				/* dcf[t]=0; */
+				*dcft=0;
+			}
+		}
+		{
+			double *ecfts=ecfitems;
+			unsigned int s;
+			
+			for(s=0;s<(unsigned int)PARAM_INT_H;s++, ecfts++){
+				/* ecf[t][s]=0; */
+				*ecfts=0;
+			}
+		}
+		/*Calculate normalized standard deviation for each partition*/
+		{
+			unsigned int jj;
+			unsigned int *countjj=count;
+			double *meanjj=mean;
+			double **dmeanjj=dmean;
+			double *squarejj=square;
+			double **dsquarejj=dsquare;
+			double ***esquarejj=esquare;
+			
+			for (jj=0;jj<partitions;jj++,countjj++,meanjj++,dmeanjj++,squarejj++,dsquarejj++,esquarejj++){
+			
+				double sd2;
+				double dsd2[PARAM_INT];
+				double esd2items[PARAM_INT_H];
+				unsigned int counts;
+				double means;
+
+				/*Avoid subsequent NaN errors*/
+				if (count[jj]<=1) continue;
+
+				counts=*countjj;
+
+				means=*meanjj/counts;
+				{
+					double *dmeanjjt=*dmeanjj;
+					unsigned int t;
+					
+					for(t=0;t<PARAM_INT;t++, dmeanjjt++){
+						*dmeanjjt/=counts;
+					}
+				}
+				{
+					double sds=*squarejj-(means*means)*counts;
+					sds/=(counts-1);
+
+					/*Avoid subsequent NaN errors*/
+					if (sds==0.0) continue;
+					{						
+						double dsds[PARAM_INT];
+						double esdsitems[PARAM_INT_H];
+
+						{
+							double *dsquarejjt=*dsquarejj;
+							double *esquarejjts=**esquarejj;
+							double *dsdst=dsds;
+							double *esdsts=esdsitems;
+							double *dmeanjjt=*dmeanjj;
+							unsigned int t;
+
+							for (t=0; t<PARAM_INT; t++, dsdst++, dsquarejjt++, dmeanjjt++){
+								*dsdst=(*dsquarejjt-2*means*counts**dmeanjjt)/(counts-1);
+								
+								{
+									double *dmeanjjs=*dmeanjj;
+									unsigned int s;
+									
+									for (s=0; s<=t; s++, esdsts++, esquarejjts++, dmeanjjs++){
+										*esdsts=(*esquarejjts-2*counts*(*dmeanjjs**dmeanjjt))/(counts-1);
+									}
+								}
+							}
+						}
+
+						/*Calculate the normalized standard deviation for this partition*/
+							
+						sd2=sqrt(sds)/means;
+
+						{
+							unsigned int t;
+							double *dsd2t=dsd2;
+							double *dsdst=dsds;
+							double *dmeanjjt=*dmeanjj;
+							
+							for (t=0;t<PARAM_INT;t++, dsd2t++, dsdst++, dmeanjjt++){
+								*dsd2t=*dsdst/(2*sd2*means*means)-*dmeanjjt*sd2/means;
+							}
+						}
+						{
+							double *esd2ts=esd2items;
+							double *esdsts=esdsitems;
+							double *dmeanjjt=*dmeanjj;
+							double *dsdst=dsds;
+							unsigned int t;
+							
+							for (t=0;t<PARAM_INT;t++, dmeanjjt++, dsdst++){
+							
+								double *dsd2s=dsd2;
+								double *dmeanjjs=*dmeanjj;
+								unsigned int s;
+								
+								for (s=0;s<=t;s++, esd2ts++, esdsts++, dsd2s++, dmeanjjs++){
+								
+									*esd2ts=means**dsd2s+2*sd2**dmeanjjs;
+									*esd2ts/=(2*means*means*means*sd2*sd2);
+									*esd2ts*=(-*dsdst);
+									*esd2ts+=*esdsts/(2*means*means*sd2);
+									*esd2ts-=(*dsd2s**dmeanjjt)/means;
+									*esd2ts+=sd2**dmeanjjt**dmeanjjs/(means*means);		
+								}
+							}
+						}
+					}
+				}
+				/*Add weighted normalized standard deviation  of this partitions*/
+				/* to cumulative total for all partitions*/
+
+				cf+=sd2*counts;
+				meantotal+=means*counts;
+				{
+					double *ecfts=ecfitems;
+					double *esd2ts=esd2items;
+					double *dcft=dcf;
+					double *dsd2t=dsd2;
+					unsigned int t;
+					
+					for (t=0;t<PARAM_INT;t++, dcft++, dsd2t++){
+					
+						*dcft+=*dsd2t*counts;
+						{
+							unsigned int s;
+							
+							for (s=0; s<=t; s++, ecfts++, esd2ts++){
+							
+								/* ecf[t][s]+=esd2[t][s]*counts; */
+								*ecfts+=*esd2ts*counts;
+							}
+						}
+					}
+				}
+				counttotal+=count[jj];
+			}
+		}
+
+		if(counttotal==0){
+			(*error)++;
+			return 0.0;
+		}
+
+
+		/*Renormalize cumulated values*/
+
+		cf/=counttotal;
+		meantotal=meantotal/counttotal;
+		{
+			double *dcft=dcf;
+			double *ecfts=ecfitems;
+			unsigned int t;
+			
+			for (t=0;t<PARAM_INT;t++, dcft++){
+			
+				*dcft/=counttotal;
+				{
+					unsigned int s;
+					
+					for (s=0;s<=t;s++, ecfts++){
+					
+						/* ecf[t][s]/=counttotal; */
+						*ecfts/=counttotal;
+					}
+				}
+			}
+		}
+	}

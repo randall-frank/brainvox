@@ -1,0 +1,6 @@
+Reg coeffs when sing() was not used:
+Vector beta      : 1 
+After sing was used:
+Vector beta      : 1 
+Column   Col.length   Cholesky diagonal   Tolerance
+1 2 2 2e-15

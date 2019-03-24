@@ -1,0 +1,36 @@
+.TH cvio_current_time 3
+.SH NAME
+cvio_current_time
+.SH SYNOPSIS
+.HP
+.B
+#include "cvio_lib.h"
+.HP
+.B
+CVIO_DT_TIME cvio_current_time(void);
+.PP
+IDL API:
+.HP
+.B
+timestamp=CVIO_CURRENT_TIME()
+.SH DESCRIPTION
+The cvio_current_time function returns the current system clock.
+The return value may be used as a timestamp which will be a
+monotonically increasing unsigned integer.  The return value
+can be interpreted as being a number of ticks per second as
+specified by the constant CVIO_TIME_TICKS_PER_SEC.  This
+constant also determines the fundamental temporal accuracy of
+the cvio system.
+.PP
+Note: The accuracy of this function is system dependent.  It
+relies on the system timer.  That timer may not be accurate
+and may only be periodically updated.  It is common for the
+system clock to be accurate, but only updated once every
+hundreth of a second.  Caution and testing of a specific
+system's perfromance is advised.
+.SH SEE ALSO
+cvio_lib(3)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

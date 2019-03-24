@@ -1,0 +1,47 @@
+.TH tal_ls Brainvox
+.SH NAME
+tal_nifti \- prints header information from Analyze/NIFTI files.
+.SH SYNOPSIS
+tal_nifit [options] headerfilename
+.SH DESCRIPTION
+This program can be used to display the header information for a
+Analyze or NIFTI-1 format file.  By default, it prints out the
+dimensions and scaling of the dataset as well as the voxel format
+and endian.  The options allow the program to generate the standard
+tal_program command line options: -x(dx) -y(dy) -z(dz) -f(start) -l(end).
+This allow the program to be used as part of a script. Note all the
+options can be combined on a single run.
+.PP
+Options:
+.TP
+-xy
+Output the proper -x(dx) and -y(dy) options from the input file.
+.TP
+-z
+Output the proper -z(dz) option from the input file.
+.TP
+-f
+Output the proper -f(start) and -l(last) options from the input file.
+.TP
+-ip
+Output the interpixel value from the input file. The output is prefixed
+by the value output by the -hp option.
+.TP
+-is
+Output the interslice value from the input file. The output is prefixed
+by the value output by the -hs option.
+.TP
+-hp
+Set the output header for the interpixel value. This is only used if -ip
+is specified.  The default is: -p.
+.TP
+-hs
+Set the output header for the interslice value. This is only used if -is
+is specified.  The default is: -s.
+.PP
+.SH SEE ALSO
+Brainvox Program Reference Guide, tal_programs
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

@@ -1,0 +1,478 @@
+# 
+#	Microsoft VC 6.0 Makefile for tal_xxx programs
+#
+# $Id: Makefile.msc 1250 2005-09-16 15:51:42Z dforeman $
+#
+#
+#  Copyright (c), 1990-1999 Randall Frank and Thomas Grabowski, M.D.
+# 
+#                 University of Iowa, Department of Neurology,
+#                 Human Neuroanatomy and Neuroimaging Lab
+#                 University of Iowa, Image Analysis Facility
+# 
+#  All rights reserved.
+# 
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions
+#  are met:
+# 
+#  1. Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#  2. Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#  3. All modifications to the source code must be clearly marked as
+#     such.  Binary redistributions based on modified source code
+#     must be clearly marked as modified versions in the documentation
+#     and/or other materials provided with the distribution.
+#  4. All advertising materials mentioning features or use of this software
+#     must display the following acknowledgment:
+#       This product includes software developed by Randall Frank, Thomas
+#       Grabowski and other unpaid contributors.
+#  5. The names of Randall Frank or Thomas Grabowski may not be used to
+#     endorse or promote products derived from this software without 
+#     specific prior written permission.
+# 
+#  THIS SOFTWARE IS PROVIDED BY RANDALL FRANK AND CONTRIBUTORS ``AS IS'' AND
+#  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+#  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+#  ARE DISCLAIMED.  IN NO EVENT SHALL RANDALL FRANK OR CONTRIBUTORS BE LIABLE
+#  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+#  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+#  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+#  SUCH DAMAGE.
+# 
+#	Requires an ANSI C compiler and a Fortran compiler (for tal_regress 
+#		and tal_pca)
+#
+#	Select the compiler flags and library options and type:
+#
+#	make all - build the executables
+#	make install - install the programs
+#	make tar - build a src code tar file
+#	make clean - cleanup
+#
+# Compilation flags:
+#	Standard ANSI C stuff plus:
+#	-DSHMEM_SUPPORT if you have the Unix shared memory support
+#	-DUSE_NRC if you have access to Numerical Recipies in C source
+#			and have the file nrc.c
+#
+# MS Windows
+OPTS = -Oait -Gs -nologo -DWIN32
+CC = cl
+FLAGS = $(OPTS) 
+# -DUSE_NRC -DSHMEM_SUPPORT
+GUI_FLAGS = 
+GUI_LIBS = glut32.lib glu32.lib opengl32.lib
+GUI_PROGS = tal_vbin.exe
+LIBS =
+
+# Debugging
+#OPTS = -g 
+#FLAGS = -g 
+
+#
+# Zlib support (use intrinsic gzip library instead of gzip via popen)
+#
+ZFLAGS = -DUSE_ZLIB  -Izlib
+ZLIBS = zlib/adler32.obj zlib/compress.obj zlib/crc32.obj zlib/gzio.obj \
+ zlib/deflate.obj zlib/trees.obj zlib/zutil.obj zlib/inflate.obj \
+ zlib/infblock.obj zlib/inftrees.obj zlib/infcodes.obj zlib/infutil.obj \
+ zlib/inffast.obj zlib/uncompr.obj
+#
+# Networking libraries location:
+#	(if you do not have access to Voxblast or Brainvox libraries,
+#	just set these both blank)
+#	
+# MS Windows
+BV_SHMEM_OBJS=
+VOXNET_OBJS=
+#
+# Select exec and library locations:
+#
+#	Where tal_math will find its archive file (See the end of tal_math.c)
+#
+TAL_SUPPORT_DIR=c:\\tal_dir
+#
+#	Where do you want the executables to go?
+#
+INSTALL_DIR=c:\tal_dir
+
+#
+#	End of configuration options  
+#	(You should not need to change things below here)
+#
+
+# Define CFLAGS (especially for tal_math)
+CFLAGS = $(FLAGS) $(ZFLAGS) $(GUI_FLAGS) \
+	-DTAL_SUPPORT_DIR=\"$(TAL_SUPPORT_DIR)\"
+
+# C Source code files
+CCSRC = \
+build_3dskel.c      conversion.c        convert_analyze.c   expressions.c \
+fileio.c            iso_contour.c       macro.c             macro2c.c     \
+make_isotab.c       mrots.c             name_changer.c      polyfill_c.c  \
+regress_parse.c     skeleton2d.c        skeleton3d.c        stats.c       \
+opt_search.c        label_comp.c \
+tal_CDA.c           tal_centroid.c      tal_cluster.c       tal_cutting.c \
+tal_euler.c         tal_histcheck.c     tal_math.c          tal_math_link.c \
+tal_merge.c         tal_normalize.c     tal_probe.c         tal_rad_sample.c \
+tal_regress.c       tal_rerandom.c      tal_resample.c      tal_roi_sample.c \
+tal_skel_edm.c      tal_smooth.c        tal_spatial.c       tal_sphere.c     \
+tal_standardize.c   tal_stat.c          tal_median.c        tal_fft.c     \
+fftn.c              worsley.c           tal_remask.c	    autotrace.c \
+tal_mrinorm.c	    tal_surface.c	crop_volume.c       tal_resize.c \
+roi_utils.c         tal_ls.c		tal_vn_interface.c  regress_one.c \
+tal_rename.c	    tal_pca.c		tal_ortho.c	    tal_optimal.c \
+tal_roi2mesh.c      geom_view_io.c      tal_mcubes.c	    iso_trim.c \
+tal_thinmesh.c	    tal_trace.c	        tal_shmem.c	tal_shm_interface.c \
+tal_vbin.c          274.c               75_base.c           svd.c \
+decimate.c	    tal_warp.c
+
+# Sorry, I can't distribute this one (Numerical Recipes in C): nrc.c
+
+# Fortran Source code
+F77SRC = \
+274.f               75_base.f        	svd.f
+
+# Prototypes
+HDRS = \
+analyze_db.h      iso_tab.h         macro2protos.h    macroprotos.h \
+proto.h           skel3d_etable.h   stats_inc.h       tal_regress.h \
+autotrace.h	  crop_volume.h     roi_utils.h       fftn.h        \
+label_comp.h	  opt_search.h      geom_view_io.h    tal_shm_interface.h \
+polyfill.h	  svd.h		    as274.h           skeleton.h \
+f2c               f2c.h
+
+# Extra files
+MISC = \
+Makefile          mkcommandlines    man.src           tal_histo \
+tal_histo2d       tal_means 	    as274_fc          fftn      \
+README.tal	  COPYING	    zlib	      Makefile.msc
+
+#
+#	make a list for tar
+#
+FILES = $(CCSRC) $(F77SRC) $(HDRS) $(MISC)
+
+#
+#	define some useful object file groups
+#
+NETWORK_OBJS = $(BV_SHMEM_OBJS) $(VOXNET_OBJS) tal_shm_interface.obj
+BASEOBJS = fileio.obj name_changer.obj roi_utils.obj polyfill_c.obj \
+	$(NETWORK_OBJS) $(ZLIBS)
+
+#
+#	Define dependancies for each program
+#
+OBJECTS1 = tal_resample.obj conversion.obj $(BASEOBJS)
+PROG1 = tal_resample.exe
+
+OBJECTS2 = tal_normalize.obj $(BASEOBJS)
+PROG2 = tal_normalize.exe
+
+OBJECTS3 = tal_merge.obj $(BASEOBJS)
+PROG3 = tal_merge.exe
+
+OBJECTS4 = tal_smooth.obj $(BASEOBJS) 
+PROG4 = tal_smooth.exe
+
+OBJECTS5 = tal_CDA.obj $(BASEOBJS) stats.obj
+PROG5 = tal_CDA.exe
+
+OBJECTS6 = tal_centroid.obj $(BASEOBJS)
+PROG6 = tal_centroid.exe
+
+OBJECTS7 = tal_cutting.obj $(BASEOBJS)
+PROG7 = tal_cutting.exe
+
+OBJECTS8 = tal_roi_sample.obj $(BASEOBJS)
+PROG8 = tal_roi_sample.exe
+
+OBJECTS9 = convert_analyze.obj $(BASEOBJS)
+PROG9 = analyze2raw.exe
+
+OBJECTSA = tal_probe.obj $(BASEOBJS)
+PROGA = tal_probe.exe
+
+TMLIB = libtal_math.lib
+OBJECTSB = $(TMLIB) tal_math_link.obj 
+PROGB = tal_math.exe
+
+OBJECTSC = tal_histcheck.obj stats.obj $(BASEOBJS)
+PROGC = tal_histcheck.exe
+
+OBJECTSD = tal_stat.obj $(BASEOBJS)
+PROGD = tal_stat.exe
+
+OBJECTSE = tal_cluster.obj $(BASEOBJS)
+PROGE = tal_cluster.exe
+
+OBJECTSF = tal_euler.obj $(BASEOBJS)
+PROGF = tal_euler.exe
+
+OBJECTSG = tal_sphere.obj $(BASEOBJS) stats.obj
+PROGG = tal_sphere.exe
+
+WORSLEY = worsley.obj stats.obj $(BASEOBJS)
+PROG_WORSLEY = worsley.exe
+
+OBJECTSH = tal_regress.obj regress_parse.obj regress_one.obj $(BASEOBJS) \
+	274.obj 75_base.obj
+PROGH = tal_regress.exe
+
+OBJECTSI = tal_skel_edm.obj $(BASEOBJS) skeleton3d.obj skeleton2d.obj \
+	label_comp.obj
+PROGI = tal_edm.exe
+
+OBJECTSJ = tal_skel_edm.obj $(BASEOBJS) skeleton3d.obj skeleton2d.obj \
+	label_comp.obj
+PROGJ = tal_skel.exe
+
+OBJECTSZ = tal_skel_edm.obj $(BASEOBJS) skeleton3d.obj skeleton2d.obj \
+	label_comp.obj
+PROGZ = tal_label.exe
+
+OBJECTSK = tal_rad_sample.obj $(BASEOBJS)
+PROGK = tal_rad_sample.exe
+
+OBJECTSL = tal_standardize.obj $(BASEOBJS) stats.obj
+PROGL = tal_standardize.exe
+
+OBJECTSM = tal_rerandom.obj $(BASEOBJS) stats.obj
+PROGM = tal_rerandom.exe.exe
+
+OBJECTSN = tal_spatial.obj stats.obj $(BASEOBJS)
+PROGN = tal_spatial.exe
+
+OBJECTSO = tal_surface.obj $(BASEOBJS) iso_contour.obj
+PROGO = tal_surface.exe
+
+OBJECTSP = tal_remask.obj $(BASEOBJS) autotrace.obj
+PROGP = tal_remask.exe
+
+OBJECTSQ = tal_mrinorm.obj $(BASEOBJS) 274.obj 75_base.obj
+PROGQ = tal_mrinorm.exe
+
+OBJECTSR = tal_resize.obj $(BASEOBJS) crop_volume.obj
+PROGR = tal_resize.exe
+
+OBJECTST = tal_ls.obj $(BASEOBJS)
+PROGT = tal_ls.exe
+
+OBJECTSU = tal_fft.obj fftn.obj $(BASEOBJS)
+PROGU = tal_fft.exe
+
+OBJECTSV = tal_median.obj stats.obj $(BASEOBJS)
+PROGV = tal_median.exe
+
+OBJECTSW = tal_rename.obj $(BASEOBJS)
+PROGW = tal_rename.exe
+
+OBJECTSX = tal_pca.obj svd.obj $(BASEOBJS)
+PROGX = tal_pca.exe
+
+OBJECTSY = tal_ortho.obj $(BASEOBJS)
+PROGY = tal_ortho.exe
+
+OBJECTSAA = tal_roi2mesh.obj $(BASEOBJS) geom_view_io.obj
+PROGAA = tal_roi2mesh.exe
+
+OBJECTSAB = tal_optimal.obj $(BASEOBJS) opt_search.obj
+PROGAB = tal_optimal.exe
+
+OBJECTSAC = tal_mcubes.obj $(BASEOBJS) iso_contour.obj geom_view_io.obj
+PROGAC = tal_mcubes.exe
+
+OBJECTSAD = tal_thinmesh.obj $(BASEOBJS) iso_trim.obj geom_view_io.obj decimate.obj
+PROGAD = tal_thinmesh.exe
+
+OBJECTSAE = tal_trace.obj $(BASEOBJS) autotrace.obj
+PROGAE = tal_trace.exe
+
+OBJECTSAF = tal_shmem.obj $(BASEOBJS)
+PROGAF = tal_rmshm.exe
+
+OBJECTSAG = tal_shmem.obj $(BASEOBJS)
+PROGAG = tal_mkshm.exe
+
+OBJECTSAH = tal_warp.obj $(BASEOBJS)
+PROGAH = tal_warp.exe
+
+OBJECTS_GUI_A = tal_vbin.obj $(BASEOBJS)
+PROG_GUI_A = tal_vbin.exe
+
+#
+#	build lists of targets
+#
+
+PROGS = $(PROG1)  $(PROG2)  $(PROG3)  $(PROG4)  $(PROG5)  $(PROG6)  $(PROG7) \
+	$(PROG8)  $(PROG9)  $(PROGA)  $(PROGB)  $(PROGC)  $(PROGD)  $(PROGE) \
+	$(PROGF)  $(PROGG)  $(PROGH)  $(PROGI)  $(PROGJ)  $(PROGK) \
+	$(PROGL)  $(PROGM)  $(PROGN)  $(PROGO)  $(PROGP)  $(PROGQ) \
+	$(PROGR)  $(PROGT)  $(PROGU)  $(PROGV)  $(PROGW)  $(PROGX) \
+	$(PROGY)  $(PROGZ)  $(PROGAA) $(PROGAB) $(PROGAC) $(PROGAD) \
+	$(PROGAE) $(PROGAF) $(PROGAG) $(PROGAH) \
+	$(PROG_WORSLEY)
+
+#
+#	requires f77 (or can use f2c dir)
+#
+#	$(PROGH) $(PROGQ) $(PROGX) 
+	
+
+EXES = $(PROGS) raw2analyze.exe tal_spherep.exe $(GUI_PROGS)
+
+EXTRAS = tal_histo tal_histo2d tal_means
+
+#
+#	define targets
+#
+all: $(EXES) 
+
+install:
+	copy *.exe $(INSTALL_DIR)
+	copy $(TMLIB) $(INSTALL_DIR)
+
+tar:
+	tar cvf talsrc.tar $(FILES)
+	gzip talsrc.tar
+	move talsrc.tar.gz talsrc.tgz
+
+clean:
+	del *.obj 
+	del *.exe
+	del *.lib
+#
+#man:
+#	cd man.src; make
+#
+#man_install:
+#	cd man.src; make install
+#
+#
+#	a few special cases...
+#
+skeleton3d.o : skel3d_etable.h   skeleton3d.c
+
+skel3d_etable.h : build_3dskel.c
+	$(CC) $(CFLAGS) /Fea.exe build_3dskel.c
+	a.exe
+	del a.exe
+
+iso_contour.c : iso_tab.h
+	touch iso_contour.c
+
+iso_tab.h : make_isotab.c
+	$(CC) $(CFLAGS) /Fea.exe make_isotab.c
+	a.exe > iso_tab.h
+	del a.exe
+
+stats.o : stats.c stats_inc.h
+
+crop_volume.o : crop_volume.c crop_volume.h
+
+#
+#	build each program
+#
+$(PROG_WORSLEY) : $(WORSLEY)
+	$(CC) $(OPTS) $(WORSLEY) /Fe$(PROG_WORSLEY) $(LIBS)
+$(PROG1) : $(OBJECTS1)
+	$(CC) $(OPTS) $(OBJECTS1) /Fe$(PROG1) $(LIBS)
+$(PROG2) : $(OBJECTS2)
+	$(CC) $(OPTS) $(OBJECTS2) /Fe$(PROG2) $(LIBS)
+$(PROG3) : $(OBJECTS3)
+	$(CC) $(OPTS) $(OBJECTS3) /Fe$(PROG3) $(LIBS)
+$(PROG4) : $(OBJECTS4)
+	$(CC) $(OPTS) $(OBJECTS4) /Fe$(PROG4) $(LIBS)
+$(PROG5) : $(OBJECTS5)
+	$(CC) $(OPTS) $(OBJECTS5) /Fe$(PROG5) $(LIBS)
+$(PROG6) : $(OBJECTS6)
+	$(CC) $(OPTS) $(OBJECTS6) /Fe$(PROG6) $(LIBS)
+$(PROG7) : $(OBJECTS7)
+	$(CC) $(OPTS) $(OBJECTS7) /Fe$(PROG7) $(LIBS)
+$(PROG8) : $(OBJECTS8)
+	$(CC) $(OPTS) $(OBJECTS8) /Fe$(PROG8) $(LIBS)
+$(PROG9) : $(OBJECTS9)
+	$(CC) $(OPTS) $(OBJECTS9) /Fe$(PROG9) $(LIBS)
+	copy $(PROG9) raw2analyze.exe
+$(PROGA) : $(OBJECTSA)
+	$(CC) $(OPTS) $(OBJECTSA) /Fe$(PROGA) $(LIBS)
+$(PROGB) : $(OBJECTSB)
+	$(CC) $(OPTS) $(OBJECTSB) /Fe$(PROGB) $(LIBS)
+$(PROGC) : $(OBJECTSC)
+	$(CC) $(OPTS) $(OBJECTSC) /Fe$(PROGC) $(LIBS)
+$(PROGD) : $(OBJECTSD)
+	$(CC) $(OPTS) $(OBJECTSD) /Fe$(PROGD) $(LIBS)
+$(PROGE) : $(OBJECTSE)
+	$(CC) $(OPTS) $(OBJECTSE) /Fe$(PROGE) $(LIBS)
+$(PROGF) : $(OBJECTSF)
+	$(CC) $(OPTS) $(OBJECTSF) /Fe$(PROGF) $(LIBS)
+$(PROGG) : $(OBJECTSG)
+	$(CC) $(OPTS) $(OBJECTSG) /Fe$(PROGG) $(LIBS)
+	copy $(PROGG) tal_spherep.exe
+$(PROGH) : $(OBJECTSH)
+	$(CC) $(OPTS) $(OBJECTSH) /Fe$(PROGH) $(LIBS)
+$(PROGI) : $(OBJECTSI)
+	$(CC) $(OPTS) $(OBJECTSI) /Fe$(PROGI) $(LIBS)
+$(PROGJ) : $(OBJECTSJ)
+	$(CC) $(OPTS) $(OBJECTSJ) /Fe$(PROGJ) $(LIBS)
+$(PROGK) : $(OBJECTSK)
+	$(CC) $(OPTS) $(OBJECTSK) /Fe$(PROGK) $(LIBS)
+$(PROGL) : $(OBJECTSL)
+	$(CC) $(OPTS) $(OBJECTSL) /Fe$(PROGL) $(LIBS)
+$(PROGM) : $(OBJECTSM)
+	$(CC) $(OPTS) $(OBJECTSM) /Fe$(PROGM) $(LIBS)
+$(PROGN) : $(OBJECTSN)
+	$(CC) $(OPTS) $(OBJECTSN) /Fe$(PROGN) $(LIBS)
+$(PROGO) : $(OBJECTSO)
+	$(CC) $(OPTS) $(OBJECTSO) /Fe$(PROGO) $(LIBS)
+$(PROGP) : $(OBJECTSP)
+	$(CC) $(OPTS) $(OBJECTSP) /Fe$(PROGP) $(LIBS)
+$(PROGQ) : $(OBJECTSQ)
+	$(CC) $(OPTS) $(OBJECTSQ) /Fe$(PROGQ) $(LIBS)
+$(PROGR) : $(OBJECTSR)
+	$(CC) $(OPTS) $(OBJECTSR) /Fe$(PROGR) $(LIBS)
+$(PROGT) : $(OBJECTST)
+	$(CC) $(OPTS) $(OBJECTST) /Fe$(PROGT) $(LIBS)
+$(PROGU) : $(OBJECTSU)
+	$(CC) $(OPTS) $(OBJECTSU) /Fe$(PROGU) $(LIBS)
+$(PROGV) : $(OBJECTSV)
+	$(CC) $(OPTS) $(OBJECTSV) /Fe$(PROGV) $(LIBS)
+$(PROGW) : $(OBJECTSW)
+	$(CC) $(OPTS) $(OBJECTSW) /Fe$(PROGW) $(LIBS)
+$(PROGX) : $(OBJECTSX)
+	$(CC) $(OPTS) $(OBJECTSX) /Fe$(PROGX) $(LIBS)
+$(PROGY) : $(OBJECTSY)
+	$(CC) $(OPTS) $(OBJECTSY) /Fe$(PROGY) $(LIBS)
+$(PROGZ) : $(OBJECTSZ)
+	$(CC) $(OPTS) $(OBJECTSZ) /Fe$(PROGZ) $(LIBS)
+$(PROGAA) : $(OBJECTSAA)
+	$(CC) $(OPTS) $(OBJECTSAA) /Fe$(PROGAA) $(LIBS)
+$(PROGAB) : $(OBJECTSAB)
+	$(CC) $(OPTS) $(OBJECTSAB) /Fe$(PROGAB) $(LIBS)
+$(PROGAC) : $(OBJECTSAC)
+	$(CC) $(OPTS) $(OBJECTSAC) /Fe$(PROGAC) $(LIBS)
+$(PROGAD) : $(OBJECTSAD)
+	$(CC) $(OPTS) $(OBJECTSAD) /Fe$(PROGAD) $(LIBS)
+$(PROGAE) : $(OBJECTSAE)
+	$(CC) $(OPTS) $(OBJECTSAE) /Fe$(PROGAE) $(LIBS)
+$(PROGAF) : $(OBJECTSAF)
+	$(CC) $(OPTS) $(OBJECTSAF) /Fe$(PROGAF) $(LIBS)
+$(PROGAG) : $(OBJECTSAG)
+	$(CC) $(OPTS) $(OBJECTSAG) /Fe$(PROGAG) $(LIBS)
+$(PROGAH) : $(OBJECTSAH)
+	$(CC) $(OPTS) $(OBJECTSAH) /Fe$(PROGAH) $(LIBS)
+
+$(PROG_GUI_A) : $(OBJECTS_GUI_A)
+	$(CC) $(OPTS) $(OBJECTS_GUI_A) /Fe$(PROG_GUI_A) $(LIBS) $(GUI_LIBS)
+
+#
+#	build the tal_math library (for commnad line recompiling)
+#
+$(TMLIB) : tal_math.obj $(BASEOBJS) macro.obj macro2c.obj
+	LIB /OUT:$(TMLIB) tal_math.obj $(BASEOBJS) macro.obj macro2c.obj

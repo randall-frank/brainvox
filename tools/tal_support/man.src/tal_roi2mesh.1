@@ -1,0 +1,51 @@
+.TH tal_roi2mesh Brainvox
+.SH NAME
+tal_roi2mesh \- Converts a series of ROIs into a triangulated polygon mesh.
+.SH SYNOPSIS
+tal_roi2mesh [options] outputfile
+.SH DESCRIPTION
+This program takes reads a list of ROI filename and their associated Z
+depth value from stdin.  At the end of the list (EOF), the ROIs are sorted
+by their Z values, and each pair of contours are triangulated.  Vertex
+normals are computed by averaging the normals of the triangles which use
+the vertex.  The triangulation algorithm is referenced in the notes.
+The outputfile (or '-' for stdout) is in Wavefront OBJ format and consists of
+a single triangle mesh.
+.PP
+The input consists of a number of lines of ASCII text of the form:
+.PP
+Roiname Zvalue
+.PP
+Triangulation will begin when the end of standard input is reached.
+.PP
+Options:
+.TP
+-t(thin)
+ROIs are thinned to this fraction of their size before being used as surface
+verticies.   The operation involves smoothing as well.
+The default is 1.0 (no thinning).
+.TP
+-o(x:y:z)
+Theis option specifies that the coordinate (x,y,z) is to be subtracted
+from the verticies before they are scaled and written out.  The default:0,0,0.
+.TP
+-m(sx,sy,sz)
+This option specifies a factor by which each vertex is multiplied by 
+(after the origin has been subtracted) before output.  Default:1,1,1.
+.TP
+-g
+Write the output file in Geomview NOFF format.
+.PP
+.SH SEE ALSO
+tal_programs, geomview, tal_surface, tal_thinmesh, tal_mcubes
+.SH NOTES
+This program is based on the algorithms in:
+.PP
+Ganapathy S, Dennehy TG, A New General Triangulation Algorithm for Planar
+Contours, ACM Trans Graphics, 10(2):192-199, 1991.
+.PP
+Future versions should output the mesh volume and surface area and might
+support capping and other output file formats.
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

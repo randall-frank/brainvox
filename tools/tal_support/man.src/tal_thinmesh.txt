@@ -1,0 +1,49 @@
+tal_thinmesh(Brainvox)                     tal_thinmesh(Brainvox)
+
+
+
+NNAAMMEE
+       tal_thinmesh − Performs vertex reduction on a polygon mesh
+       file.
+
+SSYYNNOOPPSSIISS
+       tal_thinmesh [options] inputfile outputfile
+
+DDEESSCCRRIIPPTTIIOONN
+       This program reads a polygon file (in tal_  Geomview  for­
+       mat) and will reduce the number of polygons in the surface
+       by removing verticies of polygons which are nearly  copla­
+       nar  and  representing  the  patch with 2 fewer triangles.
+       The inputfile and outputfile (or ’‐’ for stdin/stdout) are
+       in  Wavefront OBJ format and consists of a single triangle
+       mesh.  The files must have the  "#  TAL_PROGRAMS  Geomview
+       file 1.0" header comment as well.
+
+       It is not always possible for this algorithm to succeed as
+       it will not remove verticies which are part  of  an  outer
+       boundary.   In  such  cases,  as  many verticies as can be
+       removed are.
+
+       Options:
+
+       ‐t(thin)
+              This option specifies the fraction of the verticies
+              to  remove  (0.0  to  1.0).  The default is 0.0 (no
+              thinning).
+
+       ‐g     Use the Geomview NOFF file  format  for  input  and
+              output.
+
+
+SSEEEE AALLSSOO
+       tal_programs,    geomview,    tal_surface,   tal_roi2mesh,
+       tal_mcubes
+
+NNOOTTEESS
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                           tal_thinmesh(Brainvox)

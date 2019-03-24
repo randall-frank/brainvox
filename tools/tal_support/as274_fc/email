@@ -1,0 +1,57 @@
+From alan@dmsmelb.mel.dms.CSIRO.AU Wed Mar 10 04:09:40 1993
+Return-Path: <alan@dmsmelb.mel.dms.CSIRO.AU>
+Received: from dmsmelb.mel.dms.CSIRO.AU by alnitak.usc.edu (4.1/SMI-4.1+ucs-3.6)
+	id AA26267; Wed, 10 Mar 93 04:09:30 PST
+Received: from dmsmelb.mel.dms.CSIRO.AU by dmsmelb.mel.dms.CSIRO.AU (4.1/5.17)
+ id AA09250; Wed, 10 Mar 93 22:09:17 EST
+ (from alan@dmsmelb.mel.dms.CSIRO.AU (Alan Miller))
+Message-Id: <9303101209.AA09250@dmsmelb.mel.dms.CSIRO.AU>
+To: ajayshah@alnitak.usc.edu (Ajay Shah)
+Subject: Re: "Sweep" question 
+In-Reply-To: Your message of "Tue, 09 Mar 93 14:39:07 PST."
+             <9303092239.AA19717@almaak.usc.edu> 
+Date: Wed, 10 Mar 93 22:09:16 +1000
+From: alan@dmsmelb.mel.dms.CSIRO.AU
+Status: OR
+
+Ajay,
+It depends upon what you mean by a sweep algorithm.   Most people want to
+use it to calculate regression coefficients and sums of squares for a subset
+of variables.   If so, then my algorithm AS274 can be used.   Basically, you
+go from the `design' matrix X and RHS vector y to:
+
+                 RBAR               THETAB
+              x  x  x  x  x  x        x
+                 x  x  x  x  x        x
+                    x  x  x  x        x
+                       x  x  x        x
+                          x  x        x
+                             x        x
+                                    SSERR
+
+This is the notation used by Morven Gentleman in AS75 about 1974.
+SSERR is the sum of squares of residuals.   If you want to drop the last
+two variables, then the residual sum of squares is SSERR + the sum of the
+squares of the last two elements in the THETAB vector.   If you want to
+drop two other variables then you have to change the order of the variables
+to make them the last two.   This is done in AS274.
+
+There is one other complication in both AS75 and AS274.   There is a
+multiplier for each row, stored in array D.   It is such that all of the
+elements along the diagonal of RBAR are 1's.   These elements are not
+stored.   The elements of RBAR are stored in an array by rows.
+
+If there is ill-conditioning or a singularity then one or more of the
+D's will be very small.   My routine SING tests for this.
+
+I know of your love of Fortran.   I have received a number of requests for
+AS274 in C, so I used FOR_C to translate it.   One person replied by e-mail
+that it seemed to work OK in C.   I will send you as274.c and a header file
+which it needs.   I will also send a test driver program (in Fortran) which
+has both singularities and zero regression coefficients.   I have not
+translated my test programs as they involve I/O and that always seems to
+give problems.
+
+Cheers
+Alan
+

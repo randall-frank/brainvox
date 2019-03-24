@@ -1,0 +1,207 @@
+.TH ADDTOPUP 3G OCLSC
+.SH NAME
+.B addtopup
+\- adds items to an existing pop-up menu
+.SH "C SPECIFICATION"
+.B
+void addtopup(pup, str, arg)
+.br
+.B long pup;
+.br
+.B String str;
+.br
+.B long arg;
+.SH PARAMETERS
+.TP
+.B pup
+expects the menu identifier of the menu to which you want to
+add.  The menu identifier is the returned function value of the
+menu creation call to either
+.B newpup
+or
+.B defpup
+functions.
+.TP
+.I str
+expects a pointer to the text that you want to add as a menu
+item. In addition, you have the option of pairing an "item type"
+flag with each menu item. There are thirteen menu item type flags:
+
+.RS .5i
+.TP
+.BI %b n
+specifies which mouse button controls the menu.
+.I n
+must be 1, 2 or 3 corresponding to LEFTMOUSE, MIDDLEMOUSE and RIGHTMOUSE
+respectively and
+.I n
+must be part of the text string, not the
+.I arg
+parameter.  If
+.BI %b n
+is not specified then RIGHTMOUSE is assumed.
+.TP
+.B %s
+indicates that the menu should remember the last item selected and draw the
+menu with that item positioned under the cursor the next time the menu is drawn.
+.TP
+.B %t
+marks item text as the menu title string.
+.TP
+.B %F
+invokes a routine for every selection from this menu except
+those marked with a %n.  You must specify the invoked
+routine in the
+.I arg
+parameter.  The value of the menu item
+is used as a parameter of the executed routine.  Thus, if
+you select the third menu item, the system passes 3 as a
+parameter to the function specified by %F.
+.TP
+.B %d
+disables the menu entry causing it to appear greyed-out.  
+Selecting a disabled entry has the same behavior as selecting the title bar.
+If the greyed-out entry has a submenu associated with it, that
+submenu does not display.
+.TP
+.B %f
+invokes a routine when this particular menu item is
+selected.  You must specify the invoked routine in the
+.I arg
+parameter. The value of the menu item is passed as a
+parameter of the routine.  Thus, if you select the third
+menu item, the system passes 3 as a parameter to the
+routine specified by %f.  If you have also used the %F flag
+within this menu, then the result of the %f routine is
+passed as a parameter of the %F routine.
+.TP
+.B %i
+indicates that this item is a toggle.  Once it has been selected, 
+whenever the menu is drawn this item will have a glyph drawn beside it
+indicating that this toggle is active.  Once the item has been
+selected again, the glyph will no longer be displayed, signifying that the
+toggle is now inactive, until the item is selected next and so on.
+.TP
+.B %I
+like
+.B %i
+but sets the initial toggle state to active rather than inactive.  The glyph
+will be drawn by the item initially and subsequent selections of this item
+will disable the glyph, then enable it, etc.
+.TP
+.B %l
+adds a line under the current entry.  You can use this as a
+visual cue to group like entries together.
+.TP
+.B %m
+pops up a menu whenever this menu item is selected. You
+must provide the menu identifier of the new menu in the
+.I arg
+parameter.
+.TP
+.B %n
+like %f, this flag invokes a routine when the user selects
+this menu item.  However, %n differs from %f in that it
+ignores the routine (if any) specified by %F. The value of
+the menu item is passed as a parameter of the executed
+routine.  Thus, if you select the third menu item, the
+system passes 3 as a parameter to the function specified by %f.
+.TP
+.BI %r n
+specifies that the item is part of radio group
+.IR n .
+A radio group is a set of menu items that are mutually exclusive.  When the
+menu is drawn, a glyph will be drawn beside the currently active item
+in each radio group.  When a new item is selected from a radio group
+the glyph is moved to that item in subsequent displays of the menu.  To
+specify the initial active element of a radio group use
+.B %I 
+in addition to
+.BI %r n.
+The radio group number
+.IR n,
+must be between 0 and 9 inclusive and must be entered as part of the
+text string.  Do not use the
+.I arg
+parameter to specify the group number.  It is helpful to use lines
+(with
+.BR %l )
+to demarcate the members of a radio group.
+.TP
+.BI %x n
+assigns a numeric value to this menu item.  This values
+overrides the default position-based value assigned to this
+menu item (e.g., the third item is 3).  You must enter the
+numeric value as the
+.I n
+part of the text string.  Do not use
+the
+.I arg
+parameter to specify the numeric value.
+
+.B NOTE:
+If you use the vertical bar delimiter, "|", you can
+specify multiple menu items in a text string.  However, because
+there is only one
+.I arg
+parameter, the text string can contain no
+more than one item type that references the
+.I arg
+parameter.
+.RE
+.TP
+.I arg
+expects the command or submenu that you want to assign to the
+menu item.  You can have only one
+.I arg
+parameter for each call to
+.BR addtopup .
+
+.SH DESCRIPTION
+.B addtopup
+adds items to the bottom of an existing pop-up menu.  You can
+build a menu by using a call to 
+.B newpup
+to create a menu, followed by a
+call to
+.B addtopup
+for each menu item that you want to add to the menu. To
+activate and display the menu, submit the menu to
+.BR dopup .
+.SH EXAMPLE
+This example creates a menu with a submenu:
+.nf
+.na
+.in +.5i
+.ft C
+
+submenu = newpup();
+addtopup(submenu, "rotate %f", dorota);
+addtopup(submenu, "translate %f", dotran);
+addtopup(submenu, "scale %f", doscal);
+menu = newpup();
+addtopup(menu, "sample %t", 0);
+addtopup(menu, "persp", 0);
+addtopup(menu, "xform %m", submenu);
+addtopup(menu, "greset %f", greset);
+
+.ft R
+.in
+.ad
+.fi
+Because neither the "sample" menu title nor the "persp" menu item refer
+to the
+.I arg
+parameter, you can group "sample", "persp", and "xform" in a single call:
+
+.ft C
+ addtopup(menu, "sample %t | persp | xform %m", submenu);
+.ft R
+.SH "SEE ALSO"
+changepup, defpup, dopup, freepup, newpup, setpup
+.SH NOTES
+This routine is available only in immediate mode.
+
+When using the Distributed Graphics Library (DGL), you can not call other
+DGL routines within a function that is called by a popup menu, i.e. a
+function given as the argument to a %f or %F item type.

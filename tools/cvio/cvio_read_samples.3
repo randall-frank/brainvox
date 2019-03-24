@@ -1,0 +1,138 @@
+.TH cvio_read_samples 3
+.SH NAME
+cvio_read_samples, cvio_read_next_samples, cvio_add_samples
+.SH SYNOPSIS
+.HP
+.B
+#include "cvio_lib.h"
+.HP
+.B
+int32 cvio_read_samples(uint32 stream, CVIO_DT_TIME time[], void *buffer, int32 count);
+.HP
+.B
+int32 cvio_read_next_samples(uint32 stream, CVIO_DT_TIME time[],void *buffer,        int32 count);
+.HP
+.B
+int32 cvio_read_samples_blocking(uint32 stream, CVIO_DT_TIME time[], void *buffer, int32 count,uint32 timeout, int ttype);
+.HP
+.B
+int32 cvio_read_next_samples_blocking(uint32 stream, CVIO_DT_TIME time[], void *buffer, int32 *count,uint32 timeout, int ttype);
+.HP
+.B
+int32 cvio_add_samples(uint32 stream, CVIO_DT_TIME time[], void *buffer, int32 count);
+.PP
+IDL API:
+.HP
+.B
+err=CVIO_READ_SAMPLES(stream,time_,[buffer_,]count)  (time is input and output)
+.HP
+.B
+err=CVIO_READ_NEXT_SAMPLES(stream,time_,[buffer_,]count)
+.HP
+.B
+err=CVIO_ADD_SAMPLES(stream,time,buffer,count)
+.SH DESCRIPTION
+These functions provide the mechanism by which samples are read from or
+added to a cvio file. Cvio_read_samples reads a number of samples into
+memory.  The stream parameter is the stream identifier of an open
+cvio file opened for CVIO_ACCESS_READ access. The time array is used
+for both input and output.  On input, it contains the timestamps of
+the samples requested.  A timestamp of value CVIO_TIME_NEXT may also
+be specified to select the subsequent samples, regardless of their
+timestamps.  Note: timestamps of CVIO_TIME_NEXT and real timestamps
+may be interleaved.  This allows the caller to as for a specific
+timestamp, followed by the next sample with a single call, for example.
+The caller must provide a pointer to a block of memory large enough
+to hold the resulting samples in the buffer parameter.
+The necessary block size can
+be computed from the information returned by cvio_datatype() and
+the number of samples requested.  The count parameter selects the
+number of samples to read.  There must be at least count values
+in the time array.  The actual samples returned is based on the
+current timerule as set by cvio_setattribute.
+.PP
+Timerules:
+.PP
+CVIO_TIMERULE_FLOOR - returns the sample value with the closest timestamp
+less than the specified timestamp.
+.PP
+CVIO_TIMERULE_CEIL - returns the sample value with the closest timestamp
+greater than the specified timestamp.
+.PP
+CVIO_TIMERULE_ROUND - returns the sample value with the timestamp closest
+to the specified timestamp.  This is the default.
+.PP
+CVIO_TIMERULE_INTERP - returns a sample value linearly interpolated between
+the closest samples greater than and less than the specified timestamp.
+.PP
+The cvio_read_next_samples is identical to cvio_read_samples, except
+that the time array is ignored as an input and the function returns
+the next count samples in the file.  The time array is filled with
+the actual sample timestamps on output.
+It performs the same as the following:
+.PP
+.nf
+int32 cvio_read_next(uint32 s, CVIO_DT_TIME *t, void *b, int32 count)
+{
+	for(int32 i=0;i<count;i++) t[i] = CVIO_TIME_NEXT;
+	return(cvio_read_samples(s,t,b,count));
+}
+.fi
+.PP
+In the 'C' API for the read functions, it is the callers responsibility to
+specify the proper data type and size of the buffer parameter.
+If NULL is passed as the buffer parameter to cvio_read_samples() or
+cvio_read_next_samples(), then no actual sample data will be
+read, but all the timestamp data will be processed normally.
+In the IDL API, the buffer parameter type, dimensions and size are
+automatically allocated properly.  If the user is not interested
+in the actual samples, the buffer parameter can just be dropped
+in the IDL CVIO_READ_SAMPLES() and CVIO_READ_NEXT_SAMPLES() functions.
+.PP
+The blocking form of the cvio_read functions behave much like their
+cvio_read counterparts, except that they "wait" if no samples are
+available.  The length of the wait is determined by the timeout
+value.  A value of '0' waits "forever".  If a non-zero value is
+passed, the ttype parameter specifies the timeout type.
+.PP
+The timeout types are:
+.PP
+CVIO_TIMEOUT_LOCAL - treats the timeout as a number of ticks as
+measured by the local machine.
+.PP
+CVIO_TIMEOUT_STREAM - times out after the stream's last time value passes the
+timeout's value.
+
+.PP
+These functions are also
+different in that they can return fewer than the requested number
+of samples.  They will return no more than the input value of
+"*count" and will return the final number iof samples in "*count".  
+If there is a timeout before any samples are available, "*count"
+returns 0 and the function returns CVIO_ERR_OK.  It can return
+other errors as well if there are problems withh the I/O systems.
+.PP
+The cvio_add_samples function is used to add samples to an existing
+file opened with CVIO_ACCESS_APPEND access mode.  The user provides
+a list of timestamps and a list of data samples in the buffer
+parameter.  The number of samples is passed in the count parameter.
+The timestamp array (time) must consist of monotonically increasing
+timestamps, the first of which must be greater than the largest one
+that is currently in the cvio file.  If the time array includes
+CVIO_TIME_NEXT values, the function will use automatically generated
+timestamps that increment by one the last timestamp in the file,
+ensuring a monotonically increasing sequence.
+.PP
+In the 'C' API for the add function, the caller is required to pass the
+proper datatype
+pointer in the buffer parameter.  In the IDL API, the buffer parameter
+will be automatically converted to the proper datatype as needed.
+.PP
+The return values of the functions are cvio error codes.  See
+cvio_get_error_message(3).
+.SH SEE ALSO
+cvio_lib(3), cvio_get_error_message(3), cvio_open(3), cvio_setattribute(3)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

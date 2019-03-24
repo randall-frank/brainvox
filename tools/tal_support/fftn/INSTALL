@@ -1,0 +1,15 @@
+test-fftn.c	- test suggested easy routine
+test-all.c	- test float/double, interleaved storage (complex)
+
+Edit the Makefile to reflect your complier and then `make`.
+
+
+You may have to define SUN_BROKEN_REALLOC if your realloc() function
+doesn't accept a NULL pointer.
+
+If you need to save space:
+ - define FFT_NOFLOAT or FFT_NODOUBLE to avoid compiling that precision.
+ - define FFT_RADIX4 if you only want radix 2, radix 4 transforms
+
+The file test-all.c also demonstrates other options to try, check the source
+code to see what compiler defines to use.

@@ -1,0 +1,76 @@
+#
+#	Configuration file for Mac OSX (darwin)
+#
+OS=osx
+GFX=GFX_OGL
+#
+#	Various file extensions
+#
+OBJ_SUFFIX=o
+LIB_SUFFIX=a
+SH_SUFFIX=bundle
+EXE_SUFFIX=
+#
+#	Debug flags
+#
+DEBUG=-O3
+#
+#       Local deps
+#
+LCL_LIB=../ext_libs/libIrisGL.a
+#
+#	X11 
+#
+XINC=-I/usr/X11R6/include
+XLIB=-L/usr/X11R6/lib -lX11 -lXext
+#
+#	Gfx
+#
+GINC=-I../include -I../ext_libs
+GLIB=-L../ext_libs -L/usr/X11R6/lib -lIrisGL -lGL -lsgiimg -framework AGL \
+	-framework Carbon
+#
+#       UIF
+#
+UINC=-I../ext_libs
+ULIB=-L../ext_libs -luif
+#
+#       BVOX
+#
+BINC=-I../ext_libs
+BLIB=-L../ext_libs -luif -lvtrace -lvox3
+#
+#	C
+#
+CC=gcc
+CFLAGS=$(DEBUG) -D$(OS) $(XINC) $(GINC) -D$(GFX)
+CLIB=-lm
+#
+#	Fortran
+#
+FC=f77
+FFLAGS=$(DEBUG) -D$(OS) -f -w -N15 $(GINC) -D$(GFX)
+FLIB=-lU77 -lV77
+#
+#       Make
+#
+MAKE=make
+#
+#	Ranlib
+#
+RANLIB=ranlib
+#
+#       ar
+#
+AR=ar -r
+ARP=
+#
+#######################################################################
+#
+#       Rules
+#
+.c.o:
+	${CC} -c ${CFLAGS} $*.c
+.f.o:
+	${FC} -c ${FFLAGS} $*.f
+

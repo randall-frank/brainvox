@@ -1,0 +1,104 @@
+tal_mrinorm(Brainvox)                       tal_mrinorm(Brainvox)
+
+
+
+NNAAMMEE
+       tal_mrinorm  −  Normalizes  a volume so that its slicewise
+       fitted mean voxel is a particular value.
+
+SSYYNNOOPPSSIISS
+       tal_mrinorm [options] inputtemp outputtemp
+
+DDEESSCCRRIIPPTTIIOONN
+       This program reads an 8bit input volume and  computes  the
+       slicewise mean values along a user selected axis.  A poly­
+       nomial is fit to these mean slice values.   Finally,  each
+       slice  is  multiplied  by the ratio (128/fit value).  This
+       has the effect of normalizing the voxel values.  In  addi­
+       tion,  by  using  a  fourth order polynomial, the aliasing
+       artifacts seen in volumetric MRI acquisitions can be  mod­
+       eled and removed.
+
+       Zero  valued voxels are ignored by the program.  INPUTTEMP
+       is the input volume template.  OUTPUTTEMP  is  the  volume
+       template for the output normalized volume.
+
+       Options:
+
+       ‐x(dx) The  x  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐y(dy) The y axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐f(start)
+              This specifies the slice number for the first image
+              in the volume.  Default:1.
+
+       ‐l(end)
+              This specifies the slice number for the last  image
+              in the volume.  Default:124.
+
+       ‐i(step)
+              This  specifies the increment number to go from one
+              slice to the next.  Default:1.
+
+       ‐v     This option enables verbose mode.
+
+       ‐o(order)
+              This specifies the order of the fitting polynomial.
+              Default:4.
+
+       ‐d(dumpfile)
+              This  specifies  that  the slicewise fitting ratios
+              (128/fit) should be saved  to  the  file  DUMPFILE.
+              Default: do not save.
+
+       ‐r(dumpfile)
+              This  specifies  that  the slicewise fitting ratios
+              should be read from the file  DUMPFILE  instead  of
+              being  computed  from  the volume.  This allows for
+              the fits from one volume to be applied  to  another
+              volume.  Default: compute new fit.
+
+       ‐e(err)
+              This  specifies  the  maximum voxel error to try to
+              correct.  The default is: 100.
+
+       ‐axis(X|Y|Z)
+              This specifies the axis along which the fitting  is
+              to be performed.  The default is Z.
+
+       ‐avg(X|Y|Z)(X|Y|Z)
+              This option causes line profile averages to be com­
+              puted for a volume.   The  axis  are  specified  as
+              (dim)(report)  where  DIM  is  the axis along which
+              profiles are to be computed and REPORT is the  axis
+              along  which  averages  are  reported (ie averaging
+              occurs along the unspecified axis).  The default is
+              not to compute averaged line profiles.
+
+       ‐m     This option selects an exponential dropoff model at
+              the extrema instead of a linear model.   The  model
+              is valid for an A‐P curve fit only and was obtained
+              from a brain with no A‐P aliasing artifact.
+
+       ‐s(interslice)
+              When the ‐m option is  used,  the  true  interslice
+              spacing (in mm) for the volume along the axis being
+              fit must be specified so  that  the  model  may  be
+              adjusted.  The default is 1.6mm.
+
+SSEEEE AALLSSOO
+       tal_programs
+
+NNOOTTEESS
+       Currently, the input volume must be an 8bit volume.
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                            tal_mrinorm(Brainvox)

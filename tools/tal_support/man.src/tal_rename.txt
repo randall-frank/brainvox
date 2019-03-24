@@ -1,0 +1,86 @@
+tal_rename(Brainvox)                         tal_rename(Brainvox)
+
+
+
+NNAAMMEE
+       tal_rename  −  Performs  batch  image file renaming opera­
+       tions.
+
+SSYYNNOOPPSSIISS
+       tal_rename [options] inputtemp outputtemp
+
+DDEESSCCRRIIPPTTIIOONN
+       This program applies a UNIX command to a series  of  file­
+       names  generated  from  a pair of filename templates.  See
+       the tal_programs man page for details on filename template
+       formation.   This program scans through a pair of filename
+       templates, generating a UNIX commandline of the form  "cmd
+       infile  outfile" for each pair of filenames.  "cmd" may be
+       any UNIX command (mv, cp, and rm are all  pretty  useful).
+       Note  that  a  filename  template of " " will result in no
+       filename being generated (very useful with rm) and a  tem­
+       plate  with no number field will return the template with­
+       out  substitution  (e.g.  "tal_rename   "‐cln   ‐s"   base
+       dest_%%%.pic"  will create a series of symbolic links from
+       the file "base" to files named  by  "dest_XXX.pic").   The
+       output file numbers are the same as the input file numbers
+       by default.  The user may specify  separate  starting  and
+       step  sizes  for  the output file numbers.  No last output
+       file number is needed (stopping is determined by the input
+       file numbers).
+
+       INPUTTEMP  is  the input filename template.  OUTPUTTEMP is
+       the filename template.
+
+       Warning: try the ‐t option on your tal_rename  commandline
+       BEFORE  running  it  for real.  A poorly formed tal_rename
+       commandline can really ruin your day!
+
+       Options:
+
+       ‐f(start)
+              This specifies the file number for the first  image
+              in the input template. Default:1.
+
+       ‐l(end)
+              This  specifies  the file number for the last image
+              in the input template. Default:124.
+
+       ‐i(step)
+              This specifies the increment number to go from  one
+              input file to the next. Default:1.
+
+       ‐F(start)
+              This  specifies the file number for the first image
+              in the output  template.   Default:  (same  as  the
+              input file start value).
+
+       ‐I(step)
+              This  specifies the increment number to go from one
+              output file to the next.   Default:  (same  as  the
+              input file step value).
+
+       ‐t     This  enables  the  test  mode.   Each  command  is
+              printed, but no commands are executed.
+
+       ‐v     This enables verbose mode, which  prints  out  each
+              command as it is executed.
+
+       ‐c(cmd)
+              This  option selects the UNIX command which will be
+              used.  The command  will  have  the  two  filenames
+              specified as parameters: {cmd} infile outfile.  The
+              default is: mv.
+
+
+SSEEEE AALLSSOO
+       tal_programs
+
+NNOOTTEESS
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                             tal_rename(Brainvox)

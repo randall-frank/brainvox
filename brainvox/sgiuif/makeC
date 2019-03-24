@@ -1,0 +1,1 @@
+cc hello.c hellores.o -L. -luif -lfgl -lgl_s -lfm_s -lF77 -lI77 -lU77 -lisam

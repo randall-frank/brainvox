@@ -1,0 +1,49 @@
+#
+#	Configuration file for Linux 
+#
+OS=linux
+GFX=GFX_OGL
+#
+#	Debug flags
+#
+DEBUG=-O
+#
+#       Local deps
+#
+LCL_LIB=../ext_libs/libIrisGL.a
+#
+#	X11 
+#
+XINC=-I/usr/X11R6/include
+XLIB=-L/usr/X11R6/lib -lX11 -lXext
+#
+#	Gfx
+#
+GINC=-I../include -I../ext_libs
+GLIB=-L../ext_libs -L/usr/X11R6/lib -lIrisGL -lGL -lsgiimg
+#
+#	C
+#
+CC=gcc
+CFLAGS=$(DEBUG) -D$(OS) $(XINC) $(GINC) -D$(GFX)
+CLIB=-lm
+#
+#	Fortran
+#
+FC=ifc
+FFLAGS=$(DEBUG) -D$(OS)  $(GINC) -D$(GFX) -80 -w -Vaxlib
+FLIB=-i_dynamic -Vaxlib
+#
+#       Make
+#
+MAKE=make
+#
+#######################################################################
+#
+#       Rules
+#
+.c.o:
+	${CC} -c ${CFLAGS} $*.c
+.f.o:
+	${FC} -c ${FFLAGS} $*.f
+

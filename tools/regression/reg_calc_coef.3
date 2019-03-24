@@ -1,0 +1,45 @@
+.TH reg_calc_coef 3
+.SH NAME
+reg_calc_coef
+.SH SYNOPSIS
+.HP
+.B
+#include "regression.h"
+.HP
+.B
+int reg_calc_coef(Regression *r, char *mask, double *coef,double *sterr);
+.PP
+IDL API:
+.HP
+.B
+err=REG_CALC_COEF(r[,mask],coef_[,STD_ERROR=e_])
+.SH DESCRIPTION
+he reg_calc_coef function computes the regression coefficients for a
+given regression object.  The return value is 0 for success or -1 on error.
+The r parameter is the return value of a reg_create fuction. The mask
+parameter is optional and may be passed as NULL.  It selects a subset of
+the parallel regressions to compute the sums of squares.  If a mask
+is passed, it should be the same length as the number of values specified
+in the reg_create function.
+The caller must pass a pointer to a vector of length nvalues*nvars
+as coef.
+The regression coefficients error will be
+returned in the array for each value selected by the masks.
+That is one regression coefficient each value and each variable.
+Note: the regression coefficient
+for a class variable is undefined.  The data are
+ordered as a concatenated list of nvars for each value.
+.PP
+An optional array pointer of length nvars*nvalues may be specified
+as stderr.  If it is non-NULL, the standard error of each coefficient
+is returned as output.
+.PP
+The IDL API is simplified in that all the arrays are automatically
+allocated and returned with proper lengths and dimensions and that
+the sterr output is selected by the STD_ERROR keyword.
+.SH SEE ALSO
+reg_lib(3)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

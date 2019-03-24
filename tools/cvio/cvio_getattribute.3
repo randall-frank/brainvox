@@ -1,0 +1,131 @@
+.TH cvio_getattribute 3
+.SH NAME
+cvio_getattribute, cvio_setattribute, cvio_getattriblist
+.SH SYNOPSIS
+.HP
+.B
+#include "cvio_lib.h"
+.HP
+.B
+int32 cvio_getattribute(uint32 stream, char *attr_name, void *buffer, int32 *bufferlen);
+.HP
+.B
+int32 cvio_setattribute(uint32 stream, char *attr_name, void *buffer);
+.HP
+.B
+int32 cvio_getattriblist(uint32 stream, char *buffer, int32 *bufferlen, int32 *num_attribs);
+.PP
+.HP
+.B
+err=CVIO_GETATTRIBUTE(stream,attr_name,value_)
+.HP
+.B
+err=CVIO_SETATTRIBUTE(stream,attr_name[,value])
+.HP
+.B
+err=CVIO_GETATTRIBUTELIST(stream,names_,num_names_)
+.SH DESCRIPTION
+These functions are used to manipulate the attributes in an open
+cvio file.  Attributes consist of an ASCII string name and a
+value.  The value can be any supported cvio type (user defined attributes
+may only be of the type CVIO_TYP_STRING).  Most attributes are
+file status, but some actually perform functions on cvio files.
+.PP
+The cvio_getattribute function returns the value of an attribute
+in the open cvio file specified by the passed stream indentifier.
+The caller passes the name of the attribute in the attr_name
+parameter.  The caller passes a pointer to a block of memory
+to hold the attribute value as the buffer parameter.  The length
+of this buffer in bytes is passed as bufferlen and the number of
+bytes used in the buffer are returned in bufferlen.  The caller
+must provide a buffer of the proper type (matching the
+attribute type).  The IDL API is much simpler, as the return
+value is automatically allocated as the proper type to the
+caller.
+.PP
+The cvio_setattribute function is used to change the value
+of an attribute.  The paramters are similar to the cvio_getattribute
+function, with the exception that the buffer length is not
+required. For user defined attributes, a NULL buffer pointer
+is used to remove an attribute.  In the IDL API, not providing
+the value parameter will cause a user defined attribute to
+be removed.
+.PP
+The cvio_getattriblist function is used to query a cvio file
+for a complete list of the attributes defined in the file.
+The names of the attributes are copied into the memory pointed to by
+the user specified buffer.  The size of the user supplied buffer
+is passed as bufferlen.  On return, bufferlen contains the
+number of characters used in the buffer.  Num_attribs returns
+the number of NULL terminated strings in the buffer.  The
+strings are stored contgiuously in the buffer, including terminating
+NULL character for each filename.  The IDL API returns a string array and the
+number of strings in the array.  All the buffer allocation
+is handled and the data is reformatted into IDL strings.
+.PP
+Defined attributes:
+.TP
+"REQ_ATTR_DATE_ST"
+String - The date of file creation as a string.  Readonly.
+.TP
+"REQ_ATTR_TYPE_US"
+Unsigned short - The type of the samples in the file: CVIO_TYP_*.  Readonly.
+.TP
+"REQ_ATTR_FTYPE_US"
+Unsigned short - The type of the cvio file: 0=disk, 1=shared memory.  Readonly.
+.TP
+"REQ_ATTR_RWRITES_US"
+Unsigned short - Number of remaining writers before EOF. Readonly.
+.TP
+"REQ_ATTR_NDIM_US"
+Unsigned short - The number of dimensions for each sample.  Readonly.
+.TP
+"REQ_ATTR_DIMS_US"
+3 unsigned short - The actual dimensions of each sample.  Readonly.
+.TP
+"REQ_ATTR_SPACING_F"
+3 floats - The spacing between samples in x,y,z.  Read/write.
+.TP
+"REQ_ATTR_COMP_US"
+Unsigned short - A flag specifing if the file is in compressed format.  Readonly.
+.TP
+"REQ_ATTR_NSAMP_UL"
+Unsigned long - The number of samples in the file.  Readonly.
+.TP
+"REQ_ATTR_TIMESTAMPBASE_UL"
+Unsigned long - The number of timestamp ticks in one second for this file.  Readonly.
+.TP
+"REQ_ATTR_CURRSAMP_UL"
+Unsigned long - The current sample number in the file.  Writing to
+this attribute causes the file to seek to the specified sample number.
+Read/write.
+.TP
+"REQ_ATTR_CURRTIME_TI"
+Unsigned long - The timestamp for the current sample.  Readonly.
+.TP
+"REQ_ATTR_TIMEIN_TI"
+Unsigned long - The first timestamp in the file.  Readonly.
+.TP
+"REQ_ATTR_TIMEOUT_TI"
+Unsigned long - The last timestamp in the file.  Readonly.
+.TP
+"REQ_ATTR_TIMERULE_US"
+Unsigned short - The current rule for reading samples via timestamp.
+Valid rules: CVIO_TIMERULE_FLOOR, CVIO_TIMERULE_CEIL, CVIO_TIMERULE_INTERP,
+CVIO_TIMERULE_ROUND.  Read/write.
+.TP
+"XXX_ST"
+String - User defined attribute name strings must end in '_ST'.  Read/Write.
+Passing a NULL buffer pointer or no buffer at all in the IDL API will
+result in the named attribute being removed from the file.
+.PP
+The return values of the functions are cvio error codes.  See
+cvio_get_error_message(3).
+.SH SEE ALSO
+cvio_lib(3), cvio_get_error_message(3), cvio_attr(1)
+.SH NOTES
+The "REQ_ATTR_CURRTIME_TI" attribute should be read/write, allowing
+for timestamp based seeking.
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

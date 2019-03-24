@@ -1,0 +1,248 @@
+.TH DEFPUP 3G  OCLSC
+.SH NAME
+.B defpup
+\- defines a menu
+.SH "C SPECIFICATION"
+.B
+long defpup(str [, args])
+.br
+.B
+String str;
+.br
+.B
+long args;
+.SH PARAMETERS
+.TP
+.I str
+expects a pointer to the text that you want to add as a menu item.
+In addition, you have the option of pairing an ``item type'' flag
+with each menu item. There are thirteen menu item type flags:
+
+.RS .5i
+.TP
+.BI %b n
+specifies which mouse button controls the menu.
+.I n
+must be 1, 2 or 3 corresponding to LEFTMOUSE, MIDDLEMOUSE and RIGHTMOUSE
+respectively and
+.I n
+must be part of the text string, not the
+.I arg
+parameter.  If
+.BI %b n
+is not specified then RIGHTMOUSE is assumed.
+.TP
+.B %s
+indicates that the menu should remember the last item selected and draw the
+menu with that item positioned under the cursor the next time the menu is drawn.
+.TP
+.B %t
+marks item text as the menu title string.
+.TP
+.B %F
+invokes a routine for every selection from this menu except those marked with
+a 
+.BR %n .
+You must specify the invoked routine
+in the
+.I arg
+parameter. The value of the menu item is used as
+a parameter of the executed routine.  Thus, if you select the
+third menu item, the system passes 3 as a parameter to the
+function specified by %F.
+.TP
+.B %d
+disables the menu entry causing it to appear greyed-out.  
+Selecting a disabled entry has the same behavior as selecting the title bar.
+If the greyed-out entry has a submenu associated with it, that
+submenu does not display.
+.TP
+.B %f
+invokes a routine when this particular menu item is selected.
+You must specify the invoked routine in the
+.I arg
+parameter.
+The value of the menu item is passed as a parameter of the
+routine.  Thus, if you select the third menu item, the system
+passes 3 as a parameter to the routine specified by %f.  If
+you have also used the %F flag within this menu, then the
+result of the %f routine is passed as a parameter of the %F
+routine.
+.TP
+.B %i
+indicates that this item is a toggle.  Once it has been selected, 
+whenever the menu is drawn this item will have a glyph drawn beside it
+indicating that this toggle is active.  Once the item has been
+selected again, the glyph will no longer be displayed, signifying that the
+toggle is now inactive, until the item is selected next and so on.
+.TP
+.B %I
+like
+.B %i
+but sets the initial toggle state to active rather than inactive.  The glyph
+will be drawn by the item initially and subsequent selections of this item
+will disable the glyph, then enable it, etc.
+.TP
+.B %l
+adds a line under the current entry.  This is useful in
+providing visual clues to group like entries together.
+.TP
+.B %m
+pops up a menu whenever this menu item is selected. You must
+provide the menu identifier of the new menu in the
+.I arg
+parameter.
+.TP
+.B %n
+like %f, this flag invokes a routine when the user selects
+this menu item.  However, %n differs from %f in that it
+ignores the routine (if any) specified by %F. The value of
+the menu item is passed as a parameter of the executed
+routine.  Thus, if you select the third menu item, the system
+passes 3 as a parameter to the function specified by %f.
+.TP
+.BI %r n
+specifies that the item is part of radio group
+.IR n .
+A radio group is a set of menu items that are mutually exclusive.  When the
+menu is drawn, a glyph will be drawn beside the currently active item
+in each radio group.  When a new item is selected from a radio group
+the glyph is moved to that item in subsequent displays of the menu.  To
+specify the initial active element of a radio group use
+.B %I 
+in addition to
+.BI %r n.
+The radio group number
+.IR n,
+must be between 0 and 9 inclusive and must be entered as part of the
+text string.  Do not use the
+.I arg
+parameter to specify the group number.  It is helpful to use lines
+(with
+.BR %l )
+to demarcate the members of a radio group.
+.TP
+.BI %x n
+assigns a numeric value to this menu item.  This values
+overrides the default position-based value assigned to this
+menu item (e.g., the third item is 3).  You must enter the
+numeric value as the 
+.I n
+part of the text string.  Do not use the
+.I arg
+parameter to specify the numeric value.
+.RE
+.TP
+.B args
+an optional set of arguments.  Each argument expects the command
+or submenu that you want to assign to this menu item.  You can use
+as many
+.I args
+parameters as you need.
+.SH "FUNCTION RETURN VALUE"
+The returned value for the function is the menu identifier of the menu
+just defined.
+.SH DESCRIPTION
+.B defpup
+defines a pop-up menu under the window manager and returns a
+positive menu identifier as the function value.
+.SH EXAMPLES
+.LP
+Examples best illustrate the use of the item types.
+
+.in +.5i
+.nf
+.na
+.ft C
+menu = defpup("menu %t|item 1|item 2|item 3|item 4");
+.ft R
+.in
+
+.fi
+.ad
+defines a pop-up menu with title
+.B menu
+and four items.  You can use
+a menu of this type as follows:
+.nf
+.na
+.in +.5i
+.ft C
+
+ switch (dopup(menu)) {
+     case 1: /* item 1 */
+      \fIhandling code\fP
+      break;
+     case 2: /* item 2 */
+      \fIhandling code\fP
+      break;
+     case 3: /* item 3 */
+      \fIhandling code\fP
+      break;
+     case 4: /* item 4 */
+      \fIhandling code\fP
+      break;
+ }
+.ft R
+.in
+
+A more complex example is:
+
+.in +.5i
+.ft C
+String str = "menu2 %t %F|1 %n%l|2 %m|3 %f|4 %x234";
+
+menu2 = defpup(str, menufunc, submenu, func);
+.ft R
+.in
+
+.fi
+.ad
+defines a menu with title
+.B menu2
+and four items with a line under the first one.  Invoked by:
+
+.in +.5i
+.ft C
+menuval = dopup(menu2);
+.ft R
+.in
+
+.PP
+Selecting menu item 1 causes
+.B dopup
+to return
+.BR menufunc(1) .
+Rolling off menu item 2 displays
+.IR submenu ,
+which provides additional selections.
+.B dopup
+returns
+.B menufunc(dopup(submenu))
+when another selection is made; otherwise
+.I submenu
+disappears and selections are made from
+.IR menu .
+Buttoning item 3 executes
+.I func
+with 3 as its argument.
+.B dopup
+returns
+.BR menufunc(func(3)) .
+Buttoning item 4 causes
+.B dopup
+to return
+.BR menufunc(234) .
+If no item is selected, then
+.B dopup
+returns -1.
+
+.SH "SEE ALSO"
+addtopup, changepup, dopup, freepup, newpup, setpup
+
+.SH NOTES
+This routine is available only in immediate mode.
+
+When using the Distributed Graphics Library (DGL), you can not call other
+DGL routines within a function that is called by a popup menu, i.e. a
+function given as the argument to a %f or %F item type.

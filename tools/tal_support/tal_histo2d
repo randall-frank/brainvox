@@ -1,0 +1,98 @@
+#!/usr/bin/nawk -f
+BEGIN {
+	if (ARGC == 1) {
+		printf("Usage: %s [bucksize=size][average=1][countonly=1][incstdev=weight]\n",ARGV[0])
+		printf("[pweighted=1][vweighted=1][include=1][xcol=x][ycol=y] inputfile\n")
+		printf(" The program computes histograms of the data in the\n")
+		printf(" first column in a 2d grid formed by two other columns.\n\n")
+		printf(" The default is to grid the data according to the vectors\n")
+		printf(" in the second and third columns.  The xcol=x and ycol=y\n")
+		printf(" options allow the user to select other columns to grid over.\n")
+		printf(" The default bucket size is 0.1\n")
+		printf(" The default is to sum the data values in the bin.\n")
+		printf(" The average=1 option will report the average of the data values\n")
+		printf(" in the bin.\n")
+		printf(" The countonly=1 option will report the number of data values\n")
+		printf(" in the bin.\n")
+		printf(" The pweighted=1 option will report the bin mean, weighted by\n")
+		printf(" the percentage of data values in the bin.\n")
+		printf(" The vweighted=1 option will report the bin mean, weighted by\n")
+		printf(" the reciprical of the variance of data values in the bin.\n")
+		printf(" The default is to only report values from -1.0 to 1.0.\n")
+		printf(" The include=1 option causes all the non-zero buckets\n")
+		printf(" to be printed.\n")
+		printf(" The incstdev=1 option adds a standard deviation column to\n")
+		printf(" be added after each data column.\n")
+		exit(0)
+	}
+	n = 0
+	if (bucksize == 0.0) bucksize = 0.1
+	maxb = -99999
+	minb = 99999
+	offset = 100.0 - (bucksize/2)
+	f1 = 2
+	f2 = 3
+	if (xcol != 0.0) f1 = xcol
+	if (ycol != 0.0) f2 = ycol
+	count = 0;
+	error = 0
+}
+{
+        n = n + 1
+	if ((f1 > NF) || (f2 > NF)) {
+		if (error == 0) printf("Error: Only %d columns in the input file.\n",NF)
+		error = 1
+	}
+	
+	j = int(($(f1)+offset)/bucksize)
+	k = int(($(f2)+offset)/bucksize)
+        sum[j,k] = sum[j,k] + $1
+	ss[j,k] = ss[j,k] + ($1 * $1)
+        cnt[j,k] = cnt[j,k] + 1
+	if (k < minb) minb = k
+	if (k > maxb) maxb = k
+	if (j < minb) minb = j
+	if (j > maxb) maxb = j
+	count = count + 1
+}
+END {
+	if ((ARGC == 1) || (error == 1)) exit(0)
+	if (include == 0.0) {
+		minb = int((-1+offset)/bucksize)
+		maxb = int((1+offset)/bucksize)
+	}
+	for(j=minb;j<=maxb;j++) {
+		for(k=minb;k<=maxb;k++) {
+			printf("%f",j*bucksize-offset+(bucksize/2))
+			printf("\t%f",k*bucksize-offset+(bucksize/2))
+			name = j SUBSEP k
+			if (name in sum) {
+				mean = sum[name]/cnt[name];
+				var = ((1.0/cnt[name])*ss[name]) - (mean * mean)
+				if (var == 0.0) var = 1.0
+				if (countonly != 0.0) {
+					printf("\t%f",cnt[name])
+				} else if (average != 0.0) {
+					printf("\t%f",mean)
+				} else if (vweighted != 0.0) {
+					printf("\t%f",mean/var)
+				} else if (pweighted != 0.0) {
+					printf("\t%f",mean*(cnt[name]/count))
+				} else {
+					printf("\t%f",sum[name])
+				}
+                                if (incstdev != 0.0) {
+                                        printf("\t%f",incstdev*sqrt(var))
+                                }
+			} else {
+				printf("\t%f",0.0)
+                                if (incstdev != 0.0) {
+                                        printf("\t%f",0.0)
+                                }
+			}
+			printf("\n")
+		}
+		printf("\n")
+	}
+}
+

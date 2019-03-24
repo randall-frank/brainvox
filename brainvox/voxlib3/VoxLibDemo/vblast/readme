@@ -1,0 +1,73 @@
+
+Vblast voxlib demo program
+
+	This program is designed to illustrate how one might combine
+voxlib rendering with IrisGL.  It will load a simple volume, allow the
+user to rotate it and then rotate a clipped plane through the volume.
+	The left mouse button will rotate the cube and stop a rendering.
+The right mouse button will rotate a zclipped plane through the resulting
+rendering.  The F1 key toggles the rendering quality.  The F2 key rereads
+palette files that may have changed externally.  The F3 key applies a 
+postlighting filter to the volume.  The F4 key toggles the cutting plane
+on/off. 
+
+Notes:
+	The palette and opacity files are in the same format as their
+Voxblast equivalents.  The data volumes must be in 8bit raw headerless
+one slice per file (old style Voxblast ".fb" format).  The cutting plane
+orientation is fixed.  The output image size is fixed to 512x512 and thus
+the diagonal of any loaded volume cannot exceed 512 voxels in length. 
+This is because this program uses the vl_render call instead of the
+newer vl_m_render call.  Usually, the output image size is set to the
+diagonal of the voxel cube (which may exceed screen size as the image
+buffer is virtual in software) within the vset structure and a portion
+of that buffer is displayed in the on-screen window with user defined
+panning and zoom within the virtual output image buffer.
+	 When the cutting plane is enabled, one palette
+and opacity pair is used on either side of the plane.  The default 
+palettes and opacities are linear ramps which are not very interesting
+for most datasets.  The postlighting used in this example is generally
+useful for solid surfaces or shells, not dendritic or noisy datasets.
+The program uses single buffering to avoid dithering, but on high end
+SGI hardware, double buffering could be used to avoid the flickering.
+	This program uses the builtin GL function for drawing the 
+cube bounds interactively.  Generally, this is done using custom GL or
+the polygon rendering routines in voxlib which (in conjunction with a
+user supplied font rendering callback) provide much higher quality and
+easily customized annotations.
+
+Example usage:
+
+% cd heart                              cd to the data directory
+% ../vblast/vblast saved.fb _solid.pal _solid.opac gray.pal _tree.opac 
+	Start the program using the volume defined by "saved.fb" and the
+	palette/opacity table pair (_solid.pal _solid.opac) on one side
+	of the cutting plane and (gray.pal _tree.opac) on the other.
+
+Left mouse - drag to change cube orientation
+Right mouse - drag to view cutting plane
+F1 - quality toggle
+F2 - reread palettes
+F3 - apply postlighting
+F4 - cutting plane toggle
+
+Reading palette file:_solid.opac
+Reading palette file:_solid.pal
+Reading palette file:_tree.opac
+Reading palette file:gray.pal
+
+Interp = 0  squf = 1.000000 
+Allocating 3839616 bytes of memory.
+Reading:hogheart_001.pic
+Reading:hogheart_002.pic
+Reading:hogheart_003.pic
+
+...
+
+Reading:hogheart_141.pic
+Reading:hogheart_142.pic
+Reading:hogheart_143.pic
+Reading:hogheart_144.pic
+3839616 voxels in 2.025589 seconds = 1895555.375000 voxels per sec
+
+%

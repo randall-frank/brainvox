@@ -1,0 +1,72 @@
+tal_remask(Brainvox)                         tal_remask(Brainvox)
+
+
+
+NNAAMMEE
+       tal_remask − Computes a connected voxel mask.
+
+SSYYNNOOPPSSIISS
+       tal_remask [options] inputtemp outputtemp
+
+DDEESSCCRRIIPPTTIIOONN
+       This  program computes a mask of an object(s) in the input
+       volume including any inner holes.   The  program  actually
+       computes a "non‐object" mask by performing a flood fill of
+       those voxels below the user supplied threshold starting at
+       0,0,0  in the volume.  The resulting mask is then inverted
+       and output.  The output volume has the  value  255  inside
+       the object and 0 outside.
+
+       The  program  may  be useful in computing a MRI brain mask
+       including the ventricles which can be classified  as  non‐
+       brain  if a strict thresholding method is used to create a
+       mask.
+
+       INPUTTEMP is the input volume template.  OUTPUTTEMP is the
+       output  volume template. The output volume is always 8bit.
+
+       Options:
+
+       ‐x(dx) The x axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐y(dy) The  y  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐z(dz) The image depth in bytes.  The default is 1.
+
+       ‐f(start)
+              This specifies the slice number for the first image
+              in the volume.  Default:1.
+
+       ‐l(end)
+              This  specifies the slice number for the last image
+              in the volume.  Default:119.
+
+       ‐i(step)
+              This specifies the increment number to go from  one
+              slice to the next.  Default:1.
+
+       ‐b     This  specifies  that  16bit  images should be byte
+              swapped before using.
+
+       ‐t(thres)
+              This specifies a  threshold  value.   Voxels  above
+              this value are considered to be part of the object.
+              The default value:1.0
+
+SSEEEE AALLSSOO
+       tal_programs
+
+NNOOTTEESS
+       There is an internal upper bound on the complexity of  the
+       object to be masked.  It should be set high enough for the
+       surface of an MRI brain.
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                             tal_remask(Brainvox)

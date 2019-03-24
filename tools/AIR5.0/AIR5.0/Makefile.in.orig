@@ -1,0 +1,85 @@
+@SET_MAKE@
+
+CFLAGS = @CFLAGS@
+CC = @CC@
+LIBS = @LIBS@
+
+
+all: library align_warp alignlinear binarize binarymask binarymath cd_air cd_warp combine_air combine_warp crop definecommon_air determinant_mask fixheader fuse gsmooth identify invert_air layout magnify makeaheader manualreslice mv_air mv_warp overlay_mask reconcile_air reorient resize reslice reslice_ucf reslice_unwarp reslice_unwarp_ucf reslice_vector reslice_warp reslice_warp_ucf reunite scan_vector scan_warp scanair scanheader separate setheadermax sizeof softmean softmeannorescale straightmean straightmeannorescale strictmean strictmeannorescale zoomer
+
+library:
+	cd src; ${MAKE} libRPW.a "CFLAGS=${CFLAGS}"
+
+align_warp: library
+alignlinear: library
+binarize: library
+binarymask: library
+binarymath: library
+cd_air: library
+cd_warp: library
+combine_air: library
+combine_warp: library
+crop: library
+definecommon_air: library
+determinant_mask: library
+fixheader: library
+fuse: library
+gsmooth: library
+identify: library
+invert_air: library
+layout: library
+magnify: library
+makeaheader: library
+manualreslice: library
+mv_air: library
+mv_warp: library
+overlay_mask: library
+reconcile_air: library
+reorient: library
+resize: library
+reslice: library
+reslice_ucf: library
+reslice_unwarp: library
+reslice_unwarp_ucf: library
+reslice_vector: library
+reslice_warp: library
+reslice_warp_ucf: library
+reunite: library
+scan_vector: library
+scan_warp: library
+scanair: library
+scanheader: library
+separate: library
+setheadermax: library
+sizeof: library
+softmean: library
+softmeannorescale: library
+straightmean: library
+straightmeannorescale: library
+strictmean: library
+strictmeannorescale: library
+zoomer: library
+
+
+.c :
+	${CC} $< -o $@ -Lsrc -lRPW ${LIBS} ${CFLAGS}
+	
+clean:
+	cd src; ${MAKE} clean
+	rm -f align_warp alignlinear binarize binarymask binarymath cd_air cd_warp combine_air combine_warp crop definecommon_air determinant_mask fixheader fuse gsmooth identify invert_air layout magnify makeaheader manualreslice mv_air mv_warp overlay_mask reconcile_air reorient resize reslice reslice_ucf reslice_unwarp reslice_unwarp_ucf reslice_vector reslice_warp reslice_warp_ucf reunite scan_vector scan_warp scanair scanheader separate setheadermax sizeof softmean softmeannorescale straightmean straightmeannorescale strictmean strictmeannorescale zoomer
+	rm -f config.cache config.log config.status
+	cd bin; rm -f align_warp alignlinear binarize binarymask binarymath cd_air cd_warp combine_air combine_warp crop definecommon_air determinant_mask fixheader fuse gsmooth identify invert_air layout magnify makeaheader manualreslice mv_air mv_warp overlay_mask reconcile_air reorient resize reslice reslice_ucf reslice_unwarp reslice_unwarp_ucf reslice_vector reslice_warp reslice_warp_ucf reunite scan_vector scan_warp scanair scanheader separate setheadermax sizeof softmean softmeannorescale straightmean straightmeannorescale strictmean strictmeannorescale zoomer
+
+	
+install:
+	mv align_warp alignlinear binarize binarymask binarymath cd_air cd_warp combine_air combine_warp crop definecommon_air determinant_mask fixheader fuse gsmooth identify invert_air layout magnify makeaheader manualreslice mv_air mv_warp overlay_mask reconcile_air reorient resize reslice reslice_ucf reslice_unwarp reslice_unwarp_ucf reslice_vector reslice_warp reslice_warp_ucf reunite scan_vector scan_warp scanair scanheader separate setheadermax sizeof softmean softmeannorescale straightmean straightmeannorescale strictmean strictmeannorescale zoomer bin
+	
+distclean:
+	cd src; ${MAKE} distclean
+	rm -f align_warp alignlinear binarize binarymask binarymath cd_air cd_warp combine_air combine_warp crop definecommon_air determinant_mask fixheader fuse gsmooth identify invert_air layout magnify makeaheader manualreslice mv_air mv_warp overlay_mask reconcile_air reorient resize reslice reslice_ucf reslice_unwarp reslice_unwarp_ucf reslice_vector reslice_warp reslice_warp_ucf reunite scan_vector scan_warp scanair scanheader separate setheadermax sizeof softmean softmeannorescale straightmean straightmeannorescale strictmean strictmeannorescale zoomer
+	rm -f config.cache config.log config.status
+	rm -f Makefile
+	cd bin; rm -f align_warp alignlinear binarize binarymask binarymath cd_air cd_warp combine_air combine_warp crop definecommon_air determinant_mask fixheader fuse gsmooth identify invert_air layout magnify makeaheader manualreslice mv_air mv_warp overlay_mask reconcile_air reorient resize reslice reslice_ucf reslice_unwarp reslice_unwarp_ucf reslice_vector reslice_warp reslice_warp_ucf reunite scan_vector scan_warp scanair scanheader separate setheadermax sizeof softmean softmeannorescale straightmean straightmeannorescale strictmean strictmeannorescale zoomer
+	
+	
+

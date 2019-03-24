@@ -1,0 +1,35 @@
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define as 1 for UNIX, 2 for PC */
+#undef AIR_CONFIG_PATHS
+
+/* Define as 1 unless non-compliant with ISO/IEEE Std 754-1985 */
+#undef AIR_CONFIG_AUTO_BYTESWAP
+
+/* Define as 16 unless you want an 8 bit version of AIR, in which case define as 8 */
+#undef AIR_CONFIG_OUTBITS
+
+/* Relevant only when AIR_CONFIG_OUTBITS is 16, can be 1, 2 or 3 */
+#undef AIR_CONFIG_REP16
+
+/* Should be less than 256 if AIR_CONFIG_OUTBITS is 8 */
+#undef AIR_CONFIG_THRESHOLD1
+
+/* Should be less than 256 is AIR_CONFIG_OUTBITS is 8 */
+#undef AIR_CONFIG_THRESHOLD2
+
+/* Define as 1 if nonessential screen printing is desired */
+#undef AIR_CONFIG_VERBOSITY
+
+/* voxel sizes differing by less than this amount are assumed identical */
+#undef AIR_CONFIG_PIX_SIZE_ERR
+
+/* MACHINE GENERATED, non-zero if popen() and pclose() were found */
+#undef AIR_CONFIG_PIPES
+
+/* MACHINE GENERATED, non-zero if gunzip was found */
+#undef AIR_CONFIG_DECOMPRESS
+
+/* MACHINE GENERATED, 1 if unistd.h, sys/types.h, sys/stat.h and stat() were found, 2 if lstat() was also found */
+#undef AIR_CONFIG_REQ_PERMS
+

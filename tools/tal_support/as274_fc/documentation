@@ -1,0 +1,396 @@
+
+                           Notes on AS 274
+      "Least-squares routines to supplement those of Gentleman"
+                             Alan Miller
+
+
+This algorithm provides a set of high accuracy least squares routines
+which expand upon those provided by Gentleman in AS 75.  In
+particular, it includes facilities for (weighted) least-squares for a
+subset of the variables, for changing the order of the variables, for
+testing for singularities, and for calculating an estimated covariance
+matrix for the regression coefficients.
+
+The algorithm is NOT consistent with those which have been published
+in the same journal by Clarke (AS 163), Stirling (AS 164) or Smith (AS
+268), in that the orthogonal reduction is stored in a different way.
+It is unfortunate that these authors have not used the same format as
+Gentleman.
+
+The basic algorithm is the same as Gentleman's.  As each new case is
+added, the orthogonal reduction is updated.  In traditional
+least-squares notation, the algorithm goes straight from the X-matrix
+(the 'design' matrix) to the Cholesky factorization WITHOUT the
+intermediate step of forming a sum of squares and products matrix.
+Thus it avoids squaring the condition number.  To be pedantic, it is
+actually the Banachiewicz factorization which is used.  We use:
+
+		  Q X = sqrt(D) R
+
+where Q is an orthonormal matrix such that Q'Q = I, D is a diagonal
+matrix (sqrt(D) is my crude way of indicating a diagonal matrix with
+elements on the diagonal which are the square roots of the elements
+stored in array D in the routines), and R is an upper triangular
+matrix with 1's on the diagonal.  The array R is stored in a
+1-dimensional array with elements stored by rows as shown below (the
+1's on the diagonal are NOT stored).
+
+Storage of R:    (1)  1   2   3   4   5
+		     (1)  6   7   8   9
+		         (1) 10  11  12
+			     (1) 13  14
+			         (1) 15
+				     (1)
+
+N.B. The matrix Q is a product of planar-rotation matrices
+(Jacobi/Givens rotations); it is not calculated or stored.
+N.B. If you want to fit a constant (intercept) in your model, you can
+do it by putting the first element of each row a X equal to 1.0.
+N.B. You may like to dimension XROW as XROW(0:K) in your calling
+program, where K is the number of variables (other than the constant).
+The parameter NP passed to routine INCLUD (and others) then takes the
+value K+1.
+
+To perform the calculation of regression coefficients (and nothing
+else), you need to call the following routines in the order given:
+
+1. clear           - initializes arrays
+2. includ          - call once for each case to update the orthogonal reduction
+3. tolset          - calculates tolerances for each variable
+4. sing (optional) - tests for singularities
+5. regcf           - calculates regression coefficients for the first NREQ
+		     variables
+
+You can then add extra data and recalculate the regression coefficients.
+
+Other routines (all require that 1 and 2 above have been used first).
+ss    calculates array RSS such that RSS(I) = the residual sum of squares with
+      the first I variables in the model
+cov   calculates the estimated covariance matrix of the regression coefficients
+      (the user must input a value for the residual variance VAR, usually the
+      residual sum of squares SSERR divided by NOBS - NP for all variables,
+      or RSS(I) divided by NOBS - I for the first I variables).
+pcorr calculates partial correlations with the first IN variables in the model.
+      If IN = 1 and the first variable is identically equal to 1 then these are
+      the usual full correlations.   If IN = 0 it gives the cross products (not
+      centered) divided by the square root of the product of the second moments
+      (about zero) of the two variables.
+vmove moves the variable in position FROM to position TO.
+reordr calls vmove repeatedly to re-order the variables from the current order
+      in integer array VORDER to that in the integer array LIST.
+hdiag calculates the diagonal elements of the `hat' matrix used in various
+      diagnostic statistics.
+
+For vmove and reordr, the user must first set up an integer array
+VORDER which assigns a unique integer value with each variable.  You
+may like to associate the value 0 with the constant in the model.
+
+For cov, vmove, reordr and hdiag you must call tolset first.
+
+*** Warning *** Routine INCLUD (from Gentleman's AS 75) overwrites the elements
+in array XROW.
+
+25 November 1991
+---------------------------------------------------------------------------
+
+
+                   Notes on handling singularities
+
+
+If there is a singularity amongst your X-variables and routine SING is
+not used, you will get wrong answers from most routines.  The
+orthogonal reduction can be written as:
+
+	X  =  Q' sqrt(D) R
+
+If we denote the columns of X as X1, X2, ..., Xk, and the columns of
+Q' as q1, q2, ..., qk, then we have:
+
+       x1  =  r(11).q1
+       x2  =  r(12).q1  +  r(22).q2
+       x3  =  r(13).q1  +  r(23).q2  + r(33).q3
+
+etc., where r(ij) = the (i,j)-element of R multiplied by the square
+root of the i-th diagonal element of D.  That is x1 is equal to the
+first orthogonal direction, q1, multiplied by a scaling factor.  x2 =
+a projection of length r(12) in the first direction, q1, plus a
+projection of length r(22) in a new direction, q2, which is orthogonal
+to q1, etc.  If the X-directions are all orthogonal then all of the
+r(ij)'s for off-diagonal elements of R will be zero.
+
+Let us suppose that there is a singularity amongst the X-variables,
+that is that one of the X-variables is exactly linearly related to
+some of the others.  For simplicity, let us suppose that x3 = a.x1 +
+b.x2.  The direction q3 is formed from x3 by subtracting its
+projections in directions q1 and q2 and then scaling so that it has
+length equal to 1.  When the projections in directions q1 and q2 are
+subtracted in this case, there should be nothing left.  In practice,
+there will be almost always be small rounding errors.  Direction q3
+will be formed from these rounding errors.  Thus we will have a rogue
+direction in the columns of Q'.  The projections of the dependant
+variable on this direction can be large.  It is like correlating the
+Y-variable on a variable formed by using random numbers or a column of
+numbers from the phone directory.
+
+Routine SING sets the projections on this direction equal to zero.
+
+In the case just mentioned, a full rank X could be obtained by
+removing any one of the variables x1, x2 or x3.  In AS274, the
+equivalent to removing a variable is to move it to the last position
+and then to only use the first (k-1) variables in subsequent
+calculations.  You still tell routines such as REGCF that there are NP
+variables, but you set NREQ = NP - 1.
+
+If you just want properties of a subset of variables, then you use
+either VMOVE or REORDR to re-order the variables so that the first
+ones are those which you are interested in, and you set NREQ equal to
+the number of those variables.  In most cases, the constant
+(intercept) will be included in the model and so will be included in
+the count of variables, NREQ (N-required).
+
+
+                    Features NOT included in AS274
+
+
+There is no facility for removing or adding variables (columns).  This
+could be done but adding variables requires the storage of the
+Q-matrix, or at least of the rotations used to form it.
+
+There is no facility for two or more dependant variables, though this
+is fairly easy to program.  The extra dependant variables can be
+treated as X-variables.  Thus if we have dependant variables Y1, Y2
+and Y3, then Y2 and Y3 can be added at the end of the list of
+X-variables.  When looking at the properties of Y1 related to the
+X-variables, use only the first (NP-2) columns by setting NREQ = NP-2.
+When you want to look at Y2, just copy column (NP-1) of RBAR into
+THETAB - this requires a little thought to work out just where those
+elements are stored.  You may want to first copy the original THETAB,
+or to copy the column of RBAR into a different array, perhaps THETAB2
+say.  The residual sum of squares, SSERR, for variable Y2 is D(NP-1).
+
+Y3 is a little more difficult.  You must first change the order of the
+variables so that Y3 is before Y2, otherwise you will be regressing Y3
+on Y2, and you probably don't want to do that.
+
+The easy way of thinking about the above is by considering each column
+of R (after scaling by the square roots of the diagonal elements of D)
+as the projections of the corresponding variable on all of those which
+have preceded it.  The Y-variable is just another variable being
+projected upon a set of orthogonal directions formed by the variables
+which came before it.  The vector THETAB is stored separately just for
+fast access as most users will have only one Y-variable; it could have
+been incorporated as the last column of RBAR.
+
+2 May 1993
+---------------------------------------------------------------------------
+
+                    Documentation on test programs
+
+
+Test1
+Fitting a cubic polynomial to a set of artificial data for which the
+least-squares regression coefficients = 1.0 exactly.  To introduce a
+difficult singularity, an extra variable is added which is equal to x
++ x**2.  The order of the variables is rotated.  This tests out the
+code of:
+	includ
+	tolset
+	sing
+	regcf
+	ss
+	vmove
+The test is too tough for single precision on machines with only 24
+bits for the mantissa.
+
+Test2
+Calculates the regression coefficients for the Longley data.  This is
+not badly ill-conditioned, despite what is often claimed in the
+literature, and reasonable accuracy can be obtained in single
+precision.  The order of variables is rotated.  Tests the code of:
+	includ
+	regcf
+	tolset
+	sing 
+	ss
+	vmove
+
+Test3
+Another test of treatment of singularities, this uses a random number
+generator.  7 predictors but rank = 5.  All regression coefficients
+should be 0, 1 or 2.  Rows 4 & 5 are swapped, as also are rows 6 & 7.
+Tests the code of:
+	includ
+	regcf
+	tolset
+	sing 
+	ss
+	vmove
+
+Test4
+Calculates the inverse of a simple upper-triangular matrix.  Tests the
+code of:
+	inv
+
+Test5
+Calculates a simple covariance matrix.   Tests the code of:
+	cov
+	inv
+
+Test6
+Calculates the correlation matrix for the Draper & Smith STEAM data.
+The correlations check against those in Draper & Smith.  Tests the
+code of:
+	includ
+	pcorr
+	cor
+
+Test7
+Uses the Cloud seeding example on page 4 of Cook & Weisberg to
+calculate the diagonal elements of the hat matrix.  Tests the code of
+	hdiag
+
+Test8
+A test with more variables than cases (8 variables, 5 cases), with
+rank = 4.  Tests the code of:
+	includ
+	tolset
+	sing
+	ss
+	regcf
+	reordr
+
+Test9 (Wampler)
+A well-known test of how least-squares software handles
+ill-conditioning.  Though the performance of this suite of routines
+looks poor, any routines based upon the normal equations approach
+perform far worse.  Test the code of:
+	includ
+	tolset
+	sing
+	regcf
+
+t10
+This is the test problem from Simon and Lesage 1988.
+
+Thu, 11 Mar 93 23:17:18 +1000
+
+---------------------------------------------------------------------------
+
+A breakdown of as274 functions, by the name of the test program which
+exercises the given function.
+
+includ
+t1.c:        error = includ(5, 10, 1.0, xrow, y[i], d, rbar, thetab, &sserr);
+t2.c:        error = includ(7, 21, 1, x[i], y[i], d, rbar, thetab, &sserr);
+t3.c:        error = includ(7, 21, 1, x, y, d, rbar, thetab, &sserr);
+t6.c:        error = includ(10, 45, 1, x[i], y[i], d, rbar, thetab, &sserr);
+t7.c:      error = includ(np, nrbar, 1, xrow, y[row], d, rbar, thetab, &sserr);
+t8.c:        error = includ(np, nrbar, 1, x, y, d, rbar, thetab, &sserr);
+t9.c:        error = includ(9, 36, 1, xrow, y, d, rbar, thetab, &sserr);
+t9.c:            error = includ(9, 36, 1, xrow, y, d, rbar, thetab, &sserr);
+
+clear
+t2.c:    error = clear(7, 21, d, rbar, thetab, &sserr);
+t3.c:    error = clear(7, 21, d, rbar, thetab, &sserr);
+t6.c:    error = clear(10, 45, d, rbar, thetab, &sserr);
+t7.c:    error = clear(np, nrbar, d, rbar, thetab, &sserr);
+t8.c:    error = clear(np, nrbar, d, rbar, thetab, &sserr);
+t9.c:        error = clear(9, 36, d, rbar, thetab, &sserr);
+
+inv:
+t4.c:    inv(7, 21, rbar, 6, rinv);
+
+regcf
+t1.c:        error = regcf(5, 10, d, rbar, thetab, tol, beta, 5);
+t2.c:        error = regcf(7, 21, d, rbar, thetab, tol, beta, 7);
+t3.c:    error = regcf(7, 21, d, rbar, thetab, tol, beta, 7);
+t8.c:    error = regcf(np, nrbar, d, rbar, thetab, tol, beta, 4);
+t8.c:    error = regcf(np, nrbar, d, rbar, thetab, tol, beta, 4);
+t9.c:            error = regcf(9, 36, d, rbar, thetab, tol, beta, 9);
+
+tolset
+t1.c:    error = tolset(5, 10, d, rbar, tol, work);
+t2.c:    error = tolset(7, 21, d, rbar, tol, work);
+t3.c:    error = tolset(7, 21, d, rbar, tol, work);
+t7.c:    error = tolset(np, nrbar, d, rbar, tol, wk);
+t8.c:    error = tolset(np, nrbar, d, rbar, tol, work);
+t9.c:        error = tolset(9, 36, d, rbar, tol, work);
+
+sing
+t1.c:    error = sing(5, 10, d, rbar, thetab, &sserr, tol, lindep, work);
+t2.c:    error = sing(7, 21, d, rbar, thetab, &sserr, tol, lindep, work);
+t3.c:    error = sing(7, 21, d, rbar, thetab, &sserr, tol, lindep, work);
+t8.c:    error = sing(np, nrbar, d, rbar, thetab, &sserr, tol, lindep, work);
+t8.c:    error = sing(np, nrbar, d, rbar, thetab, &sserr, tol, lindep, work);
+t9.c:        error = sing(9, 36, d, rbar, thetab, &sserr, tol, lindep, work);
+
+ss
+t1.c:        error = ss(5, d, thetab, &sserr, rss);
+t2.c:    error = ss(7, d, thetab, &sserr, rss);
+t3.c:    error = ss(7, d, thetab, &sserr, rss);
+t3.c:    error = ss(7, d, thetab, &sserr, rss);
+t3.c:    error = ss(7, d, thetab, &sserr, rss);
+t8.c:    error = ss(np, d, thetab, &sserr, rss);
+
+cov
+t5.c:    error = cov(7, 21, d, rbar, 6, rinv, &var, covmat, 21, sterr);
+
+cor
+(not called directly by any test program)
+
+pcorr
+t6.c:    error = pcorr(10, 45, d, rbar, thetab, &sserr,
+
+vmove
+t1.c:        error = vmove(5, 10, vorder, d, rbar, thetab, rss, 1, 5, tol);
+t2.c:        error = vmove(7, 21, vorder, d, rbar, thetab, rss, 2, 7, tol);
+t3.c:    error = vmove(7, 21, vorder, d, rbar, thetab, rss, 4, 5, tol);
+t3.c:    error = vmove(7, 21, vorder, d, rbar, thetab, rss, 6, 7, tol);
+
+reordr
+t8.c: error = reordr(np, nrbar, vorder, d, rbar, thetab, rss, tol, list, 4, 1);
+
+hdiag
+t7.c:        error = hdiag(xrow, np, nrbar, d, rbar, tol, np, hii+row, wk);
+
+---------------------------------------------------------------------------
+
+Date: Fri, 19 Mar 93 23:04:01 +1000
+From: alan@dmsmelb.mel.dms.CSIRO.AU
+
+The basic Fortran code in AS274 has been almost unchanged since 1988.
+The only changes made in the refereeing were to remove tests for exact
+zeroes, even though almost all Fortran compilers can detect them.
+There was also one error in SING corrected about that time.  From
+about the mid 1970s until around 1980 I was using Householder
+reduction for least squares work.  Then I switched to Hammarling's
+algorithm as it is an updating algorithm which does not need all of
+the data in core, or even known, at one time.  I wanted to publish
+what is now algorithm AS273, but was using Hammarling's algorithm.
+Applied Statistics seemed to be the obvious place to publish.  I
+looked through their least-squares algorithms, hoping I could just use
+one of them in AS273.  What I found was an incompatible mess.  I
+decided to go with Morven Gentleman's AS75 as it was similar to
+Hammarling's algorithm.  The Gentleman algorithm is faster than the
+Hammarling algorithm for up to about 20 variables; after that H's
+algorithm is a little faster.
+
+For my book, `Subset selection in regression', which was published by
+Chapman & Hall in 1990, I mainly used H's algorithm, though I have now
+converted almost all of the code to use AS274.
+
+I still use H's algorithm for non-linear least-squares, but that is
+only because I have not got around to changing the code yet.
+
+The code of AS274 was available from statlib for about 6 months before
+it appeared in print.  Nobody has reported any problems to me.  I find
+that nobody ever reports that they have found code useful or accurate;
+I only get messages about bugs.  Some of the code in Applied Stats.
+has been poor.
+
+I cannot claim to have tested every aspect of AS274.  I have just
+accepted Gentleman's code - i.e. routine INCLUD.  My test programs are
+more extensive than most of those which I have seen in print, and
+certainly tougher than say the Longley data which every producer of a
+stats. package trots out.
+

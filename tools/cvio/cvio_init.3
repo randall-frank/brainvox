@@ -1,0 +1,39 @@
+.TH cvio_init 3
+.SH NAME
+cvio_init, cvio_cleanup
+.SH SYNOPSIS
+.HP
+.B
+#include "cvio_lib.h"
+.HP
+.B
+int32 cvio_init(void);
+.HP
+.B
+int32 cvio_cleanup(int32 cleanupflag);
+.PP
+IDL API:
+.PP
+These functions are not needed in the IDL API as they are automatically
+called by the DLM mechanism.  There is one side effect, IDL always calls
+cvio_cleanup() with the cleanupflag set to 0.
+.SH DESCRIPTION
+The function cvio_init must be called before any other cvio functions
+are called.  It sets up any internal memory structures needed by the
+cvio library.
+.PP
+The function cvio_cleanup must be called before an application exits.
+It frees up all internal memory structures and closes all remaining
+open files (see cvio_close).  The cleanupflag parameter can either be 
+0 or CVIO_CLEANUP_RMSHMEM.
+If CVIO_CLEANUP_RMSHMEM is set, all shared memory blocks that are
+still open will be closed and deleted from memory (see cvio_delete).
+.PP
+The return values of the functions are cvio error codes.  See
+cvio_get_error_message(3).
+.SH SEE ALSO
+cvio_lib(3), cvio_get_error_message(1), cvio_delete(1)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

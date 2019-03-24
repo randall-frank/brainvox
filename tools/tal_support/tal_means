@@ -1,0 +1,33 @@
+#!/usr/bin/nawk -f
+BEGIN {
+	if (ARGC == 1) {
+		printf("Usage: %s inputfile\n",ARGV[0])
+		printf(" This program will compute the mean and weighted mean\n")
+		printf(" of a series of columns.  For the first column, no\n")
+		printf(" weighted mean is computed.  All other columns compute\n")
+		printf(" weighted means using the first column as a weighting\n")
+		printf(" factor.\n")
+		exit(0)
+	}
+        n = 0
+}
+{
+        j = NF
+        n = n + 1
+        sum[0] = sum[0] + $1
+        for(i=1;i<j;i++) {
+                sum[i] = sum[i] + $(i+1)
+                summ[i] = summ[i] + ($1*$(i+1))
+        }
+}
+END {
+	if (ARGC == 1) exit(0)
+	if (n == 0) n = 1
+        print "-------------------"
+        print "Pixel mean:",sum[0]/n
+        for(i=1;i<j;i++) {
+                print "Vector ",i," mean centroid:",sum[i]/n,summ[i]/sum[0]
+        }
+        print "-------------------"
+}
+

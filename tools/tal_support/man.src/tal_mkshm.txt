@@ -1,0 +1,55 @@
+tal_mkshm(Brainvox)                           tal_mkshm(Brainvox)
+
+
+
+NNAAMMEE
+       tal_mkshm − creates a shared memory volume.
+
+SSYYNNOOPPSSIISS
+       tal_mkshm [options] nslices
+
+DDEESSCCRRIIPPTTIIOONN
+       This  program  is  used  to  create shared memory volumes.
+       Shared memory volumes  are  simply  shared  memory  blocks
+       which can be used to store images.  The shared memory vol­
+       ume has a filename template in the form  ’:XX_%%%’,  where
+       XX  is  the  shared  memory  volume number (start at 0 and
+       increment to 99).  NSLICES specifies the number of  slices
+       to  be allocated.  The size of each slice is specified via
+       the options.  Enough memory is allocated to hold  all  the
+       images.   Note:  the  shared memory system does nothing to
+       enforce the use of a shared memory volume.  It only checks
+       to  make sure the image selected to read/write will fit in
+       the  volume.    This   means   that   programs   can   mix
+       float/short/byte  access  to the same volume if the slices
+       fit.  Care must be taken by the user to ensure  consistant
+       use  of  the memory.  The shared memory is not initialized
+       to any value on  creation.   Finally,  the  shared  memory
+       blocks  must  be explicitly destroyed using tal_rmshm.  If
+       not, they will live beyond the current Unix login.   These
+       volumes  are extremely useful for the storage of temporary
+       results between tal programs.   The  program  outputs  the
+       shared memory filename template to stdout.
+
+       Options:
+
+       ‐x(dx) The  x  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐y(dy) The y axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐z(dz) The image depth in bytes.  The default is 1 byte.
+
+
+SSEEEE AALLSSOO
+       tal_mkshm, tal_ls, tal_programs
+
+NNOOTTEESS
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                              tal_mkshm(Brainvox)

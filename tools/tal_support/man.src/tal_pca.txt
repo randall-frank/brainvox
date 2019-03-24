@@ -1,0 +1,129 @@
+tal_pca(Brainvox)                               tal_pca(Brainvox)
+
+
+
+NNAAMMEE
+       tal_pca − Computes the principle components of a series of
+       volumes, considering each pixel as an input component.
+
+SSYYNNOOPPSSIISS
+       tal_pca [options] ncomponents [‐|vol1temp ...]
+
+DDEESSCCRRIIPPTTIIOONN
+       This program computes a  number  of  principle  components
+       specified  on  the  command  line by NCOMPONENTS.  This is
+       done via singular value decomposition (SVD) of the  intput
+       data.  Each input volume is considered a row of the matrix
+       to be decomposed (one observation) with each pixel in  the
+       volume being one component of the observation (a column of
+       the matrix).
+
+       The N requested Eigen values are output on  standard  out­
+       put,  followed  by  the  projection of each input volume’s
+       data (observation) on each principle component (dot  prod­
+       uct  of the Eigen vector and the observation vector).  The
+       output is one row per input volume  with  one  column  for
+       each  Eigen  vector.   These  projections  can be analyzed
+       externally, or used as intput data to a regression  analy­
+       sis  (tal_regress).   Eigen  vectors can also be output as
+       volumes and viewed separately.
+
+       Filename templates of all the input volumes are  specified
+       on  the command line.  If a "‐" is used for the input vol­
+       ume template, the input volume  template  names  are  read
+       from  stdin.   A  volume  mask may be used to restrict the
+       operation to a portion of the volume and step options  (‐i
+       and  ‐s)  exist  to  reduce the computation to a managable
+       size.
+
+       Options:
+
+       ‐x(dx) The x axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐y(dy) The  y  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐z(dz) The image depth in bytes.  All  input  volume  must
+              have  the  same  depth.   The  default  is  4 bytes
+              (floats).
+
+       ‐f(start)
+              This specifies the slice number for the first image
+              in the volume.  Default:1.
+
+       ‐l(end)
+              This  specifies the slice number for the last image
+              in the volume.  Default:119.
+
+       ‐i(step)
+              This specifies the increment number to go from  one
+              slice to the next.  Default:2.
+
+       ‐s(skip)
+              This specifies the step factor for pixels in the XY
+              plane.  Default:2.
+
+       ‐b     This specifies that 16bit  images  should  be  byte
+              swapped before using.  Default: no swapping.
+
+       ‐v[v[v[v]]]
+              This  option specifies a verbosity level (number of
+              v’s).  Not presently useful.
+
+       ‐o(offset)
+              This option specifies an offset value added to each
+              pixel before it is used.  Default:0.
+
+       ‐c     This  option  enables variable centering.  The mean
+              of each column of data is removed before the decom­
+              position  is  performed.   The  projections  are of
+              these centered variables if this option is enabled.
+              Default: no centering.
+
+       ‐p(projfile)
+              Output  the  projection  of  the input data on each
+              principle component and write to the file PROJFILE.
+              Default:stdout.
+
+       ‐O(num):(outvoltemp)
+              This  option specifies that the Eigen vector speci­
+              fied by NUM be saved to disk as a volume using  the
+              volume  template  OUTVOLTEMP.   If stepping factors
+              were specified greater than one, the output  images
+              will  be  pixel  replicated  to fill in the skipped
+              areas.  The volume  is  a  floating  point  volume.
+              Default: do not save.
+
+       ‐m(masktemp)
+              This  option  allows the user to specify a filename
+              template for a mask volume.   Statistics  are  only
+              computed  for  voxels  withing  this  volume.   The
+              default is to compute for all voxels.
+
+SSEEEE AALLSSOO
+       tal_programs, tal_math, tal_regress
+
+NNOOTTEESS
+       This program requires that ALL observations be memory res­
+       ident  to  operate.   It also requires that two times this
+       amount of memory be available.  The step options  (‐i  and
+       ‐s)  can  be  used to decimate large volumes to meet local
+       memory requirements.  Note: pixels outside of the mask are
+       NOT  stored, thus a tighter mask can be used to reduce the
+       step factors.
+
+       tal_pca uses singular value  decomposition  based  on  the
+       LINPACK  ZSVDC  routine:  Dongarra JJ, Bunch JR, Moler CB,
+       and Stewart GW, LINPACK User’s Guide, SIAM,  Philadelphia,
+       1979.
+
+       Currently, only 8bit mask volume are supported.
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                                tal_pca(Brainvox)

@@ -1,0 +1,78 @@
+
+Mike,
+	Enclosed is part of a file I sent describing the technique to others.
+Basically in FORTRAN the array name is a fixed reference and cannot be 
+assigned another address like you tried to do.  Instead just return an
+address from your malloc/calloc call.  Then dereference this address via
+a subroutine/function invocation using the %val() intrinsic.  This method
+should work with most UNIXes with the %val() intrinsic.  IRIX 3.3 has 
+FORTRAN 8X POINTER data types but I have not tried them yet.
+
+Hope this helps...
+
+	I think this file should have the info you need.  Compile with
+ cc -O -c mallocf.c  and just include the mallocf.o in you f77 link line
+(or cc link line if you use the -lc_s libs).   This works on Silicon
+Graphics systems IRIX 3.2 and higher.  Should work on lots of other
+UNIX boxes.
+
+----------------the following is the file mallocf.c------------------
+/*   this routine is made to be called from FORTRAN  
+     it defines two routines MALLOC and FREE:
+
+     CALL MALLOC(PTR,SIZE)
+     Integer*4	PTR,SIZE
+	allocates SIZE bytes in heap and returns the pointer
+	to them in PTR	
+
+     CALL FREE(PTR)
+	deallocates the memory pointed to by PTR
+
+	this memory can be accessed by subroutines as follows:
+	...
+	CALL MALLOC(PTR,400)  !4bytes/integer*100integers
+	If (PTR .EQ. 0) CALL EXIT(1) !Failed memory allocation...
+	CALL DUMMY(%VAL(PTR))
+	CALL FREE(PTR)   !release the memory
+	...
+	SUBROUTINE 	DUMMY(ARRAY)
+	INTEGER*4	ARRAY(100)
+
+	ARRAY(1)=...
+
+	RETURN
+	END
+
+	Note: this causes the calling procedure to pass the value
+		of the pointer on the stack instead of the address
+		of the pointer.  the called procedure does not know
+		this and assumes the value on the stack is the address
+		of the array.  the array may be referenced as normal
+		but the data goes into the dynamically allocated memory.
+
+	Not a prescribed technique but it works until FORTRAN 8X
+	Randy Frank, Image Analysis Facility, University of Iowa
+	(actually there is a pointer data type under IRIX 3.3)
+
+	C-source follows...
+
+	Note the use of the _ in the declaration of malloc.  This is
+	because f77 automatically adds an _ to the end of subroutine 
+	and function names.
+*/
+
+malloc_(int *tran, int *size)
+
+{
+	unsigned	sizec;
+	sizec = *size;
+	*tran = malloc(sizec);
+}
+
+free_(int *tran)
+
+{
+	free(*tran);
+}
+--------------end of file mallocf.c------------------------------
+

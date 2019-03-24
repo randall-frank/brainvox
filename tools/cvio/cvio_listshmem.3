@@ -1,0 +1,38 @@
+.TH cvio_listshmem 3
+.SH NAME
+cvio_listshmem
+.SH SYNOPSIS
+.HP
+.B
+#include "cvio_lib.h"
+.HP
+.B
+int32 cvio_listshmem(char *buffer, int32 *bufferlen, int32 *num_strings);
+.PP
+IDL API:
+.HP
+.B
+err=CVIO_LISTSHMEM(names_,num_names_)
+.SH DESCRIPTION
+The cvio_listshmem function returns a list of the names of the
+shared memory files currently present on the host machine. The
+names of the files are copied into the memory pointed to by
+the user specified buffer.  The size of the user supplied buffer
+is passed as bufferlen.  On return, bufferlen contains the 
+number of characters used in the buffer.  Num_strings returns
+the number of NULL terminated strings in the buffer.  The
+strings are stored contgiuously in the buffer, including terminating
+NULL character for each filename.
+.PP
+The IDL API is simpler.  It returns a string array and the
+number of strings in the array.  All the buffer allocation
+is handled and the data is reformatted into IDL strings.
+.PP
+The return value of the function is a cvio error code.  See
+cvio_get_error_message(3).
+.SH SEE ALSO
+cvio_lib(3), cvio_get_error_message(3), cvio_ls(1)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

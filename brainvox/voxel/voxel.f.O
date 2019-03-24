@@ -1,0 +1,2466 @@
+C 
+C	To disable the MP_FIT options define the CPP var NO_MP_FIT
+C	To disable the surface options define the CPP var NO_SURF
+C	To disable the Howard disk options define the CPP var NO_DSPACE
+C
+	Program brainvox_voxel
+
+	Implicit None
+
+	Include 'fdevice.h'
+	Include 'fgl.h'
+	Include 'sgiuif.h'
+	Include '../libs/vt_inc.f'
+	Include '../libs/vt_protos.f'
+	Include 'voxeluif.inc'
+
+	Include 'measure.inc'
+	Include 'rotsdef.inc'
+	Include 'palettes.inc'
+	Include 'windows.inc'
+
+	Record	/rotsrec/	rots
+
+	Logical		error,dirty,autosample
+C	Logical		dirty2
+
+	Integer*4	winput,MP_disp
+	Real*4		frots(12),ftals(3)
+	Real*4		norm(4)
+	Integer*4	status,i,state,mode,j,rendermode
+	Integer*4	device
+	Integer*4	wid,x,y,xo,wleft,wbot,yo,wid2
+C	Integer*4	wid3
+	Integer*2	data
+	Integer*4	myset(1100)
+	Integer*4	save_ptr,zbufptr
+C	Integer*4	im2d_ptr
+	Integer*4	rottable(3,8),extents(6)
+	Integer*4	thres,tempi,cindex,bcolor 
+C
+	Integer*4	image3dsize
+C
+	Integer*4	w2dpts(4096,4)   ! x,y,slice,color
+	Integer*4	w3dpts(4096,4)   ! x,y,?,color
+	Integer*4	temppts(4096,4),retvals(4)
+	Integer*4	num2dpts,num3dpts
+	Integer*4	winsave,label_over
+C
+	Integer*4	zoom3d,ix,iy,tx,ty
+	Integer*4	offset3d(2)
+	Real*4		grid1
+	Integer*4	gcol1
+	Integer*4	use_16bit
+C
+	Character*100	tstr
+	Character*150	tempstr
+	Character*10 	clist(14)
+C
+C	PET data from _patient
+C
+	Character*80	inj_temp,pet_t_dir
+	Integer*4	pet_min,pet_max,pet_avg
+C
+	Integer*4	im_menu,grid_menu,back_menu,savep_menu,loadp_menu
+C
+	Record /ditem/	dialog(100)
+C
+C	FOR FAT LINES
+C
+	Integer*4	FAT,tal_over,clippingon
+C
+C	IPC defines
+C
+	Integer*4	size,message(IPC_SHM_SIZE),templut(1024)
+C
+	Integer*4	iargc,slicetoz,ztoslice,mkdir,time
+	Integer*4		ZtoSlice_t
+	Real*4		ftemp
+
+	double precision rand
+
+	external 	iargc,slicetoz,ztoslice,mkdir,ZtoSlice_t,time,rand
+C
+	data		rottable/90 ,0  ,0  ,270,0  ,0  ,
+     +				 0  ,90 ,0  ,0  ,270,0  ,
+     +				 0  ,0  ,0  ,0  ,180,0  ,
+     +				 20 ,40 ,0  ,20 ,320,0  /
+	data	clist/'Co:Black  ',
+     +		      'Co:Red    ',
+     +		      'Co:Green  ',
+     +		      'Co:Yellow ',
+     +		      'Co:Blue   ',
+     +		      'Co:Magenta',
+     +		      'Co:Cyan   ',
+     +		      'Co:White  ',
+     +		      'Co:Coral  ',
+     +		      'Co:Chartre',
+     +		      'Co:SpGreen',
+     +		      'Co:SlateBl',
+     +		      'Co:BlueVio',
+     +		      'Co:OrangeR'/
+C
+C	zoom/trans for output images
+C
+C	data		offset2d/0,0/
+	data		offset3d/0,0/
+C	data		zoom2d/1/
+	data		zoom3d/1/
+C
+	common	/fat_com/fat,clippingon
+C
+	if (iargc() .lt. 1) then
+2		type 17
+17	Format("This program must be launched from within brainvox.") 
+		Call exit(1)
+	Endif
+	call getarg(iargc(),tstr)
+	read(unit=tstr,*,err=2) shm_data
+C
+        Call getarg(1,tstr)   
+	If (tstr .eq. 'DIALOG_PSET') then
+		Call rename_pointsets(shm_data)
+		Call exit(0)
+	Endif
+C
+        Call getarg(1,tstr)   
+	If (tstr .eq. 'DIALOG_MPIO') then
+		Call mp_fit_settings_io(shm_data)
+		Call exit(0)
+	Endif
+        Call getarg(1,tstr)   
+	If (tstr .eq. 'DIALOG_LMOD') then
+		Call lighting_model_control(shm_data)
+		Call exit(0)
+	Endif
+        Call getarg(1,tstr)   
+	If (tstr .eq. 'DIALOG_TEXTURE') then
+		Call texture_control(shm_data)
+		Call exit(0)
+	Endif
+C
+C	print version and program ID
+C
+	If ((iargc() .lt. 1).or.(bv_test_option(OPTS_TESTING))) Then
+	type 1,version,com_date
+1	Format(" Welcome to BRAINVOX_VOXEL version:",A15,/,
+     +	       " Copyright (C) ",A15," University of Iowa,",
+     +         " Image Analysis Facility")
+	Endif
+C
+        numrgns=0  
+C
+	image3dsize = 445
+	FAT = 0
+	use_16bit = 0
+C	wind2d(curwin).mode = 0
+	clippingon = 0
+	autosample = .false.
+	bcolor = 0
+	tal_over = 0
+	label_over = 0
+	rots.sthickness = 6.64
+	rots.ipixel = 1.0
+	rots.n_slices(1) = 15  ! count
+	rots.n_slices(2) = 0  ! view
+	rots.x_off = 0.0	! xoffset
+	rots.xshift= 0.0
+	rots.outname = "sampled_%%%.pic "
+	Do i= 1,2
+		rots.slew(i) = 0
+		rots.tilt(i) = 0
+	Enddo
+	Do i= 1,3
+		rots.uptrans(i) = 0.0
+		rots.uprots(i) = 0.0
+		rots.fpnorm(i) = 0.0
+		Do j=1,4
+			rots.fppoints(j,i) = 0.0
+		Enddo
+		rots.upxaxis(i) = 0.0
+		rots.upyaxis(i) = 0.0
+		rots.upnorm(i) = 0.0
+	Enddo
+	rots.upxaxis(1) = 1.0
+	rots.upyaxis(2) = 1.0
+	rots.upnorm(3) = 1.0
+	rots.fpnorm(3) = 1.0
+	MP_disp = 9
+	pointtype = 2  ! tal points
+	data_layer = 0 ! first pane of measurement data
+C
+C	define dashed linestyle
+C
+	call deflin(2768,$00000303)
+C
+	Call init_measure
+C
+C	init the calibration spaces
+C
+	Call init_tal
+	Call init_dspace
+C
+C	I am NOT the shared memory owner!!! (there can be only one!!)
+C
+	shmem_owner = 0
+	Call vt_init_shmem
+C
+C       read the rgnsdef file
+C
+        Call read_rgns(tstr,error)
+C
+C	get the window
+C
+	x = (1280-485)
+	y = (1024-385)
+	call prefpo(x,x+485,y,y+385)
+	wid=winope("voxel",5)
+	Call double
+	Call RGBmod
+	Call gconfi
+	Call qdevic(WINQUI)
+	Call qdevic(WINFRE)
+	Call qdevic(WINTHA)
+	Call INIT_DLG(status)
+	If (status .ne. 0) Call Exit(1)
+	Call GET_DLG_COMP('voxeluif.r',1,100,dialog,status)
+	If (status .ne. 0) Call Exit(1)
+C
+C	menus
+C
+	savep_menu = newpup()
+	loadp_menu = newpup()
+	tempstr = "Save pointset %t%s}"
+	Call addtop(savep_menu,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Load pointset %t%s}"
+	Call addtop(loadp_menu,tempstr,index(tempstr,"}")-1,0)
+
+	grid_menu = newpup()
+	im_menu = newpup()
+	im_menu2 = newpup()
+	back_menu = newpup()
+	dialog(10).aux=newpup()
+	dialog(13).aux=newpup()
+	dialog(14).aux=newpup()
+	dialog(12).aux=newpup()
+	dialog(measurecolor).aux=newpup()
+	dialog(statemenu).aux=newpup()
+	dialog(mpfitmenu).aux=newpup()
+	dialog(pnttypemenu).aux=newpup()
+C
+C	Menus for the polygon selection popups
+C
+	Do J=0,3
+		dialog(pointmenus+j).aux=newpup()
+		Do i = 1,numrgns
+			write(tempstr,9) 
+     +				rgnnames(i)(1:index(rgnnames(i)," ")),i 
+9	Format(A,"%r1%i%x",I2.2,"}")
+			Call addtop(dialog(pointmenus+j).aux,tempstr,
+     +				index(tempstr,"}")-1,0)
+		Enddo
+	Enddo
+C
+C	Menus for the multi-windows
+C
+	windows_menu = newpup()
+	Do i=1,MAX_WINDOWS
+		write(tempstr,787) i,9100+i
+787	Format("2DImage",I2.2," %i%x",I4.4,"}")
+		Call addtop(windows_menu,tempstr,index(tempstr,"}")-1,0)
+	Enddo
+C
+C	Menus for the 3D cursor
+C
+	cursor3d_menu = newpup()
+	tempstr = "Display cursor %i%x9200|Track cursor %i%x9201"
+     +		//"|Recolor cursor %x9202}"
+	Call addtop(cursor3d_menu,tempstr,index(tempstr,"}")-1,0)
+C
+C	Menus for the space type
+C
+        tempstr="Coordinate space %t|Brainvox %r1%x1|"//
+     + 		"Talairach %r1%I%x2|Howard Disk %r1%x3}"
+	Call addtop(dialog(pnttypemenu).aux,
+     +		tempstr,index(tempstr,"}")-1,0)
+C
+C	Menus for MP_FIT mode
+C
+	slice_menu = Newpup()
+        tempstr = "Slice 01 %I%r5%x100}"
+	Call addtop(slice_menu,tempstr,index(tempstr,"}")-1,0)
+	Do j=1,14
+		write(tempstr,6) j+1,j+100
+6	Format("Slice ",I2.2," %r5%x",I3.3,"}")
+		Call addtop(slice_menu,tempstr,index(tempstr,"}")-1,0)
+	Enddo
+
+	tempstr = "View first slice %I%x1|View other slices %i%x2|"//
+     +	      "View fixed polygon %i%x3|View construction lines %i%x7}"
+	Call addtop(dialog(mpfitmenu).aux,tempstr,index(tempstr,"}")-1,0)
+     	tempstr = "Solid resampled slice %l%i%x6|"//
+     +	      "Overlay voxel image %l%I%x5}"
+	Call addtop(dialog(mpfitmenu).aux,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Resample to output files %x4|"//
+     +	      "Resample pointsets only %x8|MP_FIT settings files %x9|"//
+     +	      "Select resampled slice view %l%m}"
+	Call addtop(dialog(mpfitmenu).aux,tempstr,index(tempstr,"}")-1,
+     +		slice_menu)
+	tempstr = "Calibrate glasses (RT,RE,LT,LE) %x10|"//
+     +		"Load glasses fit %x11|Save glasses fit %l%x12}"
+C
+C       Right temple
+C       Right ear
+C       Left temple
+C       Left ear
+C
+	Call addtop(dialog(mpfitmenu).aux,tempstr,index(tempstr,"}")-1,i)
+	tempstr = "Xoff:positive to patient's left %d%x13}"
+	Call addtop(dialog(mpfitmenu).aux,tempstr,index(tempstr,"}")-1,i)
+C
+C	State menu
+C
+#ifdef NO_MP_FIT
+	tempstr = "Slices %I%r4%x0|Arbitrary %r4%x1|MP_FIT %d%l%r4%x2}"
+#else
+	tempstr = "Slices %I%r4%x0|Arbitrary %r4%x1|MP_FIT %l%r4%x2}"
+#endif
+	Call addtop(dialog(statemenu).aux,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Select window %l%m|Autosampling %i%x1000}"
+	Call addtop(dialog(statemenu).aux,tempstr,index(tempstr,"}")-1,
+     +		windows_menu)
+C
+C	Background menu rollover
+C
+	tempstr = "Grayscale %t%s|0.00 %I%r3%x5000|0.25 %r3%x5025}"
+	Call addtop(back_menu,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "0.50 %r3%x5050|0.75 %r3%x5075|1.00 %r3%x5100}"
+	Call addtop(back_menu,tempstr,index(tempstr,"}")-1,0)
+C
+C	Menus for the loading and saving of points
+C
+	Do I=0,19
+		Call get_point_name(i,tstr,'./ ')
+		j = 80
+		Do while (tstr(j:j) .eq. ' ')
+			j = j - 1
+		Enddo
+		write(tempstr,8) tstr(1:j),I+3000
+		Call addtop(loadp_menu,tempstr,index(tempstr,"}")-1,0)
+8	Format("Load ",A," %x",I4.4,"}")
+		write(tempstr,7) tstr(1:j),I+4000
+		Call addtop(savep_menu,tempstr,index(tempstr,"}")-1,0)
+7	Format("Save ",A," %x",I4.4,"}")
+	Enddo
+	Call update_pset_menu(loadp_menu,3000,'./ ',0)
+	Call update_pset_menu(savep_menu,4000,'./ ',1)
+C
+C	view popup
+C
+	i = Newpup()
+	tempstr = "Views %t|Top %x1|Bottom %x2|Right %x3|Left %x4|"
+     +		//"Front %x5|Back %x6|Ortho right %x7|Ortho left %x8}"
+	Call addtop(i,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Views %m}"
+	Call addtop(dialog(10).aux,tempstr,index(tempstr,"}")-1,i)
+        tempstr = "Background color %l%m|Send 2D pnts to trace %x100|"//
+     +            "Reproject 2D pnts to 3D %l%x101}"
+	Call addtop(dialog(10).aux,tempstr,index(tempstr,"}")-1,back_menu)
+	tempstr = "Load point set %m}"
+	Call addtop(dialog(10).aux,tempstr,index(tempstr,"}")-1,loadp_menu)
+	tempstr = "Rename point sets %x132|Save point set %l%m}"
+	Call addtop(dialog(10).aux,tempstr,index(tempstr,"}")-1,savep_menu)
+C Filter submenu
+	i = Newpup()
+        tempstr = "Filters %t|Median filter %x102|Average filter %x103|"
+     +		//"Zaverage filter %x104|Zmedian filter %x105}"
+	Call addtop(i,tempstr,index(tempstr,"}")-1,0)
+C Filter
+	tempstr = "Filters %l%m}"
+	Call addtop(dialog(10).aux,tempstr,index(tempstr,"}")-1,i)
+C Lighting options
+	tempstr = "Quick-Light the image %x106|"//
+     +		"Lighting controls %l%x107|Texture controls %x108|"//
+     +		"Orientation overlays %l%i%x135}"
+	Call addtop(dialog(10).aux,tempstr,index(tempstr,"}")-1,0)
+
+C Talairach submenu (get PET data first)
+	Call read_patient_pet("_patient ",inj_temp,pet_min,
+     +                          pet_max,pet_avg,error)
+	i = Newpup()
+        tempstr = "MRI volume %x113}"
+	Call addtop(i,tempstr,index(tempstr,"}")-1,0)
+	If (.not. error) Then
+	tempstr = "PET injection 1 %x114|PET injection 2 %x115|"
+     +		//"PET injection 3 %x116|PET injection 4 %x117}"
+	Call addtop(i,tempstr,index(tempstr,"}")-1,0)
+        tempstr = "PET injection 5 %x118|PET injection 6 %x119|"
+     +		//"PET injection 7 %x120|PET injection 8 %x121}"
+	Call addtop(i,tempstr,index(tempstr,"}")-1,0)
+	Endif
+C Talairach stuff
+#ifndef NO_TAL_SPACE
+	j = Newpup()
+	tempstr = "Talairach Space %t}"
+	Call addtop(j,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Calib Talairach (CA,CP,pl) %x110|Load Talairach %x111|"
+     +		//"Save Talairach %x112|Resample Talairach %m|"
+     +		//"Overlay Talairach %l%i%x130}"
+	Call addtop(j,tempstr,index(tempstr,"}")-1,i)
+	tempstr = "St Louis variant mods %x136}"
+	Call addtop(j,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Talairach support %l%m}"
+	Call addtop(dialog(10).aux,tempstr,index(tempstr,"}")-1,j)
+#endif
+	tempstr = "Read points from _hotspots %x131}"
+	Call addtop(dialog(10).aux,tempstr,index(tempstr,"}")-1,0)
+C
+C	clipping toggle
+C
+	tempstr = "Clip points to surface %i%x133}"
+	Call addtop(dialog(10).aux,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Fit plane to pnts %l%x134}"
+	Call addtop(dialog(10).aux,tempstr,index(tempstr,"}")-1,0)
+C
+C	Matt Howard Disk Space (dspace) (500-504)
+C	
+#ifndef NO_DSPACE
+	i = Newpup()
+	tempstr = "Howard Disk %t|Calibrate space (CT,X,CCW) %x500}"
+	Call addtop(i,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Load calibration %x504|Save calibration %x503}"
+	Call addtop(i,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Lines display %i%x501|Plane display %i%x502}"
+	Call addtop(i,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Howard Disk support %m}"
+	Call addtop(dialog(10).aux,tempstr,index(tempstr,"}")-1,i)
+#endif
+C
+C	RJF options
+C
+	If (bv_test_option(OPTS_RJF)) Then
+		Call srand(time())
+		j =  Newpup()
+		tempstr = "Random points %x1000}"
+		Call addtop(j,tempstr,index(tempstr,"}")-1,0)
+		tempstr = "RJF - options %m}"
+		Call addtop(dialog(10).aux,tempstr,index(tempstr,"}")-1,j)
+	Endif
+C
+C	preview popup
+C
+	tempstr="Full quality %I%r1%x1|2x speed %r1%x2|3x speed %r1%x3|"//
+     +			"4x speed %r1%x4|5x speed %r1%l%x5}"
+	Call addtop(dialog(12).aux,tempstr,index(tempstr,"}")-1,0)
+	tempstr="Textured rendering %i%x100}"
+	Call addtop(dialog(12).aux,tempstr,index(tempstr,"}")-1,0)
+C
+C	color popups
+C
+	tempstr="Trace Color %t|Black %s%x0|Red %x1|Green %x2|"//
+     +		"Yellow %x3|Blue %x4}"
+	Call addtop(dialog(13).aux,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Magenta %x5|Cyan %x6|White %x7}"
+	Call addtop(dialog(13).aux,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Coral%x8|Chartreuse%x9|SpringGreen%x10|SlateBlue%x11|"
+     +		//"BlueViolet%x12|OrangeRed%x13}"
+	Call addtop(dialog(13).aux,tempstr,index(tempstr,"}")-1,0)
+C
+	tempstr="Measure Color %t|Black %s%x0|Red %x1|Green %x2|"//
+     +		"Yellow %x3|Blue %x4}"
+	Call addtop(dialog(measurecolor).aux,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Magenta %x5|Cyan %x6|White %x7}"
+	Call addtop(dialog(measurecolor).aux,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Coral%x8|Chartreuse%x9|SpringGreen%x10|SlateBlue%x11|"
+     +		//"BlueViolet%x12|OrangeRed%l%x13}"
+	Call addtop(dialog(measurecolor).aux,tempstr,index(tempstr,"}")-1,0)
+#ifdef NO_SURF
+	tempstr = "Surfaces disabled %d}"
+	Call addtop(dialog(measurecolor).aux,tempstr,index(tempstr,"}")-1,0)
+#else
+	tempstr = "Save FLIP surface %x100|Save SurfView surface %x101}"
+	Call addtop(dialog(measurecolor).aux,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Run SurfView (FLIP) %x103|Run SurfView %x102}"
+	Call addtop(dialog(measurecolor).aux,tempstr,index(tempstr,"}")-1,0)
+#endif
+C
+C	clear traces popup
+C
+	tempstr="Clear Traces %t|All traces %s%x100|Voxel traces %x102|"
+     +		//"Image traces %101}"
+	Call addtop(dialog(14).aux,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Black %x0|Red %x1|Green %x2|Yellow %x3|Blue %x4}"
+	Call addtop(dialog(14).aux,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Magenta %x5|Cyan %x6|White %x7}"
+	Call addtop(dialog(14).aux,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Coral%x8|Chartreuse%x9|SpringGreen%x10|SlateBlue%x11|"
+     +		//"BlueViolet%x12|OrangeRed%x13}"
+	Call addtop(dialog(14).aux,tempstr,index(tempstr,"}")-1,0)
+C
+C	Grid menu rollover (number = 1000 + 2*mm)
+C
+	tempstr = "None %x1000|0.2 cm %x1004|0.5 cm %x1010|"//
+     +			"1 cm %x1020|2 cm %x1040}"
+	Call addtop(grid_menu,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "3 cm %x1060|4 cm %x1080|5 cm %x1100|10 cm %x1200}"
+	Call addtop(grid_menu,tempstr,index(tempstr,"}")-1,0)
+C
+C	zoom/save popup
+C
+	tempstr = "Save image %x100|Zoom 1 %x1|Zoom 2 %x2|Zoom 3 %x3}"
+	Call addtop(im_menu,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "Zoom 4 %x4|Zoom 5 %x5|Grid %m}"
+	Call addtop(im_menu,tempstr,index(tempstr,"}")-1,grid_menu)
+	tempstr = "3D cursor %l%m}"
+	Call addtop(im_menu,tempstr,index(tempstr,"}")-1,
+     +		cursor3d_menu)
+C
+	tempstr = "Select this window %x9001|"//
+     +			"Add new window %x9002|"//
+     +			"Remove this window %x9003|"//
+     +			"Select window %l%m}"
+	Call addtop(im_menu2,tempstr,index(tempstr,"}")-1,windows_menu)
+	tempstr = "Save image %x100|Zoom 1 %x1|"//
+     +		"Zoom 2 %x2|Zoom 3 %x3|Zoom 4 %x4|Zoom 5 %x5|Grid %l%m}"
+	Call addtop(im_menu2,tempstr,index(tempstr,"}")-1,grid_menu)
+	tempstr = "No texture %I%r1%x8000|Texture 1 %r1%x8001|"//
+     +		"Texture 2 %r1%x8002}"
+	Call addtop(im_menu2,tempstr,index(tempstr,"}")-1,0)
+	tempstr = "3D cursor %m}"
+	Call addtop(im_menu2,tempstr,index(tempstr,"}")-1,
+     +		cursor3d_menu)
+C
+C	init the data set (both 8 bit volumes)
+C
+	Call	vl_init(myset)
+	i = realimages+((realimages - 1) * interpimages)
+	Call	vl_data(%val(imagesize),%val(imagesize),%val(i),
+     +			%val(images_addr),myset)
+	Call	vl_aux_data(%val(1),%val(texture_addr),myset)
+C
+C	init extents
+C
+	extents(1) = imagesize-1  ! image Xmin
+	extents(2) = 0            ! image Xmax
+	extents(3) = imagesize-1  ! image Ymin
+	extents(4) = 0            ! image Ymax
+	extents(5) = 0		  ! image Zmin
+	extents(6) = ((realimages-1)*interpimages)+realimages-1 ! image Zmax
+C
+C	check image data extents
+C
+	thres = 5
+	Do i = 1, realimages
+C
+C	get number of virtual image
+c
+		tempi = (((i-1)*interpimages)+i)-1
+		Call check_extents(extents,thres,
+     +			%val(images_addr+(tempi*imagesize*imagesize)),
+     +			imagesize)
+	Enddo
+	Call vl_limits(%val(extents(1)),%val(extents(2)),
+     +		       %val(extents(3)),%val(extents(4)),
+     +		       %val(extents(5)),%val(extents(6)),myset)
+C
+C	set the squeeze factor
+C
+	If (realimages .gt. 2) then
+                squeezefactor = (float(realimages)*interslice)/
+     +    (float(realimages + (interpimages*(realimages-1)))*interpixel)
+
+	Call vl_setsqu(squeezefactor,myset)
+	Endif
+	If (bv_test_option(OPTS_RJF)) Then
+		Type *,"Brainvox - Squeeze factor =",squeezefactor
+		Type *,"Brainvox - Real Images =",realimages
+		Type *,"Brainvox - Interp Images =",interpimages
+	Endif
+
+C	type *,"realimgs",realimages
+C	type *,"interpimages",interpimages
+C	type *,"squeezefactor",squeezefactor
+C	Call vl_getsqu(squeezefactor,myset)
+C	type *,"squeezefactor",squeezefactor
+C
+C	init the slider positions
+C
+	Do I=1,6
+		rots.rots(i)= 0
+	Enddo
+	rots.rots(7) = 256
+C
+C	init luts
+C
+	Call read_pal("_vlut ",palette,error)
+	Call read_pal("_opacity ",opacity,error)
+	Call read_pal("_texture ",texture_c,error)
+	Call read_pal("_texopac ",texture_o,error)
+	Call setpal(palette,opacity,texture_c,texture_o,bcolor,myset)
+	Call read_pal("_iopac ",templut,error)
+	Call read_pal("_ilut ",pal_2d,error)
+	Do i=769,1024
+		pal_2d(i) = templut(i)
+	Enddo
+C
+C	no Grids...
+C
+	grid1 = 0.0
+C	grid2 = 0.0
+C
+C	open the voxel image window
+C
+	x=(0)
+	y=(1024-image3dsize)
+	call prefpo(x,x+image3dsize-1,y,y+image3dsize-1)
+	wid2 = winope("3DImage",7)
+	Call minsiz(image3dsize,image3dsize)
+	Call wincon
+	Call single
+	Call RGBmod
+	Call gconfi
+C
+C	open the 2D image window
+C
+C	x=(image3dsize+20)
+C	y=(1024-imagesize)
+C	call prefpo(x,x+imagesize-1,y,y+imagesize-1)
+C	wid3 = winope("2DImage",7)
+C	Call minsiz(imagesize,imagesize)
+C	Call wincon
+C	Call single
+C	Call rgbmod   ! Call cmode
+C	Call gconfi
+C	Inum2d = 1
+	Call init_window(i)
+C
+C	initial color index
+C
+	cindex = 2
+	dialog(13).text = clist(cindex+1)
+	dialog(13).tlength = 10 
+
+	linedata.color = 2
+	dialog(measurecolor).text = clist(linedata.color+1)
+	dialog(measurecolor).tlength = 10
+
+C
+	Call setup_dialog(rots,dialog,wid,myset,0)
+C
+C	allocate memory for backbuffer
+C	4 bytes image 2 bytes zbuffer
+C
+	save_ptr=malloc(image3dsize*image3dsize*6)  
+	if (save_ptr .eq. 0) goto 999
+	call memclear(%val(save_ptr),image3dsize*image3dsize*6)
+	zbufptr = save_ptr + (image3dsize*image3dsize*4)
+	Call vl_image(%val(image3dsize),%val(image3dsize),%val(save_ptr),
+     +			%val(zbufptr),myset)
+C
+C	allocate memory for the 2D image
+C
+C	im2d_ptr=malloc(imagesize*imagesize*2)
+C	if (im2d_ptr .eq. 0) goto 999
+C	call memclear(%val(im2d_ptr),imagesize*imagesize*2)
+C
+	Call qdevic(INPTCH)
+	Call qdevic(MOUSE3)
+	Call qdevic(MOUSE2)
+	Call qdevic(F1KEY) 
+	Call qdevic(TIMER0)
+	Call noise(TIMER0,20)  !every 1/3 seconds
+C
+	dirty = .true.
+	wind2d(curwin).dirty = .true.
+	num2dpts = 0
+	num3dpts = 0
+	winput = wid
+	rendermode = 0
+C
+	Call update_texture_functions(1)
+C
+C	redraw comes from setup_dialog
+C
+C
+10	device=qread(data)	! top of event loop
+C
+C	check for change in input focus
+C
+	if (device .eq. INPTCH) then
+		i = data
+		if (data .ne. 0) call winset(i)
+		winput = data
+		goto 10
+	Endif
+C
+C	FAT lines stuff
+C
+	If ((device .eq. F1KEY).and.(data .eq. 1)) then
+		FAT = FAT + 1
+		If (FAT .gt. 8) FAT = 0
+		Call Qenter(REDRAW,0)
+		goto 10
+	Endif
+C
+C	timer stuff
+C
+	if (device .eq. TIMER0) then
+		size = IPC_SHM_SIZE
+		call check_ipc(size,message)
+		if (message(1) .eq. IPC_QUIT) goto 999
+		if (message(1) .eq. IPC_VLUTS) then
+			Call send_ipc(1,IPC_OK)
+			Call read_pal("_vlut ",palette,error)
+			Call read_pal("_opacity ",opacity,error)
+			Call setpal(palette,opacity,texture_c,texture_o,
+     +				bcolor,myset)
+			Call read_pal("_ilut ",pal_2d,error)
+			Call Qenter(REDRAW,0)
+		Endif
+		if (message(1) .eq. IPC_TEXFUNCS) then
+C
+C	New texturing functions
+C
+			Call send_ipc(1,IPC_OK)
+			Call update_texture_functions(1)
+		Endif
+		if ((message(1) .eq. IPC_TEXCLIP).or.
+     +			(message(1) .eq. IPC_TEXFILL) .or.
+     +			(message(1) .eq. IPC_TEXUTIL)) then
+C
+C	Texture volume clipping functions
+C
+			Call clip_texture(w2dpts,num2dpts,myset,
+     +				message(1),message(2),message(3))
+C
+C	The texture volume is new!!
+C
+			Call update_texture_functions(0)
+			Call send_ipc(1,IPC_OK)
+			message(1) = IPC_I_HISTO
+			message(258) = IPC_H_TEXTUREVOL
+			Call send_ipc(258,message)
+		Endif
+		if (message(1) .eq. IPC_TEXVOLUME) then
+C
+C	A new texture volume (send histogram to pals, resample some windows)
+C
+			Call update_texture_functions(0)
+			Call send_ipc(1,IPC_OK)
+			message(1) = IPC_I_HISTO
+			message(258) = IPC_H_TEXTUREVOL
+			Call send_ipc(258,message)
+			goto 10
+		Endif
+		if (message(1) .eq. IPC_PNAMES) then
+			Call send_ipc(1,IPC_OK)
+        		Call update_pset_menu(loadp_menu,3000,'./ ',0)
+        		Call update_pset_menu(savep_menu,4000,'./ ',1)
+		Endif
+		if (message(1) .eq. IPC_MPIOLOAD) then
+			Call MP_FIT_load_settings(message(2),rots)
+			Call send_ipc(1,IPC_OK)
+			tstr = rots.outname
+			i = index(tstr," ") - 1
+			if (i .lt. 0) i = 1
+			dialog(tempedit).text = tstr(1:i)
+			dialog(tempedit).tlength = i
+			write(dialog(thickedit).text,350) rots.sthickness
+			dialog(thickedit).tlength = 5
+			write(dialog(ipixeledit).text,352) rots.ipixel
+			dialog(ipixeledit).tlength = 7
+			write(dialog(countedit).text,349) rots.n_slices(1)
+			dialog(countedit).tlength = 3
+			write(dialog(offedit).text,351) rots.x_off
+			dialog(offedit).tlength = 5
+			write(dialog(cslewedit).text,351) rots.slew(1)
+			dialog(cslewedit).tlength = 5
+			write(dialog(ctiltedit).text,351) rots.tilt(1)
+			dialog(ctiltedit).tlength = 5
+			write(dialog(xshiftedit).text,351) rots.xshift
+			dialog(xshiftedit).tlength = 5
+			Call calc_up(rots,interpixel)
+			Call dirty_window(-1,2)
+			Call setup_dialog(rots,dialog,wid,myset,0)
+		Endif
+		if (message(1) .eq. IPC_MPIOSAVE) then
+			Call MP_FIT_save_settings(message(2),rots)
+			Call send_ipc(1,IPC_OK)
+		Endif
+C
+C	Messages from the palette editor and lighting model dialog
+C
+		if (message(1) .eq. IPC_V_VLUT) then
+			Call unpack_palette(message(2),templut)
+			Do i=1,256
+				palette(i) = templut(i)
+				palette(i+256) = templut(i+256)
+				palette(i+512) = templut(i+512)
+				opacity(i) = templut(i+768)
+			Enddo
+			Call setpal(palette,opacity,texture_c,texture_o,
+     +					bcolor,myset)
+			Call send_ipc(1,IPC_OK)
+		Else if (message(1) .eq. IPC_V_ILUT) then
+			Call unpack_palette(message(2),templut)
+			Do i=1,1024
+				pal_2d(i) = templut(i)
+			Enddo
+			Call send_ipc(1,IPC_OK)
+			Call update_texture_functions(1)
+			Call qenter(REDRAW,0)
+		Else if (message(1) .eq. IPC_V_TLUT) then
+			Call unpack_palette(message(2),templut)
+			Do i=1,256
+				texture_c(i) = templut(i)
+				texture_c(i+256) = templut(i+256)
+				texture_c(i+512) = templut(i+512)
+				texture_o(i) = templut(i+768)
+			Enddo
+			Call setpal(palette,opacity,texture_c,texture_o,
+     +					bcolor,myset)
+			Call send_ipc(1,IPC_OK)
+			Call update_texture_functions(1)
+		Else if (message(1) .eq. IPC_L_INTRINSIC) then
+			Call set_intrinsic_lighting(message(2),rendermode)
+			Call send_ipc(1,IPC_OK)
+		Else if (message(1) .eq. IPC_L_POSTLIGHT) then
+			Call wait_cursor
+			Call do_postlight(%val(save_ptr),
+     +				%val(zbufptr),
+     +				%val(save_ptr),
+     +				%val(image3dsize),
+     +				%val(image3dsize),
+     +				message(2))
+			Call arrow_cursor
+			Call Qenter(REDRAW,wid2)
+			Call send_ipc(1,IPC_OK)
+		Else if (message(1) .eq. IPC_L_FILTER) then
+			Call wait_cursor
+			Call do_filter_proc(%val(save_ptr),
+     +				%val(zbufptr),%val(image3dsize),
+     +				%val(image3dsize),%val(message(2)))
+			If (message(2) .le. 11) Then
+				Call Qenter(REDRAW,wid2)
+			Else 
+				Call do_measure(w2dpts,num2dpts,w3dpts,
+     +					num3dpts,myset,dialog,1)	
+			Endif
+			Call arrow_cursor
+			Call send_ipc(1,IPC_OK)
+		Endif
+		goto 10
+	Endif
+C
+C	check for scrolling on either image
+C
+	if ((device .eq. MOUSE2).and.(data .eq. 1)) then
+		i = -1
+		if (winput .eq. wid2) i = 3
+		Call find_window(winput,status)
+		if (status .ge. 1) i = 2
+
+		If (winput .eq. wid) then
+C
+C	dynamic cube view 
+C	get window pos
+			call getori(wleft,wbot)
+C	get window x,y
+			xo = getval(CURSRX)-wleft
+			yo = getval(CURSRY)-wbot
+			if ((xo .lt. 4) .or. (yo .lt. 4) .or.
+     +				(xo .gt. 106) .or. (yo .gt. 106)) goto 10
+C
+			Do while (getbut(MOUSE2))
+C	get new x,y
+				x = getval(CURSRX)-wleft
+				y = getval(CURSRY)-wbot
+				If (getbut(LEFTAL).or.getbut(RGHTAL)) Then
+					ix = 0
+					iy = 0
+					j = x-xo
+				Else
+					ix = x-xo
+					iy = y-yo
+					j = 0
+				Endif
+				If ((ix .ne. 0).or.(iy.ne.0).or.
+     +					(j.ne.0)) then
+					call cube_rot(ix,iy,j,myset,frots)
+					call frontb(.true.)
+					call draw_cube(myset,rots,MP_disp)
+					Call ortho2(0.0,485.0,0.0,385.0)
+					call frontb(.false.)
+				Endif
+				xo = x
+				yo = y
+			Enddo
+C
+C	Change view (w/cube)
+C
+			call cube_rot(0,0,0,myset,frots)
+			Do status=1,3
+				Do while (frots(status) .lt. 0.0)
+					frots(status)=frots(status)+360.0
+				Enddo
+				Do while (frots(status) .ge. 360.0)
+					frots(status)=frots(status)-360.0
+				Enddo
+				rots.rots(status) = frots(status)
+			Enddo
+			Call setup_dialog(rots,dialog,wid,myset,wid2)
+			goto 7001
+		Endif
+C
+C	if improper window loop back...
+c
+		if (i .eq. -1) goto 10
+C
+C	tempory window focus swap
+C
+		winsave = curwin
+		Call sel_window(status,0,myset,rots)
+C
+C	Hand cursor
+C
+		Call hand_cursor
+C
+C	change the offsets while mouse is down
+C
+		Call getori(wleft,wbot)
+C
+C	get window space x,y
+C
+		xo = getval(CURSRX)-wleft
+		yo = getval(CURSRY)-wbot
+C
+		Do while (getbut(MOUSE2))
+C
+C	get window space x,y
+C
+			x = getval(CURSRX)-wleft
+			y = getval(CURSRY)-wbot
+C
+C	compute deltas
+C
+			if (i .eq. 2) then
+				ix = (xo-x)/wind2d(curwin).zoom2d
+				iy = (yo-y)/wind2d(curwin).zoom2d
+			Else if (i .eq. 3) then
+				ix = (xo-x)/zoom3d
+				iy = (yo-y)/zoom3d
+			Endif
+			If ((ix .ne. 0).or.(iy .ne. 0)) then !cursor moved
+				If (i .eq. 2) then
+					call getsiz(tx,ty)
+					Call bumpoffset(
+     +				wind2d(curwin).offset2d,
+     +				wind2d(curwin).zoom2d,
+     +						ix,iy,
+     +						imagesize,imagesize,
+     +						tx,ty)              
+					Call draw_image_i2(imagesize,
+     +						imagesize,tx,ty,
+     +					wind2d(curwin).offset2d,
+     +					wind2d(curwin).zoom2d,
+     +					%val(wind2d(curwin).im2d_ptr),
+     +					%val(wind2d(curwin).tex2d_ptr),
+     +					wind2d(curwin).texture_mode)
+				Else if (i .eq. 3) then
+					call getsiz(tx,ty)
+					Call bumpoffset(offset3d,zoom3d,
+     +						ix,iy,
+     +						image3dsize,image3dsize,
+     +						tx,ty)
+					Call draw_image_i4(image3dsize,
+     +						image3dsize,tx,ty,
+     +					offset3d,zoom3d,%val(save_ptr),
+     +						%val(zbufptr))
+				Endif
+				xo = x
+				yo = y
+			Endif
+		Enddo
+C
+C	revert to old cursor
+C
+		Call arrow_cursor
+C
+		Call sel_window(winsave,0,myset,rots)
+		Call qenter(REDRAW,winput)
+		goto 10
+	Endif
+C
+C	Check for erasing of points 
+C
+	If ((device .eq. MOUSE3).and.(data .eq. 1).and.
+     +		((getbut(LEFTSH)).or.(getbut(RIGHTS)))) then
+C
+C	cannot trace in the dialog window
+C
+		If (winput .eq. wid) goto 10
+C
+C	tempory window focus swap
+C
+		winsave = curwin
+		Call find_window(winput,status)
+		If (status .ge. 1) Call sel_window(status,0,myset,rots)
+C
+		Call getori(wleft,wbot)
+C
+C	force initial point
+C
+		xo = -999
+		yo = -999
+C
+C	while mouse is down
+C
+		Do While (getbut(MOUSE3))
+C
+C	get window space x,y
+C
+			x = getval(CURSRX)-wleft
+			y = getval(CURSRY)-wbot
+			If ((xo .ne. x).or.(yo .ne. y)) Then
+C
+C	erase points while mouse button is down
+C
+				If (winput .eq. wid2) Then ! 3d window
+       					Call erasepoints(num3dpts,w3dpts,
+     +						num2dpts,w2dpts,-1,zoom3d,
+     +						offset3d,x,y,cindex,i,myset)
+				Else ! 2d window
+       					Call erasepoints(num3dpts,w3dpts,
+     +						num2dpts,w2dpts,
+     +					wind2d(curwin).inum2d,
+     +					wind2d(curwin).zoom2d,
+     +					wind2d(curwin).offset2d,
+     +						x,y,cindex,i,myset)
+				Endif
+C
+C	draw the deleted points... (i of them)
+C
+				If (i .ne. 0) Then
+				Call winset(wind2d(curwin).wid)
+				status = num2dpts + i
+     				Call paintpoints(status,w2dpts,
+     +					wind2d(curwin).inum2d,
+     +					wind2d(curwin).zoom2d,
+     +				wind2d(curwin).offset2d,myset)    
+				Call winset(wid2)
+				status = num3dpts + i
+     				Call paintpoints(status,w3dpts,
+     +					-1,zoom3d,offset3d,myset)    
+				If (winput .ne. 0) call winset(winput)
+				Endif
+C
+C	reset the points
+C
+				xo = x
+				yo = y
+			Endif
+		Enddo
+C
+C	recompute the measurements
+C
+		Call do_measure(w2dpts,num2dpts,w3dpts,num3dpts,
+     +			myset,dialog,1)	
+C
+C	tempory window focus swap
+C
+		Call sel_window(winsave,0,myset,rots)
+C
+C	done...Redraw properly
+C
+		Call qenter(REDRAW,0)
+		Goto 10
+	Endif
+C
+C	Check for backup of traces
+C
+	If ((device .eq. MOUSE3).and.(data .eq. 1).and.
+     +		((getbut(LEFTAL)).or.(getbut(RGHTAL)))) then
+C
+C	tempory window focus swap
+C
+		winsave = curwin
+		Call find_window(winput,status)
+		If (status .ge. 1) Call sel_window(status,0,myset,rots)
+C
+C	Sort the points into contig colors with current color on top
+C
+		Call pointsort(w2dpts,num2dpts,w3dpts,num3dpts,cindex)
+C
+C	remove points while mouse button is down
+C
+		i = 0
+		Do while (getbut(MOUSE3))
+C
+			If ((num2dpts-I .gt. 0).and.
+     +				(num3dpts-I .gt. 0).and.
+     +				(w2dpts(num2dpts-I,4).eq.cindex)) then
+				I = I + 1
+C
+C	color the removed point differently (BLACK or WHITE)
+C
+				If (w2dpts(num2dpts-I+1,4) .eq. 0) then
+					w2dpts(num2dpts-I+1,4) = 7
+					w3dpts(num3dpts-I+1,4) = 7
+				Else
+					w2dpts(num2dpts-I+1,4) = 0
+					w3dpts(num3dpts-I+1,4) = 0
+				Endif
+			Endif
+C
+C	draw the deleted points...
+C
+			Call winset(wind2d(curwin).wid)
+     			Call paintpoints(num2dpts,w2dpts,
+     +				wind2d(curwin).inum2d,
+     +				wind2d(curwin).zoom2d,
+     +				wind2d(curwin).offset2d,myset)    
+			Call winset(wid2)
+     			Call paintpoints(num3dpts,w3dpts,
+     +				-1,zoom3d,offset3d,myset)    
+			If (winput .ne. 0) Call winset(winput)
+			Call sginap(10)
+		Enddo
+C
+C	actually delete the points
+C
+		num2dpts = num2dpts - I
+		num3dpts = num3dpts - I
+C
+C	recompute the measurements
+C
+		Call do_measure(w2dpts,num2dpts,w3dpts,num3dpts,
+     +			myset,dialog,1)	
+C
+C	tempory window focus swap
+C
+		Call sel_window(winsave,0,myset,rots)
+C
+C	done...Redraw properly
+C
+		Call qenter(REDRAW,0)
+		Goto 10
+	Endif
+C
+C	check for tracing on either images
+c
+	if ((device .eq. MOUSE3).and.(data .eq. 1)) then
+C
+C	cannot trace in the dialog window
+C
+		If (winput .eq. wid) goto 10
+C
+C	tempory window focus swap
+C
+		winsave = curwin
+		Call find_window(winput,status)
+		If (status .ge. 1) Call sel_window(status,0,myset,rots)
+C
+		Call getori(wleft,wbot)
+C
+C	force initial point
+C
+		xo = -999
+		yo = -999
+C
+C	while mouse is down
+C
+		Do While (getbut(MOUSE3))
+C
+C	get window space x,y
+C
+			x = getval(CURSRX)-wleft
+			y = getval(CURSRY)-wbot
+C
+C	convert to image space
+C
+			if (winput .eq. wid2) then
+C
+C	convert window space x,y into image space by:
+C		1) divide by zoom factor
+C		2) subtract the offset
+C
+C	tracing in 3d window
+C
+				ix = (x/zoom3d)+offset3d(1)
+				iy = (y/zoom3d)+offset3d(2)
+			Else
+C
+C	tracing in 2d window
+C
+				ix = (x/wind2d(curwin).zoom2d)+
+     +					wind2d(curwin).offset2d(1)
+				iy = (y/wind2d(curwin).zoom2d)+
+     +					wind2d(curwin).offset2d(2)
+			Endif
+C
+C	whenever it moves
+C
+			if ((xo .ne. ix).or.(yo .ne. iy)) then !cursor moved
+C
+C	add points and paint
+C
+				if (winput .eq. wid2) then  ! 3d window
+C
+C	add the point (if need be) to the 2d list
+C
+					i = num2dpts
+					Call addpt(ix,iy,
+     +						num2dpts,w2dpts,-1,cindex,
+     +						myset,image3dsize,
+     +						image3dsize,retvals)
+					if (i .ne. num2dpts) then	
+C
+C	Moving the 3D cursor???
+C
+	If (cursor3d_track .ne. 0) Then
+		cursor3d_pos(1) = w2dpts(num2dpts,1)
+		cursor3d_pos(2) = w2dpts(num2dpts,2)
+		cursor3d_pos(3) = w2dpts(num2dpts,3)
+		num2dpts = i
+		If (winput .ne. 0) call winset(winput)
+		goto 9876
+	Endif
+C
+C	add to the 3d list as well
+C
+					num3dpts = num3dpts + 1
+					if (num3dpts .gt. 4095) 
+     +						num3dpts = 4095
+					w3dpts(num3dpts,1) = retvals(1)
+					w3dpts(num3dpts,2) = retvals(2)
+					w3dpts(num3dpts,3) = retvals(3)
+					w3dpts(num3dpts,4) = retvals(4)
+C
+C	Interpolate if control key is held down
+C
+					if (getbut(CTRLKE) .or. 
+     +						getbut(RIGHTC)) then
+					i = 0
+					Call interp_pts(num2dpts,w2dpts,i)
+					Call interp_pts(num3dpts,w3dpts,i)
+					Endif
+				Call winset(wind2d(curwin).wid)
+     					Call paintpoints(num2dpts,w2dpts,
+     +				wind2d(curwin).inum2d, 
+     +				wind2d(curwin).zoom2d,
+     +				wind2d(curwin).offset2d,myset)
+					Call winset(wid2)
+     					Call paintpoints(num3dpts,w3dpts,
+     +					     -1,zoom3d,offset3d,myset)
+					Endif
+
+				Else ! 2d window
+					i = num3dpts
+C
+C	add the point (if need be) to the 3d list
+C
+					Call addpt(ix,iy,
+     +						num3dpts,w3dpts,
+     +				slicetoz(wind2d(curwin).inum2d),cindex,
+     +						myset,image3dsize,
+     +						image3dsize,retvals)
+					if (i .ne. num3dpts) then	
+C
+C	Moving the 3D cursor???
+C
+	If (cursor3d_track .ne. 0) Then
+		cursor3d_pos(1) = retvals(1)
+		cursor3d_pos(2) = retvals(2)
+		cursor3d_pos(3) = retvals(3)
+		num3dpts = i
+		If (winput .ne. 0) call winset(winput)
+		goto 9876
+	Endif
+C
+C	add to the 2d list as well
+C
+					num2dpts = num2dpts + 1
+					if (num2dpts .gt. 4095) 
+     +						num2dpts = 4095
+					w2dpts(num2dpts,1) = retvals(1)
+					w2dpts(num2dpts,2) = retvals(2)
+					w2dpts(num2dpts,3) = retvals(3)
+					w2dpts(num2dpts,4) = retvals(4)
+C
+C	Interpolate if control key is held down
+C
+					if (getbut(CTRLKE) .or. 
+     +						getbut(RIGHTC)) then
+					i = 0
+					Call interp_pts(num2dpts,w2dpts,i)
+					Call interp_pts(num3dpts,w3dpts,i)
+					Endif
+					Call winset(wid2)
+     					Call paintpoints(num3dpts,w3dpts,
+     +					     -1,zoom3d,offset3d,myset)
+				Call winset(wind2d(curwin).wid)
+     					Call paintpoints(num2dpts,w2dpts,
+     +			    	wind2d(curwin).inum2d,
+     +				wind2d(curwin).zoom2d,
+     +				wind2d(curwin).offset2d,myset)
+					Endif
+				Endif
+C
+C	reset the points and the window
+C
+				xo = ix
+				yo = iy
+				If (winput .ne. 0) call winset(winput)
+			Endif
+C
+C	redraw
+C
+		Enddo
+C
+C	recompute the measurements
+C
+		Call do_measure(w2dpts,num2dpts,w3dpts,num3dpts,
+     +			myset,dialog,1)	
+9876	Continue
+C
+C	tempory window focus swap
+C
+		Call sel_window(winsave,0,myset,rots)
+C
+		Call Qenter(REDRAW,0)
+		Goto 10
+	Endif
+C
+C	handle redraw
+C
+	If (device .eq. REDRAW) then	! redraw screen
+C
+		tempi = winget()
+		If ((data .eq. 0).or.(data .eq. wid2)) Then
+C
+C	first the 3D image window
+C
+		call winset(wid2)
+		Call RESHAP	! do not forget !!!
+		call getsiz(ix,iy)
+		Call ortho2(0.0,float(ix-1),0.0,float(iy-1))
+		if (dirty) then
+			Call wait_cursor
+			status = rendermode
+			if (use_16bit .eq. 1) Then
+				status = rendermode + 16
+			Endif
+			Call vl_m_render(%val(1),%val(status),
+     +				%val(MOUSE3),
+     +				i,myset,%val(0))
+C
+C	recompute the measurements
+C
+		Call do_measure(w2dpts,num2dpts,w3dpts,num3dpts,
+     +			myset,dialog,1)	
+C
+			Call arrow_cursor
+C
+C	if the user aborted then clear the queue of mouse down events
+C
+			If (i .eq. 4) Then
+				Call qreset
+				Call qenter(REDRAW,0)
+			Endif
+C
+C	reset the dirty flag and the points
+C
+			dirty = .false.
+		Endif
+		Call bumpoffset(offset3d,zoom3d,
+     +			0,0,image3dsize,image3dsize,ix,iy)               
+		Call draw_image_i4(image3dsize,image3dsize,ix,iy,
+     +			offset3d,zoom3d,%val(save_ptr),%val(zbufptr))
+C
+		Call ortho(0.0,float(ix-1),0.0,float(iy-1),
+     +			float(image3dsize)/2.0,
+     +			-float(image3dsize)/2.0)
+C		
+     		Call paintpoints(num3dpts,w3dpts,-1,
+     +				zoom3d,offset3d,myset)    
+		if (grid1 .gt. 0.0) call draw_grid(zoom3d,gcol1,grid1)
+C
+C	Draw Tal_overlays (if desired)
+C
+		If (clippingon) then
+			call zbuffe(.true.)
+		Else
+			call zbuffe(.false.)
+		Endif
+	        Call draw_tal_overlay(myset,imagesize,
+     +          	tal_over,offset3d,zoom3d,gcol1)
+C
+C	Draw 3D cursor overlay
+C
+		Call draw_3d_cursor(myset,offset3d,zoom3d)
+C
+		Call ortho(0.0,float(ix-1),0.0,float(iy-1),
+     +			float(image3dsize)/2.0,
+     +			-float(image3dsize)/2.0)
+C
+C	Draw the MP_FIT graphics if requested
+C
+		If (wind2d(curwin).mode .eq. 2) then
+        		Call draw_mp_fit_voxel(rots,myset,imagesize,
+     +				interpixel,MP_disp,offset3d,zoom3d)
+		Endif
+C
+C	Draw Dspace graphics if requested
+C
+		Call draw_dspace_voxel(rots,myset,imagesize,interpixel,
+     +          	offset3d,zoom3d)
+C
+C	Clean up
+C
+		Call ortho2(0.0,float(ix-1),0.0,float(iy-1))
+		call zbuffe(.false.)
+		Endif
+C
+C	Check for all the 2D windows
+C
+	winsave = curwin
+	Do curwin=1,MAX_WINDOWS
+		If ((wind2d(curwin).wid .ne.-1).and.((data.eq.0)
+     +			.or.(data .eq. wind2d(curwin).wid))) Then
+C
+C	next the 2D image window
+C
+		call winset(wind2d(curwin).wid)
+		Call RESHAP	! do not forget !!!
+		Call set_cindex_table
+		call getsiz(ix,iy)
+		Call ortho2(0.0,float(ix),0.0,float(iy))
+C
+C	Do a temp swap
+C
+		Call sel_window(curwin,0,myset,rots)
+C
+C	Resample images if needed
+C
+		if (wind2d(curwin).dirty) then
+			If (wind2d(curwin).mode .eq. 1) then
+C
+C	Arbitrary
+C
+				Do status = 1,3
+					frots(status) = 
+     +					wind2d(curwin).rots(status)
+				Enddo
+				frots(4) = wind2d(curwin).rots(4)-256
+				Call wait_cursor
+				Call vl_resample(%val(imagesize),
+     +					%val(imagesize),
+     +					%val(wind2d(curwin).im2d_ptr),
+     +					frots(1),frots(4),myset)
+				If (wind2d(curwin).texture_mode .ne. 0)Then
+					Call vl_resample16(%val(imagesize),
+     +						%val(imagesize),
+     +					    %val(wind2d(curwin).tex2d_ptr),
+     +						frots(1),frots(4),myset)
+				Endif
+				Call calc_image_histo(curwin)
+				If (curwin.eq.winsave) Call send_image_histo
+				Call arrow_cursor
+			Else if (wind2d(curwin).mode .eq. 2) then
+C
+C	MP_FIT
+C       Get the center point
+C
+				frots(4) = rots.sthickness/interpixel
+                		Do status=1,3
+                       		frots(status)=rots.upcenter(status) +
+     +                          	float(-wind2d(curwin).n_slice)*
+     +					frots(4)*rots.upnorm(status)
+                		Enddo
+C
+				Call wait_cursor
+				call vl_resample_axis(%val(imagesize),
+     +					%val(imagesize),
+     +					%val(wind2d(curwin).im2d_ptr),
+     +					rots.upxaxis(1),rots.upyaxis(1),
+     +					rots.upnorm(1),frots(1),
+     +					myset,1.0)  !ratio = MRI/MRI
+				If (wind2d(curwin).texture_mode .ne. 0)Then
+				call vl_resample_axis16(%val(imagesize),
+     +					%val(imagesize),
+     +					%val(wind2d(curwin).tex2d_ptr),
+     +					rots.upxaxis(1),rots.upyaxis(1),
+     +					rots.upnorm(1),frots(1),
+     +					myset,1.0)  !ratio = MRI/MRI
+				Endif
+				Call calc_image_histo(curwin)
+				If (curwin.eq.winsave) Call send_image_histo
+				Call arrow_cursor
+			Else
+				Call get_2dimage(wind2d(curwin).inum2d,
+     +					%val(wind2d(curwin).im2d_ptr),1)
+				If (wind2d(curwin).texture_mode .ne. 0)Then
+				Call get_2dimage(wind2d(curwin).inum2d,
+     +					%val(wind2d(curwin).tex2d_ptr),2)
+				Endif
+				Call calc_image_histo(curwin)
+				If (curwin.eq.winsave) Call send_image_histo
+			Endif
+			wind2d(curwin).dirty = .false.
+		Endif
+		Call bumpoffset(wind2d(curwin).offset2d,
+     +			wind2d(curwin).zoom2d,
+     +			0,0,imagesize,imagesize,ix,iy)               
+		Call draw_image_i2(imagesize,imagesize,ix,iy,
+     +			wind2d(curwin).offset2d,
+     +			wind2d(curwin).zoom2d,
+     +			%val(wind2d(curwin).im2d_ptr),
+     +			%val(wind2d(curwin).tex2d_ptr),
+     +			wind2d(curwin).texture_mode)
+		Call ortho2(0.0,float(ix),0.0,float(iy))
+		Call paintpoints(num2dpts,w2dpts,wind2d(curwin).inum2d,
+     +			wind2d(curwin).zoom2d,wind2d(curwin).offset2d,myset)
+C
+		Call draw_3d_cursor_arb(wind2d(curwin).offset2d,
+     +			wind2d(curwin).zoom2d,wind2d(curwin).mode)
+C
+		If (wind2d(curwin).mode .eq. 1) then
+	        	Call draw_tal_arb_overlay(tal_over,
+     +				wind2d(curwin).offset2d,
+     +				wind2d(curwin).zoom2d,
+     +				wind2d(curwin).gcol)
+			Call bv_set_color(wind2d(curwin).gcol)
+			If (label_over .ne. 0) Then
+			Call vl_draw_labels_cutplane(wind2d(curwin).offset2d,
+     +				%val(wind2d(curwin).zoom2d),%val(15))
+			Endif
+		Endif
+		If (wind2d(curwin).grid .gt. 0.0) Then
+			call draw_grid(wind2d(curwin).zoom2d,
+     +				wind2d(curwin).gcol,
+     +				wind2d(curwin).grid)
+		Endif
+		Call ortho2(0.0,float(ix),0.0,float(iy))
+		Endif
+	Enddo
+C
+C	Do a temp swap
+C
+		Call sel_window(winsave,0,myset,rots)
+C
+		If ((data .eq. 0).or.(data .eq. wid)) Then
+C
+C	next the dialog window
+C
+		call winset(wid)
+		Call RESHAP	! do not forget !!!
+		Call ortho2(0.0,485.0,0.0,385.0)
+		Call DRAW_DLG(dialog,status)
+		If (status .ne. 0) then
+			 goto 999     
+		Endif
+		Call draw_cube(myset,rots,MP_disp)
+		Call ortho2(0.0,485.0,0.0,385.0)
+		Call swapbu
+		Endif
+		if (tempi .ne. 0) call winset(tempi)
+		goto 10
+	Endif
+C
+C	look for right mouse (MOUSE1) down in image window
+C
+	if ((device.eq.MOUSE1).and.(data.eq.1)
+     +		.and.(winput.eq.wid2)) then
+C
+C	mouse down in 3d image window
+C
+		i = dopup(im_menu)
+		if (i .eq. -1) goto 10
+		if (i .eq. 100) call save_rgb("image_3d_%%%.rgb ")
+		if ((i .ge. 1000).and.(i .lt. 2000)) then
+			grid1 = (float(i)-1000.0)/20.0
+			gcol1 = cindex
+			Call qenter(REDRAW,wid2)
+		Endif
+		if ((i .ge. 9200) .and. (i .le. 9210)) Then
+			Call Do_cursor3d(i,cindex)
+		Endif
+		if ((i .ge. 1) .and. (i .le. 5)) then
+			zoom3d = i 
+C
+C	fix errors
+C
+			call getsiz(tx,ty)
+			Call bumpoffset(offset3d,zoom3d,
+     +			0,0,           
+     +			image3dsize,image3dsize,
+     +			tx,ty)
+			Call qenter(REDRAW,wid2)
+		Endif
+		goto 10
+C
+	Else if ((device.eq.MOUSE1).and.(data.eq.1)
+     +		.and.(winput.ne.wid)) then
+C
+C	mouse down in 2d image window
+C
+		Call update_window_menu(winput)
+		i = dopup(im_menu2)
+		if (i .eq. -1) goto 10
+		if (i .eq. 100) Then
+			call save_rgb("image_2d_%%%.rgb ")
+		Else if ((i .ge. 9200) .and. (i .le. 9210)) Then
+			Call Do_cursor3d(i,cindex)
+		Else if ((i .ge. 1000).and.(i .lt. 2000)) then
+C
+C	tempory window focus swap
+C
+		winsave = curwin
+		Call find_window(winput,status)
+		If (status .ge. 1) Call sel_window(status,0,myset,rots)
+C
+			wind2d(curwin).grid = (float(i)-1000.0)/20.0
+			wind2d(curwin).gcol = cindex
+			Call qenter(REDRAW,wind2d(curwin).wid)
+C
+		Call sel_window(winsave,0,myset,rots)
+C
+		Else if ((i .ge. 1) .and. (i .le. 5)) then
+C
+C	tempory window focus swap
+C
+		winsave = curwin
+		Call find_window(winput,status)
+		If (status .ge. 1) Call sel_window(status,0,myset,rots)
+C
+			wind2d(curwin).zoom2d = i 
+C
+C	fix errors
+C
+			call getsiz(tx,ty)
+			Call bumpoffset(wind2d(curwin).offset2d,
+     +			wind2d(curwin).zoom2d,
+     +			0,0,            
+     +			imagesize,imagesize,
+     +			tx,ty)               
+			Call qenter(REDRAW,wind2d(curwin).wid)
+C
+		Call sel_window(winsave,0,myset,rots)
+C
+C	Popup menu values >= 9000 (windows menu)
+C
+		Else if (i .eq. 9001) Then  ! select (wid)
+			Call find_window(winput,status)
+			If (status .ne. -1) Then
+				Call sel_window(status,1,myset,rots)
+				Call setup_dialog(rots,dialog,wid,myset,0)
+			Endif
+		Else if (i .eq. 9002) Then  ! add new window
+			Call add_window(status,myset,rots)
+			Call setup_dialog(rots,dialog,wid,myset,0)
+		Else if (i .eq. 9003) Then  ! remove this window
+			Call rem_window(winput,myset,rots)
+			Call setup_dialog(rots,dialog,wid,myset,0)
+		Else if (i .ge. 9101) Then  ! select a new window
+			Call sel_window(i - 9100,1,myset,rots)
+			Call setup_dialog(rots,dialog,wid,myset,wid2)
+C
+C	Popup menu values >= 8000 (texture menu)
+C
+		Else if ((i .ge. 8000) .and. (i .le. 8002)) Then 
+			Call find_window(winput,status)
+			If (status .ne. -1) Then
+				wind2d(status).texture_mode = i - 8000
+				Call dirty_window(status,1)
+				Call qenter(REDRAW,wind2d(status).wid)
+			Endif
+		Endif
+		goto 10
+	Endif
+C
+C	if the input window is NOT the dialog window do nothing...
+C
+	if (winput .ne. wid) goto 10
+	Call HANDLE_DLG(device,data,dialog,status) 
+	If (status .ne. 0) goto 999    
+	If (device .eq.  DLG_NOPEVNT) goto 10
+C
+C	handle buttons
+C
+	If (device .eq.  DLG_BUTEVNT) then	
+		mode = 0
+		If (data .eq. 11) then   !render
+			dirty = .true.
+			Call qenter(REDRAW,wid2)
+		Else if (data .eq. samplebutton) then
+			wind2d(curwin).dirty = .true.
+			Call qenter(REDRAW,wind2d(curwin).wid)
+		Else if (data.eq.pntadd) then
+			ftals(1) = 0.0
+			i = dialog(talxedit).tlength
+			read(dialog(talxedit).text(1:i),*,
+     +				err=520,end=520) ftals(1)
+520			ftals(2) = 0.0
+			i = dialog(talyedit).tlength
+			read(dialog(talyedit).text(1:i),*,
+     +				err=521,end=521) ftals(2)
+521			ftals(3) = 0.0
+			i = dialog(talzedit).tlength
+			read(dialog(talzedit).text(1:i),*,
+     +				err=522,end=522) ftals(3)
+522			num2dpts = num2dpts + 1
+			if (num2dpts .gt. 4095)	num2dpts = 4095
+			if (pointtype .eq. 2) then
+				Call tal_tal2point(ftals,
+     +					w2dpts(num2dpts,1),
+     +					w2dpts(num2dpts,2),
+     +					w2dpts(num2dpts,3))
+			Else if (pointtype .eq. 3) then
+				Call disk2point(ftals,
+     +					w2dpts(num2dpts,1),
+     +					w2dpts(num2dpts,2),
+     +					w2dpts(num2dpts,3))
+			Else
+				w2dpts(num2dpts,1)=ftals(1)/interpixel
+				w2dpts(num2dpts,2)=ftals(2)/interpixel
+				w2dpts(num2dpts,3)=ftals(3)/
+     +					(interpixel*squeezefactor)
+			Endif
+			w2dpts(num2dpts,4) = cindex
+			Call do_measure(w2dpts,num2dpts,w3dpts,
+     +				num3dpts,myset,dialog,1)	
+			Call qenter(REDRAW,0)
+			goto 7001
+		Endif
+		goto 10
+	Endif
+C
+C	Handle non-editable text events
+C
+	If (device .eq.  DLG_TXTEVNT) Then
+		If ((data .ge. measuretext).and.
+     +			(data .le. measuretext+4)) Then
+
+			Call next_meas_layer
+			Call do_measure(w2dpts,num2dpts,w3dpts,
+     +				num3dpts,myset,dialog,1)	
+			Call qenter(REDRAW,wid)
+
+		Endif
+		goto 10
+	Endif
+C
+C	Handle text edit events
+C
+	If (device .eq.  DLG_EDTEVNT) then	
+		ftemp = 0
+		i = dialog(data).tlength
+		if (data .eq. tempedit) then
+			rots.outname = dialog(data).text(1:i)//' '
+			ftemp = 0
+		Else if (data .eq. thickedit) Then
+			ftemp = rots.sthickness
+			read(dialog(data).text(1:i),*,err=347,end=347)
+     +				rots.sthickness
+347			write(dialog(data).text,350) rots.sthickness
+350	Format(F5.2)
+352	Format(F7.4)
+351	Format(F5.1)
+			dialog(data).tlength = 5
+			Call calc_up(rots,interpixel)
+			ftemp = ftemp - rots.sthickness
+		Else if (data .eq. ipixeledit) Then
+			ftemp = rots.ipixel
+			read(dialog(data).text(1:i),*,err=343,end=343)
+     +				rots.ipixel
+343			write(dialog(data).text,352) rots.ipixel
+			dialog(data).tlength = 7
+			ftemp = ftemp - rots.ipixel
+		Else if (data .eq. countedit) Then
+			ftemp = 0
+			read(dialog(data).text(1:i),*,err=348,end=348)
+     +				rots.n_slices(1)
+348			write(dialog(data).text,349) rots.n_slices(1)
+349	Format(I3)
+			dialog(data).tlength = 3
+			Call calc_up(rots,interpixel)
+		Else if (data .eq. offedit) Then
+			ftemp = rots.x_off
+			read(dialog(data).text(1:i),*,err=346,end=346) 
+     +				rots.x_off
+346			write(dialog(data).text,351) rots.x_off
+			dialog(data).tlength = 5
+			Call calc_up(rots,interpixel)
+			ftemp = ftemp - rots.x_off
+		Else if (data .eq. cslewedit) Then
+			ftemp = rots.slew(1)
+			read(dialog(data).text(1:i),*,err=345,end=345) 
+     +				rots.slew(1)
+345			write(dialog(data).text,351) rots.slew(1)
+			dialog(data).tlength = 5
+			Call calc_up(rots,interpixel)
+			ftemp = ftemp - rots.slew(1)
+		Else if (data .eq. ctiltedit) Then
+			ftemp = rots.tilt(1)
+			read(dialog(data).text(1:i),*,err=344,end=344) 
+     +				rots.tilt(1)
+344			write(dialog(data).text,351) rots.tilt(1)
+			dialog(data).tlength = 5
+			Call calc_up(rots,interpixel)
+			ftemp = ftemp - rots.tilt(1)
+		Else if (data .eq. xshiftedit) Then
+			ftemp = rots.xshift
+			read(dialog(data).text(1:i),*,err=353,end=353) 
+     +				rots.xshift
+353			write(dialog(data).text,351) rots.xshift
+			dialog(data).tlength = 5
+			Call calc_up(rots,interpixel)
+			ftemp = ftemp - rots.xshift
+		Endif
+		If ((autosample).and.(ftemp .ne. 0)) Then
+			Call dirty_window(-1,2)
+		Endif
+		Call setup_dialog(rots,dialog,wid,myset,0)
+		goto 10
+	Endif
+C
+C	handle menu events
+C
+	if (device .eq. DLG_POPEVNT) then
+		if (data .eq. 10) then  ! view popup
+			i = dialog(data).tpos
+C
+			if ((i .ge. 1) .and. (i .le. 8)) then
+C
+C	Change view
+C
+				Do status=1,3
+					rots.rots(status) = rottable(status,I)
+				Enddo
+				Call setup_dialog(rots,dialog,wid,myset,wid2)
+				goto 7001
+C
+			Else if (i .eq. 100) then  ! send 2d points to trace
+C
+C	convert the points to slice Zs
+C
+				status = 0
+				Do j=1,num2dpts
+			If (ztoslice_t(w2dpts(j,3),2) .ne. -1) then
+			    status=status+1
+			    temppts(status,1) = w2dpts(j,1)
+			    temppts(status,2) = w2dpts(j,2)
+			    temppts(status,3) = ztoslice_t(w2dpts(j,3),2)
+			    temppts(status,4) = w2dpts(j,4)
+			Endif
+				Enddo
+C
+C	send number of points first
+C
+				Call vt_write_points(status,temppts)
+C
+C	Let trace know!!!
+C
+				message(1) = IPC_POINT
+				size = 1
+				Call send_ipc(size,message)
+C
+			Else if (i .eq. 101) then  ! Reproject 2D+Z to voxel
+C
+C	we need a redraw
+C
+				Call Qenter(REDRAW,0)
+C
+C	This routine allows the user to send the current set of 2D+Z points
+C	back through the rotation matrix to generate voxel image points
+C	This is VERY useful when the voxel image rotates.
+C
+C	preserve cutting plane status (but we must reproject with it disabled)
+C
+7001				status = wind2d(curwin).mode
+				wind2d(curwin).mode = 0
+C
+				num3dpts = 0
+				Do I=1,num2dpts
+				   Call addpt(w2dpts(I,1),w2dpts(I,2),
+     +					num3dpts,w3dpts,w2dpts(I,3),
+     +					w2dpts(I,4),myset,image3dsize,
+     +					image3dsize,retvals)
+				Enddo
+				wind2d(curwin).mode = status
+				goto 10
+C
+			Else if (i .eq. 102) then  ! Median Filter
+C
+				Call wait_cursor
+				Call do_filter_proc(%val(save_ptr),
+     +					%val(zbufptr),%val(image3dsize),
+     +					%val(image3dsize),%val(10))
+				Call arrow_cursor
+				Call Qenter(REDRAW,wid2)
+C
+			Else if (i .eq. 103) then  ! Average Filter
+C
+				Call wait_cursor
+				Call do_filter_proc(%val(save_ptr),
+     +					%val(zbufptr),%val(image3dsize),
+     +					%val(image3dsize),%val(11))
+				Call arrow_cursor
+				Call Qenter(REDRAW,wid2)
+C
+			Else if (i .eq. 104) then  ! ZAverage Filter
+C
+				Call wait_cursor
+				Call do_filter_proc(%val(save_ptr),
+     +					%val(zbufptr),%val(image3dsize),
+     +					%val(image3dsize),%val(15))
+C
+C	recompute the measurements
+C
+		Call do_measure(w2dpts,num2dpts,w3dpts,num3dpts,
+     +			myset,dialog,1)	
+C
+				Call arrow_cursor
+				Call Qenter(REDRAW,0)
+C
+			Else if (i .eq. 105) then  ! ZMedian Filter
+C
+				Call wait_cursor
+				Call do_filter_proc(%val(save_ptr),
+     +					%val(zbufptr),%val(image3dsize),
+     +					%val(image3dsize),%val(16))
+C
+C	recompute the measurements
+C
+		Call do_measure(w2dpts,num2dpts,w3dpts,num3dpts,
+     +			myset,dialog,1)	
+C
+				Call arrow_cursor
+				Call Qenter(REDRAW,0)
+C
+			Else if (i .eq. 106) then  ! Lighting
+C
+				Call wait_cursor
+				norm(1) = 0.0
+				norm(2) = 0.0
+				norm(3) = 1.0
+				norm(4) = 1.0
+				Call do_postlight(%val(save_ptr),
+     +					%val(zbufptr),
+     +					%val(save_ptr),
+     +					%val(image3dsize),
+     +					%val(image3dsize),
+     +					norm)
+				Call arrow_cursor
+				Call Qenter(REDRAW,wid2)
+C
+			Else if (i .eq. 107) then  ! Lighting controls
+C
+				write(tstr,880) shm_data
+880	Format("brainvox_voxel DIALOG_LMOD ",I9," &")
+				Call system(tstr)
+C
+			Else if (i .eq. 108) then  ! Texture controls
+C
+				write(tstr,890) shm_data
+890	Format("brainvox_voxel DIALOG_TEXTURE ",I9," &")
+				Call system(tstr)
+C
+			Else if (i .eq. 110) then  ! Calib Talairach
+				Call wait_cursor
+				Call tal_init_space(w2dpts,num2dpts,
+     +					opacity,myset)
+				Call arrow_cursor
+				Call Qenter(REDRAW,0)
+
+			Else if (i .eq. 136) then  ! St Louis mods to tal space
+				Call tal_2_stlouis
+				Call Qenter(REDRAW,0)
+
+			Else if (i .eq. 111) then  ! Load Talairach
+				Call tal_file_io("_talairach ",IPC_READ,
+     +					interpixel)
+				Call Qenter(REDRAW,0)
+
+			Else if (i .eq. 112) then  ! Save Talairach
+				Call tal_file_io("_talairach ",IPC_WRITE,
+     +					interpixel)
+			Else if (i .eq. 113) then  ! Resample Talairach MRI
+				Call tal_resample("tal_res_%%%.pic ",1)
+			Else if (i .eq. 131) then  ! Read _hotspots file
+				Call read_tal_points(num2dpts,w2dpts,
+     +					"_hotspots ")
+				Call do_measure(w2dpts,num2dpts,w3dpts,
+     +					num3dpts,myset,dialog,1)	
+				Call qenter(REDRAW,0)
+				goto 7001
+			Else if (i .eq. 135) then  ! orient overlays
+				label_over = 1-label_over
+				if (label_over .ne. 0) Then
+					wind2d(curwin).gcol = cindex
+				Endif
+				Call Qenter(REDRAW,0)
+			Else if (i .eq. 130) then  ! TAL overlays
+				tal_over = 7 - tal_over
+				if (tal_over .ne. 0) gcol1 = cindex
+				if (tal_over .ne. 0) Then
+					wind2d(curwin).gcol = cindex
+				Endif
+				Call Qenter(REDRAW,0)
+			Else if ((i .ge. 114).and.
+     +				(i .le. 121)) then  ! Resample Talairach PET
+C
+C	Setup the environment (start by making a PET TAL INJ dir)
+C
+				pet_t_dir = " "
+				Call name_changer("TAL_INJ_%%%.dir ",
+     +					(i-113),pet_t_dir,error)
+				Inquire(exist=error,file=pet_t_dir)
+				tstr = pet_t_dir(1:
+     +					index(pet_t_dir,' ')-1)//char(0)
+				If (.not. error) Then
+					status = mkdir(tstr,$000041ff)
+				Endif
+				tstr=" "
+C
+C	Get the injection template
+C
+				Call name_changer(inj_temp,(i-113),
+     +					tstr,error)
+				tempstr=" "
+C
+C	build the filename template from injection template
+C	input:"*/"(inj)"_%%%.pic"  output:TAL_INJ_ij#.dir/(inj)"_%%%.pic"
+C
+				write(unit=tempstr,878) 
+     +				tstr(1:index(tstr,' ')-1),
+     +				pet_t_dir(1:index(pet_t_dir,' ')-1),
+     +				tstr(1:index(tstr,' ')-1)
+878	Format('tal_resample "*/',A,'_%%%.pic" "',A,'/',A,'_%%%.pic"')
+				Call system(tempstr)
+C
+C
+C	Background color
+C
+			Else if ((i .ge. 5000).and.(i .le. 5100)) then 
+C
+				i = i - 5000
+				i = (float(I)/100.0)*255
+				bcolor = i + i*256 + i*65536
+				Call setpal(palette,opacity,texture_c,
+     +					texture_o,bcolor,myset)
+C
+			Else if (i .eq. 132) then  ! fork off renamer
+C
+C	Fork off the point set renamer
+C
+				write(tstr,879) shm_data
+879	Format("brainvox_voxel DIALOG_PSET ",I9," &")
+				Call system(tstr)
+C
+C	Load point set
+C
+			Else if ((i .ge. 3000).and.(i .le. 3100)) then 
+C
+			Call point_io(i-3000,tstr,0,w2dpts,num2dpts,'./ ')
+				Call Qenter(REDRAW,0)
+C
+C		pass these read points into 3d window array 
+C
+				goto 7001  
+C
+C	Save point set
+C
+			Else if ((i .ge. 4000).and.(i .le. 4100)) then 
+C
+C	Get the pointset name
+C
+			Call get_point_name(i-4000,tstr,'./ ')
+C	Save the points
+			Call point_io(i-4000,tstr,1,w2dpts,num2dpts,'./ ')
+C
+C 	Toggle pointset clipping
+C
+			Else if (i .eq. 133) then  ! toggle clipping
+				clippingon = 1 - clippingon
+				Call Qenter(REDRAW,0)
+C
+C fit a plane to the current points
+C
+			Else if (i .eq. 134) then  ! Plane fitting
+C
+				Call fit_cutting_plane(cindex,w2dpts,
+     +					num2dpts,myset,frots)
+C
+C	1-error  2-area 3,4,5-rx,ry,rz 6-D
+C
+				If (frots(1) .eq. -1) Then
+			Type *,"Unable to fit a plane to these points"
+				Else
+					wind2d(curwin).rots(1)=frots(3)
+					wind2d(curwin).rots(2)=frots(4)
+					wind2d(curwin).rots(3)=frots(5)
+					wind2d(curwin).rots(4)=frots(6)+256
+			   		Call setup_dialog(rots,dialog,
+     +					wid,myset,0)
+					If (autosample) then
+					wind2d(curwin).dirty = .true.
+						goto 10
+					Endif
+				Endif
+C
+C	Howard Dspace options
+C
+			Else if ((i .ge. 500) .and. (i .le. 510)) Then
+				Call wait_cursor
+				Call handle_dspace_menu(i,w2dpts,
+     +					num2dpts,myset)
+				Call arrow_cursor
+				Call qenter(REDRAW,0)
+C
+C	RJF options
+C
+			Else if ((i .ge. 1000) .and. (i .le. 1100)) Then
+C
+C	Random points
+C
+				if (i .eq. 1000) Then
+					num2dpts = 0
+					i = 0
+					Do while (i .lt. 200)
+C	Type *,"looking",i
+						retvals(1)=rand()*imagesize
+						retvals(2)=rand()*imagesize
+						j = (rand()*realimages)+1
+						j = ((j-1)*interpimages)+j
+						retvals(3)=j-1
+						retvals(4)=12
+					j=realimages+
+     +						((realimages-1)*interpimages)
+					if ((retvals(1) .lt. imagesize).and.
+     +					    (retvals(2) .lt. imagesize).and.
+     +					    (retvals(3) .lt. j) .and.
+     +					    (retvals(3) .ge. 0)) Then
+C	Type *,"checking",retvals(1),retvals(2),retvals(3)
+
+						Call get_pix(j,retvals,
+     +				%val(images_addr),imagesize,imagesize)
+						If (j .gt. 0) Then
+							i = i + 1
+							num2dpts = i
+C	Type *,"adding",retvals(1),retvals(2),retvals(3),i
+							Do j=1,4
+						   	w2dpts(i,j)=retvals(j)
+							Enddo
+						Endif
+					Endif
+					Enddo
+					Call qenter(REDRAW,0)
+C
+C		pass these read points into 3d window array 
+C
+					Goto 7001  
+				Endif
+			Endif
+			goto 10
+C
+C	trace color
+C
+		Else if (data .eq. 13) then  ! color popup
+			i = dialog(data).tpos
+			if (I .ge. 0) cindex = i
+			dialog(data).text = clist(cindex+1)
+			Call qenter(REDRAW,wid)
+			goto 10
+C
+C	Pointtype menu
+C
+		Else if (data .eq. pnttypemenu) then 
+			i = dialog(data).tpos
+			if (i .eq. 1) Then
+				pointtype = i
+				dialog(pnttypemenu).text = "Pnt:BV "
+			Else if (i .eq. 2) Then
+				pointtype = i
+				dialog(pnttypemenu).text = "Pnt:Tal"
+			Else if (i .eq. 3) Then
+				pointtype = i
+				dialog(pnttypemenu).text = "Pnt:Dsk"
+			Endif
+			Call do_measure(w2dpts,num2dpts,w3dpts,
+     +				num3dpts,myset,dialog,1)	
+			Call qenter(REDRAW,wid)
+			Goto 10
+C
+C	MP_FIT opts
+C
+		Else if (data .eq. mpfitmenu) then  ! mpfit popup
+			i = dialog(data).tpos
+C
+C	MP_disp : 	1 = view first slice
+C			2 = view other slices
+C			4 = view fixed polygon
+C			8 = Overlay voxel imag?
+C			16 = solid current plane
+C
+			if (i .eq. 1) then
+				MP_disp = ieor(MP_disp,1)
+				Call qenter(REDRAW,0)
+			Else if (i .eq. 2) then
+				MP_disp = ieor(MP_disp,2)
+				Call qenter(REDRAW,0)
+			Else if (i .eq. 3) then
+				MP_disp = ieor(MP_disp,4)
+				Call qenter(REDRAW,0)
+			Else if (i .eq. 4) then
+				Call save_planes(rots,myset,imagesize,
+     +					interpixel,patientinfo,0)
+			Else if (i .eq. 8) then
+				Call save_planes(rots,myset,imagesize,
+     +					interpixel,patientinfo,1)
+			Else if (i .eq. 9) then
+C
+C	Fork off the MP_FIT file i/o interface
+C
+				write(tstr,877) shm_data
+877	Format("brainvox_voxel DIALOG_MPIO ",I9," &")
+				Call system(tstr)
+
+			Else if (i .eq. 5) then
+				MP_disp = ieor(MP_disp,8)
+				Call qenter(REDRAW,0)
+			Else if (i .eq. 6) then
+				MP_disp = ieor(MP_disp,16)
+				Call qenter(REDRAW,0)
+			Else if (i .eq. 7) then
+				MP_disp = ieor(MP_disp,32)
+				Call qenter(REDRAW,0)
+			Else if ((i .ge. 100).and.(i .le. 114)) then
+				wind2d(curwin).n_slice = i - 100
+				wind2d(curwin).dirty = .true.
+				Call setup_dialog(rots,dialog,wid,myset,0)
+			Else if (i .eq. 10) then
+C
+C	Autofitting of glasses
+C
+				Call trace2fppoints(num2dpts,w2dpts,rots)
+				Call  calc_fp(rots)
+				Call  calc_up(rots,interpixel)
+				If (autosample) Then
+					Call dirty_window(-1,2)
+				Endif
+				Call qenter(REDRAW,0)
+			Else if (i .eq. 11) then
+C Load
+				Call glasses_io(IPC_READ,rots)
+				Call  calc_fp(rots)
+				Call  calc_up(rots,interpixel)
+				If (autosample) Then
+					Call dirty_window(-1,2)
+				Endif
+				Call qenter(REDRAW,0)
+			Else if (i .eq. 12) then
+C Save
+				Call glasses_io(IPC_WRITE,rots)
+			Endif
+			goto 10
+C
+C	point menus
+C
+		Else if ((data .ge. pointmenus).and.
+     +			(data .le. pointmenus+3)) then  ! point popups
+			i = dialog(data).tpos
+			if (i .le. 0) goto 10
+			Call getroipnt(i,frots)
+			rots.fppoints(data-pointmenus+1,1) = frots(1)
+			rots.fppoints(data-pointmenus+1,2) = frots(2)
+			rots.fppoints(data-pointmenus+1,3) = frots(3)
+			Call  calc_fp(rots)
+			Call  calc_up(rots,interpixel)
+			If (autosample) Then
+				Call dirty_window(-1,2)
+			Endif
+			Call qenter(REDRAW,0)
+			goto 10
+C
+C	measure color
+C
+		Else if (data .eq. measurecolor) then  ! color popup
+			i = dialog(data).tpos
+			If (i .lt. 100) then
+C
+C	Change the color and
+C
+				dialog(data).text = clist(i+1)
+				linedata.color = i
+C
+C	recompute the measurements
+C
+				Call do_measure(w2dpts,num2dpts,w3dpts,
+     +					num3dpts,myset,dialog,1)	
+			Else if (i .eq. 100) then
+C
+C	recompute and output a FLIP surface file
+C
+				Call do_measure(w2dpts,num2dpts,w3dpts,
+     +					num3dpts,myset,dialog,2)	
+			Else if (i .eq. 101) then
+C
+C	recompute and output a SURFVIEW surface file
+C
+				Call do_measure(w2dpts,num2dpts,w3dpts,
+     +					num3dpts,myset,dialog,3)	
+			Else if (i .eq. 102) then
+C
+C	Run SURFVIEW on the file Voxel.surf
+C
+				Call system("surfview -s Voxel.surf &")
+
+			Else if (i .eq. 103) then
+C
+C	Run SURFVIEW (flip mode) on the file Voxel.surf
+C
+				Call system("surfview -f -s Voxel.surf &")
+			Endif
+C
+			Call qenter(REDRAW,0)
+			goto 10
+C
+C	preview
+C
+		Else If (data .eq. 12) then   !preview popup
+			i = dialog(data).tpos
+			If (i .eq. 100) Then
+				use_16bit = 1-use_16bit
+			Else if (i .ge. 1) then
+				Call vl_speed(%val(i),myset)
+			Endif
+			goto 10 
+		Else If (data .eq. 14) then   !clear 100=all 101=image 102=vox
+			i = dialog(data).tpos
+			if (i .eq. 101) then
+				num2dpts = 0
+			Else if (i .eq. 102) then
+				num3dpts = 0
+			Else if (i .eq. 100) then
+				num3dpts = 0
+				num2dpts = 0
+			Else if ((i .ge. 0) .and. (i .le. 13)) then
+				Call delpoints(num2dpts,w2dpts,i)
+				Call delpoints(num3dpts,w3dpts,i)
+			Endif
+C
+C	recompute the measurements
+C
+			Call do_measure(w2dpts,num2dpts,w3dpts,num3dpts,
+     +				myset,dialog,1)	
+C
+			Call qenter(REDRAW,0)   
+			goto 10 
+C
+C	Cutting state (slices,arbitrary,MP_FIT)
+C
+		Else if (data .eq. statemenu) then  ! changing cutting state
+			i = dialog(data).tpos
+			if (i .eq. 0) then
+				wind2d(curwin).mode = 0
+				wind2d(curwin).dirty = .true.
+			Else if (i .eq. 1) then
+				wind2d(curwin).mode = 1
+				wind2d(curwin).dirty = .true.
+			Else if (i .eq. 2) then
+				wind2d(curwin).mode = 2
+				call calc_fp(rots)
+				call calc_up(rots,interpixel)
+			Else if (i .eq. 1000) then
+				autosample = .not. autosample
+			if (autosample) wind2d(curwin).dirty = .true.
+			Else if (i .ge. 9101) Then
+				Call sel_window(i - 9100,1,myset,rots)
+			Endif
+			Call setup_dialog(rots,dialog,wid,myset,0)
+			goto 10 
+		Endif
+		goto 10
+	Endif
+C
+C	handle scrollbar events
+C
+	if (device .eq. DLG_BAREVNT) then
+		status = 0
+		i = dialog(data).aux
+		if (data .eq. 15) then
+			wind2d(curwin).inum2d = i
+			wind2d(curwin).dirty = .true.
+			Call qenter(REDRAW,wind2d(curwin).wid)
+			Call qenter(REDRAW,wid)
+		Else if ((data .ge. cutbars).and.(data .le. cutbars+3)) then
+C
+C	arbitrary mode
+C
+			If (wind2d(curwin).mode .eq. 1) Then
+				wind2d(curwin).rots(data-cutbars+1) = i
+				i = wind2d(curwin).wid
+			Endif
+C
+C	MP_FIT mode  (Slew,Tilt,TableH,TableV)
+C
+			If (wind2d(curwin).mode .eq. 2) then
+				if (data .eq. cutbars+1) 
+     +					rots.slew(2)=(float(i)/2.0)-90.0
+				if (data .eq. cutbars+0) 
+     +					rots.tilt(2)=(float(i)/2.0)-90.0
+				if (data .eq. cutbars+3) 
+     +					rots.uptrans(2) = i - 256.0
+				if (data .eq. cutbars+2) 
+     +					rots.uptrans(3) = i - 180.0
+				Call calc_up(rots,interpixel)
+				If (autosample) Then
+					Call dirty_window(-1,2)
+				Endif
+				i = 0
+			Endif
+C
+C	Check for autosample
+C
+			Call setup_dialog(rots,dialog,wid,myset,i)
+			If (autosample) then
+				wind2d(curwin).dirty = .true.
+				goto 10
+			Endif
+		Else
+C
+C	Cube rotations
+C
+			rots.rots(data-5) = i
+			status = 1
+		Endif
+		Call setup_dialog(rots,dialog,wid,myset,0)
+		if (status .eq. 0) goto 10
+C
+C	reproject the points and return to top of loop
+C
+		goto 7001
+C
+	Endif
+C
+	Goto 10
+C
+C	quit routine  
+C
+999	continue
+C
+C	since we are a lower life form we should not send IPCs
+C	cut the umbilical
+C
+	Call winclo(wid)
+	Call winclo(wid2)
+	Do i=1,MAX_WINDOWS
+		If (wind2d(i).wid .ne. -1) Then
+			Call winclo(wind2d(i).wid)
+		Endif
+	Enddo
+	Call vt_quit_shmem
+	Call exit(0)
+C
+	End

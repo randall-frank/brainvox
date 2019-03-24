@@ -1,0 +1,63 @@
+.TH tal_resample Brainvox
+.SH NAME
+tal_resample \- Resamples a volume into Talairach space.
+.SH SYNOPSIS
+tal_resample [options] inputtemp outputtemp
+.SH DESCRIPTION
+This program reads an input volume and a Brainvox Talairach space
+calibration file.  It then resamples the input volume and outputs a volume
+in Talairach space.  A pre-interpolated nearest neighbor algorithm is used
+for resampling.  Output voxels are only computed for the voxels considered
+to be located inside Talairach space.  This leaves a large border around a
+volume of 256x256 images.
+.PP
+INPUTTEMP is the input volume template.   OUTPUTTEMP is the 
+volume template for the output Talairach  space resampled volume.
+.PP
+Options:
+.TP
+-x(dx)
+The x axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-y(dy)
+The y axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-z(dz)
+The image depth in bytes.  The default is 2 bytes (unsigned shorts).
+.TP
+-f(start)
+This specifies the slice number for the first image in the volume.  Default:1.
+.TP
+-l(end)
+This specifies the slice number for the last image in the volume.  Default:124.
+.TP
+-i(step)
+This specifies the increment number to go from one slice to the next.  Default:1.
+.TP
+-b
+This specifies that 16bit images should be byte swapped before using.
+.TP
+-p(interpixel)
+This specifies the interpixel spacing in mm.  The default:1.0.
+.TP
+-s(interslice)
+This specifies the interslice spacing in mm.  The default:6.64.
+.TP
+-o(dz)
+This specifies the output interslice spacing in mm.  The default:1.0
+.TP
+-L(minz:maxz)
+Set the minimum and maximum Z slices to compute for in talairach space.  The default values are: -44.0:74.5
+.TP
+-d(value)
+This specifies a value for voxels outsize the resampled area.  The default:256.
+.TP
+-t(talfile)
+This specifies the name of a Brainvox Talairach space calibration file to
+be used to direct the resampling.  The default filename:_talairach.
+.SH SEE ALSO
+tal_programs
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

@@ -1,0 +1,81 @@
+.TH cvio_tell 3
+.SH NAME
+cvio_tell, cvio_seek, cvio_has_writer, cvio_max_length
+.SH SYNOPSIS
+.HP
+.B
+#include "cvio_lib.h"
+.HP
+.B
+int32 cvio_tell(uint32 stream, uint32 *curr_sample, CVIO_DT_TIME *curr_time, uint32 *n_samples);
+.HP
+.B
+int32 cvio_seek(uint32 stream, int32 is_time, uint32 value);
+.HP
+.B
+int32 cvio_has_writer(uint32 stream,int32 *writer);
+.HP
+.B
+int32 cvio_max_length(uint32 stream,uint32 *len);
+.PP
+IDL API:
+.HP
+.B
+err=CVIO_TELL(stream,cur_sample_,curr_time_,n_samples_)
+.HP
+.B
+err=CVIO_SEEK(stream,is_time,value)
+.HP
+.B
+err=CVIO_HAS_WRITER(stream,nwriters_)
+.HP
+.B
+err=CVIO_MAX_LENGTH(stream,len_)
+.SH DESCRIPTION
+These functions provide file positioning operations and status
+queries on cvio files.
+.PP
+The cvio_tell function returns information on the current file
+sample position.  The stream input parameter is stream identifier
+from an open cvio file. The function returns the index of the
+current sample, the timestamp of the current sample and the
+number of samples in the cvio file.
+.PP
+The cvio_seek function will cause the current position in the file
+to move to a specified position.  The position is specified by the
+value parameter.  The value parameter is interpreted as a sample
+index or a timestamp, depending on the value of the is_time parameter.
+If is_time is non-zero, value is interpreted as a timestamp, otherwise
+it is considered to be an index.  This function can actually be implemented
+using cvio_setattribute with the "REQ_ATTR_CURRTIME_TI" or
+"REQ_ATTR_CURRSAMP_UL" attributes.
+.PP
+Note: currently, the case of is_time being non-zero is unimplemented.
+.PP
+The cvio_has_writer queries an open cvio file to see if it has a
+current writer on the file.  The writer parameter is set to 1 if
+a writer is present or 0 otherwise.  This function will only
+return 1 if the file is a shared memory file.  It is not possible
+for a cvio application to dynamically update file information for
+asynchronous writers if the file is on disk.  The function allows
+an application to watch to see if a shared memory file can possibly
+get larger.
+.PP
+The cvio_max_length function returns the maximum number of samples
+in the cvio file.  In the case of the file being a shared memory
+file, this is the maximum number of sample the file can hold.
+In the case of a disk file, this is the number of samples currently
+in the file. See also cvio_getattribute with the "REQ_ATTR_NSAMP_UL"
+attribute.
+.PP
+The return values of the functions are cvio error codes.  See
+cvio_get_error_message(3).
+.SH SEE ALSO
+cvio_lib(3), cvio_get_error_message(3), cvio_getattribute(3),
+cvio_getattribute(3)
+.SH NOTES
+Should the library return a different number for a disk file, as
+the semantics are that disk files are only limited by disk space.
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

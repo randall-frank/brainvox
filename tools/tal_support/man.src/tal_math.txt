@@ -1,0 +1,236 @@
+tal_math(Brainvox)                             tal_math(Brainvox)
+
+
+
+NNAAMMEE
+       tal_math  −  Performs  general  purpose math on up to four
+       input volumes.
+
+SSYYNNOOPPSSIISS
+       tal_math [options] expression outputtemp inputA inputB ...
+       inputW
+
+DDEESSCCRRIIPPTTIIOONN
+       This  program  computes  general  purpose math on up to 23
+       input volumes.  The operation is described as a  algebraic
+       EXPRESSION.   The  expression  can  contain  the variables
+       A,B,C, ... W which are the pixel  values  for  the  corre­
+       sponding  locations  in the input volumes specified by the
+       filename templates INPUTA, INPUTB, ... INPUTW.  Only those
+       used  in  the  expression need be specified on the command
+       line.  For each voxel in space, the expression  is  evalu­
+       ated  (with  floating  point  precision) and output as the
+       voxel value in the output volume OUTPUTTEMP.   Input  vol­
+       umes may also be specified by ROI template names.  In this
+       case, pixels inside the ROI on a given  plane  are  valued
+       one  and outside are valued zero.  If a plane has no asso­
+       ciated ROI, the entire plane is zero.
+
+       This program also supports a  custom  application  feature
+       which allows the program to create a new application which
+       is customized  to  a  specific  expression.   This  custom
+       application  runs  generally 5 times faster than the stan­
+       dard interpreted tal_math by compiling the expression into
+       C code.
+
+       The expression parser is fairly complete and a list of the
+       available operators and functions is given below:
+
+       Tal_math will parse mathematical expressions  with  paren­
+       thesis up to 30 levels deep.  Expressions are evaluated as
+       real numbers and then clipped to the bounds of the  output
+       image  type:0‐255,0‐65535.   Numbers  can  be expressed as
+       integers, floating point numbers or  in  scientific  nota­
+       tion.   Binary,  octal  and  hexadecimal  numbers  can  be
+       entered by prefixing them with ’0b’, ’0’ or  ’0x’  respec­
+       tively.
+
+       Expressions  can be logical or real valued.  An value of 0
+       represents a logical FALSE and any other value  represents
+       TRUE.
+
+       The following variables are supported:
+
+       A‐W    Pixel value from input image A‐W
+
+       X,Y,Z  Pixel location within the volume (Z=slice number)
+
+       The following operators are supported:
+
+       ()     Controls the order of evaluation
+
+       +      Addition
+
+       ‐      Subtraction
+
+       *      Multiplication
+
+       /      Division
+
+       MOD,%  Modulus operation (remainder)
+
+       DIV,backslash
+              Integer division
+
+       ==     Logical equals
+
+       !=     Logical not equal
+
+       >      Logical greater than
+
+       <      Logical less than
+
+       >=     Logical greater than or equal
+
+       <=     Logical less than or equal
+
+       !,NOT()
+              Logical not
+
+       &&,AND Logical and
+
+       ||,OR  Logical or
+
+       ~      Bitwise not
+
+       &      Bitwise and
+
+       |      Bitwise or
+
+       >>     Bitwise shift right (divide)
+
+       <<     Bitwise shift left (multiply)
+
+       INT()  Integer truncation
+
+       ABS()  Absolute value
+
+       TAN()  Tangent (All trig functions use radians)
+
+       COS()  Cosine
+
+       SIN()  Sin
+
+       ATAN() Arctangent
+
+       ATAN2( dy, dx )
+              Two valued arctangent
+
+       ACOS() Arccosine
+
+       ASIN() Arcsine
+
+       LN()   Log base e
+
+       SGN()  Sign of arg (‐1 for a < 0, +1 for a >= 0)
+
+       EXP()  Exponentiation base e
+
+       RAND() Returns pseudo‐random number 0.0‐1.0
+
+       ^,POW  Raise  to  a  power (x^y = x to the yth power) Note
+              that this  operator  has  the  same  precedence  as
+              multiplication and division.
+
+       Options:
+
+       ‐x(dx) The  x  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐y(dy) The y axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐z(dz) The  image  depth in bytes.  The default is 2 bytes
+              (unsigned shorts).  Unlike most  tal_programs,  the
+              ‐z  option in tal_math may be used repeatedly.  The
+              last instance before a filename template  specifies
+              the  image  depth  for that template.  Each volume,
+              four input and one output, can thus have  different
+              pixel depths.
+
+       ‐f(start)
+              This specifies the slice number for the first image
+              in the volume.  Default:1.
+
+       ‐l(end)
+              This specifies the slice number for the last  image
+              in the volume.  Default:15.
+
+       ‐i(step)
+              This  specifies the increment number to go from one
+              slice to the next.  Default:1.
+
+       ‐b     This specifies that 16bit  images  should  be  byte
+              swapped before using.
+
+       ‐s(scale)
+              ROIs  used as input volumes are scaled by this fac­
+              tor before being rasterized into  a  binary  volume
+              (0=outside  1=inside).  The default is set to match
+              Brainvox ROIs:0.5
+
+       ‐noflip
+              This option specifies  that  ROIs  are  not  to  be
+              flipped over the X axis before they are rasterized.
+              The default is set to match Brainvox ROIs:flip them
+
+       ‐m(masktemp)
+              This allows the user to specify the template for an
+              8bit mask volume.  Computations are only  performed
+              where  the  mask  is non‐zero.  There is no default
+              mask.
+
+       ‐d(background)
+              This option specifies the value to  be  output  for
+              values  outside  of any specified mask volume.  The
+              default is 0.0.
+
+       ‐c(exename)
+              This specifies that the program should  create  and
+              compile  a  custom  version of itself optimized for
+              the given expression.  Tal_math will create a  cus­
+              tom  C  source module and link this into a new exe­
+              cutable  using  the   library   /usr/local/lib/lib­
+              tal_math.a  named  by  the option value.  This exe­
+              cutable has many of the same options  as  tal_math,
+              but no command line expression is used.
+
+       ‐C(comment)
+              This  option  allows  the  user  to place a comment
+              string in a custom executable (‐c) to help organize
+              custom  programs.   The  COMMENT can be any valid C
+              sting and thus can include \n for newlines  and  \t
+              for tabs.  The default is no comment string.
+
+       ‐help  This  option  prints  help on valid expressions and
+              functions.
+
+SSEEEE AALLSSOO
+       tal_programs, tal_merge, tal_normalize
+
+NNOOTTEESS
+       Unlike most tal_programs, the ‐z option in tal_math may be
+       used repeatedly.  The last instance before a filename tem­
+       plate specifies the image depth for that  template.   Each
+       volume,  23  input and one output, can thus have different
+       pixel depths.
+
+       The ‐c option requires an  ANSI  C  compiler  be  properly
+       installed    on    the    system   and   that   the   file
+       /usr/local/lib/libtal_math.a is installed as well.  If the
+       file  cannot  be  placed  in  /usr/local/lib, then set the
+       environmental variable ’TAL_SUPPORT_DIR’ to  the  name  of
+       the directory where the library file exists.
+
+       The  algebraic  interpreter is a modified C version of the
+       one presented in: Writing Compilers and  Interpreters:  An
+       Applied Approach, by Ronald Mak.  A future version will be
+       lex/yacc based (when I get some spare time).
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                               tal_math(Brainvox)

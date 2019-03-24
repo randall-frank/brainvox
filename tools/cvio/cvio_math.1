@@ -1,0 +1,85 @@
+.TH cvio_math 1
+.SH NAME
+cvio_math - Perform math on CVIO files
+.SH SYNOPSIS
+cvio_math [options] expression dst srcA [srcB ... srcW]
+.PP
+cvio_math [-v] -S expression shfile comment
+.PP
+cvio_math [options] -s shfile dst srcA [srcB ... srcW]
+.SH DESCRIPTION
+This program allows the user to perform math on a collection
+of input CVIO files and output a single CVIO file.  
+The program computes general purpose math on up to 23 input volumes.  The
+operation is described as a algebraic EXPRESSION.  The expression can contain
+the variables A,B,C, ... W which are the pixel values for the corresponding
+locations in the input volumes specified by the filename templates SRCA,
+SRCB, ... SRCW.  Only those used in the expression need be
+specified on the command line.  For each sample element, the expression is
+evaluated (with floating point precision) and output as the value in the
+output volume DST.
+One output sample is generated for each input sample in the SRCA file.
+SRCA must be specified, even if the variable 'a' is not used in the
+expression.  The value used from the files will be at the last timestamp
+at or before the timestamp used from SRCA.
+.PP
+This program also supports a custom application feature which allows the
+program to create a new application which is customized to a specific
+expression.  This custom application runs generally 5 times faster than
+the standard interpreted tal_math by compiling the expression into C code.
+This is down with the second form of the command line given above. It
+results in a file named SHFILE.  This SHFILE can be used in the third
+form of the command line.  Note: when used to generate an SHFILE, if the
+-v option is specified, the source to the shared library is ouptut
+as well as 'SHFILE.c'.  Technically, any shared library with the
+exported entry point ini that file can be used as a compiled expression.
+.PP
+The expression parser is fairly complete and a list of the available operators
+and functions can be found by running 'cvio_math -help'
+.PP
+Options:
+.TP
+-v
+Selects verbose mode.
+.TP
+-help
+Output the details of the expression parser and extra variables.
+.TP
+-c
+Selects the output file should be in compressed form.
+.TP
+-z(num)
+Selects the data type of the output file. 2=byte, 3=short, 4=float,
+5=unsigned short.  The default is byte.
+.TP
+-A
+If this flag is set, user specified attributes (non-REQ_ attributes)
+will not be copied.
+.TP
+-S
+Create a shared library that implements the given expression and
+embed the comment string.  This file can be used with -s to
+run a compiled expression.
+.TP
+-s
+Use a shared library as an expression.  The file can be generated
+with the -S option.  Note: if -v is specified, the expression and
+the comment will be printed to stdout.
+.TP
+-m(maxsize)
+This allows the user to specify the maximum number of output samples,
+used generally by shared memory files. If not specified, the system
+attempts to ascertain this from the input src file.
+.TP
+-d
+Do not create the output file.  Assume it already exists.
+.TP
+-b(sample)
+Begin processing at sample.
+.PP
+.SH SEE ALSO
+cvio_intro(1)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

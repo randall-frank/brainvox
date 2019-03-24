@@ -1,0 +1,86 @@
+/* Copyright 1995-2001 Roger P. Woods, M.D. */
+/* Modified 5/11/01 */
+
+
+/* param_chain_rule.cf
+ *
+ * This code fragment computes derivatives with respect to external spatial_parameters
+ * from derivatives with respect to internal spatial_parameters
+ *
+ * It is included by other subroutines (e.g., uvderivsRS12, uvderivsRS6)
+ */
+
+
+		/* Calculate derivatives with respect to external spatial_parameters*/
+		{
+			unsigned int t;
+			
+			for (t=0;t<spatial_parameters;t++){
+				dcff[t]=0;
+				{
+					{
+						unsigned int r;
+						
+						for (r=0;r<(unsigned int)PARAM_INT-1;r++){
+							dcff[t]+=dcf[r]*dp[r][t];
+						}
+					}
+					{
+						unsigned int s;
+						
+						for (s=0;s<=t;s++){
+							ecff[t][s]=0;
+							{
+								unsigned int r;
+								
+								for(r=0; r<(unsigned int)PARAM_INT-1; r++){
+								
+									double temp=0;
+									{
+										unsigned int r1;
+										
+										for (r1=0; r1<=r; r1++){
+										
+											/* temp+=ecf[r][r1]*dp[r1][s]; */
+											temp+=ecfitems[r*(r+1)/2+r1]*dp[r1][s];
+										}
+										for(; r1<(unsigned int)PARAM_INT-1; r1++){
+										
+											/* temp+=ecf[r1][r]*dp[r1][s]; */
+											temp+=ecfitems[r1*(r1+1)/2+r]*dp[r1][s];
+										}
+									}
+									ecff[t][s]+=temp*dp[r][t]+dcf[r]*ep[r][t][s];
+								}
+							}
+						}
+					}
+				}
+			}
+
+			dcff[t]=dcf[PARAM_INT-1]*dscale;
+
+			{
+				unsigned int s;
+				unsigned int r=(unsigned int)PARAM_INT-1;
+					
+				for (s=0; s<t; s++){
+					double temp=0;
+					{
+						unsigned int r1;
+							
+						for (r1=0; r1<r; r1++){
+
+							temp+=ecfitems[r*(r+1)/2+r1]*dp[r1][s];
+
+						}
+					}
+
+					ecff[t][s]=temp*dscale;
+
+				}
+
+				ecff[t][s]=dscale*dscale*ecfitems[r*(r+1)/2+r]+dcf[r]*escale;
+
+			}
+		}

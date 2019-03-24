@@ -1,0 +1,38 @@
+
+This archive is fortran and C implementations of AS 274 by Alan
+Miller.  The file `documentation' by him discusses the library itself
+and the 10 tests.
+
+        * in the F directory, say "make reg" to compile 10 test
+          programs and compare their results against what should
+          happen.  This may not work perfectly because fortran
+          compilers are not properly standardised on output formats.
+          On non-IEEEfp-hardware, you may see tiny numerical discrepencies.
+
+        * in the C directory, say "make reg" to compile the same 10
+          test cases (this time in C) and compare their results
+          against what should happen.  This time, the smallest
+          discrepency is not ok, because ANSI C is a well-specified
+          standard.
+          On non-IEEEfp-hardware, you may see tiny numerical discrepencies.
+
+          The fortran results are different in physical detail from
+          the C results; you're welcome to look hard at them and
+          confirm they are identical.
+
+        * The C source for as274c.c was obtained by putting as274.f
+          through f2c and then doing a lot of hand-editing:
+
+                - functions know how to use malloc(3) themselves, they
+                  don't need to be given "workspace".
+                - all parameters are not passed by reference like in fortran.
+                - the error returns from functions are more carefully done.
+                - the innermost function includ() does a bit less
+                  checking by default, set -DSTRINGENT if you want
+                  full checking.
+                - the code is cleaner and more structured.  It almost
+                  looks like it is native C.
+
+          There is a finite chance that some errors were introduced in
+          making these changes which are not trapped by the 10 test
+          programs.  Proceed with care.

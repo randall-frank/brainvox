@@ -1,0 +1,49 @@
+.TH reg_add_obs 3
+.SH NAME
+reg_add_obs, reg_remove_obs
+.SH SYNOPSIS
+.HP
+.B
+#include "regression.h"
+.HP
+.B
+int reg_add_obs(Regression *r, double *y, double w, double **obs);
+.HP
+.B
+int reg_remove_obs(Regression *r, double *y, double w, double **obs);
+.PP
+IDL API:
+.HP
+.B
+err=REG_ADD_OBS(r,y,obs[,w])
+.HP
+.B
+err=REG_REMOVE_OBS(r,y,obs[,w])
+.SH DESCRIPTION
+These functions are used to add and remove observations from a running
+regression.  The two functions have identical parameters.  If  reg_remove_obs
+is called with the identical arguments as the reg_add_obs, the result will
+be as if the original reg_add_obs call had never been made.  There is no
+limits as to the order in which the reg_remove_obs function is called,
+suffice it be after the reg_add_obs call.
+.PP
+The return value is 0 for success or -1 on error.
+The r parameter is the return value of a reg_create fuction.
+The y argument is a pointer to an array of nvalues doubles which
+define the observation Y value.  The w argument is the weight with
+which a given observation is presented.  This allows individual
+observations to have different relative weights.  The obs parameter
+is an array of nvalues pointers to arrays of length nvars in length.
+These specify the observation X values.  The X and Y data need not
+be preserved after these calls as their content is condensed and
+stored in a very efficient form in the regression object.
+.PP
+The IDL API differs in that the w parameter is optional and
+will default to the value 1.0 if unspecified.  The obs and Y
+parameters are simple IDL arrays and can be of any IDL type.
+.SH SEE ALSO
+reg_lib(3)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

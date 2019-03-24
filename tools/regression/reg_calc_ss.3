@@ -1,0 +1,41 @@
+.TH reg_calc_ss 3
+.SH NAME
+reg_calc_ss
+.SH SYNOPSIS
+.HP
+.B
+#include "regression.h"
+.HP
+.B
+int reg_calc_ss(Regression *r, char *mask, long int partial, double *ss_total, double *ss_error, double *ss_var);
+.PP
+IDL API:
+.HP
+.B
+err=REG_CALC_SS(r[,mask],partial,sst_,sse_,ssvar_)
+.SH DESCRIPTION
+The reg_calc_ss function computes various sum of squares values for a
+given regression object.  The return value is 0 for success or -1 on error.
+The r parameter is the return value of a reg_create fuction. The mask
+parameter is optional and may be passed as NULL.  It selects a subset of
+the parallel regressions to compute the sums of squares.  If a mask
+is passed, it should be the same length as the number of values specified
+in the reg_create function.  The sums of squares computed may either
+be sequential or partial.  If the partial parameter is non-zero, the
+sums will be computed as partial sums. The caller must pass pointers to
+vectors of length nvalues must be passed as ss_total and ss_error.
+The regression sum of squares total and sum of squares error will be
+returned in these arrays for each value selected by the masks.  The
+ss_var array must be a pointer of length nvalues*nvars.  That is one
+sum of squares for each value and each variable.  Note: the ss_var
+for class variables is the total for that variable.  The data are
+ordered as a concatenated list of nvars for each value.
+.PP
+The IDL API is simplified in that all the arrays are automatically
+allocated and returned with proper lengths and dimensions.
+.SH SEE ALSO
+reg_lib(3)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

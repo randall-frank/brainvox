@@ -1,0 +1,236 @@
+.TH tal_math Brainvox
+.SH NAME
+tal_math \- Performs general purpose math on up to four input volumes.
+.SH SYNOPSIS
+tal_math [options] expression outputtemp inputA inputB ... inputW
+.SH DESCRIPTION
+This program computes general purpose math on up to 23 input volumes.  The
+operation is described as a algebraic EXPRESSION.  The expression can contain
+the variables A,B,C, ... W which are the pixel values for the corresponding 
+locations in the input volumes specified by the filename templates INPUTA,
+INPUTB, ... INPUTW.  Only those used in the expression need be
+specified on the command line.  For each voxel in space, the expression is
+evaluated (with floating point precision) and output as the voxel value in the
+output volume OUTPUTTEMP.  Input volumes may also be specified by ROI
+template names.  In this case, pixels inside the ROI on a given plane are valued
+one and outside are valued zero.  If a plane has no associated ROI, the
+entire plane is zero.
+.PP
+This program also supports a custom application feature which allows the
+program to create a new application which is customized to a specific
+expression.  This custom application runs generally 5 times faster than
+the standard interpreted tal_math by compiling the expression into C code.
+.PP
+The expression parser is fairly complete and a list of the available operators and
+functions is given below:
+.PP
+Tal_math will parse mathematical expressions
+with parenthesis up to 30 levels deep.  Expressions
+are evaluated as real numbers and then clipped to the
+bounds of the output image type:0-255,0-65535.
+Numbers can be expressed as integers, floating point
+numbers or in scientific notation.  Binary, octal and
+hexadecimal numbers can be entered by prefixing them
+with '0b', '0' or '0x' respectively.
+.PP
+Expressions can be logical or real
+valued.  An value of 0 represents a logical FALSE and
+any other value represents TRUE.
+.PP
+The following variables are supported:
+.TP
+A-W
+Pixel value from input image A-W
+.TP
+X,Y,Z
+Pixel location within the volume (Z=slice number)
+.PP
+The following operators are supported:
+.TP
+()
+Controls the order of evaluation
+.TP
++
+Addition
+.TP
+-
+Subtraction
+.TP
+*
+Multiplication
+.TP
+/
+Division
+.TP
+MOD,%
+Modulus operation (remainder)
+.TP
+DIV,backslash
+Integer division
+.TP
+== 
+Logical equals
+.TP
+!=
+Logical not equal
+.TP
+>
+Logical greater than
+.TP
+<
+Logical less than
+.TP
+>=
+Logical greater than or equal
+.TP
+<=
+Logical less than or equal
+.TP
+!,NOT()
+Logical not
+.TP
+&&,AND
+Logical and
+.TP
+||,OR
+Logical or
+.TP
+~
+Bitwise not
+.TP
+&
+Bitwise and
+.TP
+|
+Bitwise or
+.TP
+>>
+Bitwise shift right (divide)
+.TP
+<<
+Bitwise shift left (multiply)
+.TP
+INT()
+Integer truncation
+.TP
+ABS()
+Absolute value
+.TP
+TAN()
+Tangent (All trig functions use radians)
+.TP
+COS()
+Cosine
+.TP
+SIN()
+Sin
+.TP
+ATAN()
+Arctangent
+.TP
+ATAN2( dy, dx )
+Two valued arctangent
+.TP
+ACOS()
+Arccosine
+.TP
+ASIN()
+Arcsine
+.TP
+LN()
+Log base e
+.TP
+SGN()
+Sign of arg (-1 for a < 0, +1 for a >= 0)
+.TP
+EXP()
+Exponentiation base e
+.TP
+RAND()
+Returns pseudo-random number 0.0-1.0
+.TP
+^,POW
+Raise to a power (x^y = x to the yth power) Note that this operator
+has the same precedence as multiplication and division.
+.PP
+Options:
+.TP
+-x(dx)
+The x axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-y(dy)
+The y axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-z(dz)
+The image depth in bytes.  The default is 2 bytes (unsigned shorts).  Unlike most
+tal_programs, the -z option in tal_math may be used repeatedly.  The last
+instance before a filename template specifies the image depth for that template.  Each
+volume, four input and one output, can thus have different pixel depths.
+.TP
+-f(start)
+This specifies the slice number for the first image in the volume.  Default:1.
+.TP
+-l(end)
+This specifies the slice number for the last image in the volume.  Default:15.
+.TP
+-i(step)
+This specifies the increment number to go from one slice to the next.  Default:1.
+.TP
+-b
+This specifies that 16bit images should be byte swapped before using.
+.TP
+-s(scale)
+ROIs used as input volumes are scaled by this factor before being
+rasterized into a binary volume (0=outside 1=inside). The default is
+set to match Brainvox ROIs:0.5
+.TP
+-noflip
+This option specifies that ROIs are not to be flipped over the X axis
+before they are rasterized.  The default is set to match Brainvox
+ROIs:flip them
+.TP
+-m(masktemp)
+This allows the user to specify the template for an 8bit mask volume.
+Computations are only performed where the mask is non-zero.  There
+is no default mask.
+.TP
+-d(background)
+This option specifies the value to be output for values outside
+of any specified mask volume.  The default is 0.0.
+.TP
+-c(exename)
+This specifies that the program should create and compile a custom version
+of itself optimized for the given expression.  Tal_math will create a 
+custom C source module and link this into a new executable using the
+library /usr/local/lib/libtal_math.a named by the option value.  This
+executable has many of the same options as tal_math, but no command line
+expression is used.
+.TP
+-C(comment)
+This option allows the user to place a comment string in a custom executable
+(-c) to help organize custom programs.  The COMMENT can be any valid C sting
+and thus can include \\n for newlines and \\t for tabs.  The default is no 
+comment string.
+.TP
+-help
+This option prints help on valid expressions and functions.
+.SH SEE ALSO
+tal_programs, tal_merge, tal_normalize
+.SH NOTES
+Unlike most tal_programs, the -z option in tal_math may be used repeatedly.
+The last instance before a filename template specifies the image depth for
+that template.  Each volume, 23 input and one output, can thus have
+different pixel depths.
+.PP
+The -c option requires an ANSI C compiler be properly installed on the system
+and that the file /usr/local/lib/libtal_math.a is installed as well.
+If the file cannot be placed in /usr/local/lib, then set the environmental
+variable 'TAL_SUPPORT_DIR' to the name of the directory where the library
+file exists.
+.PP
+The algebraic interpreter is a modified C version of the one presented in:
+Writing Compilers and Interpreters: An Applied Approach, by Ronald Mak. 
+A future version will be lex/yacc based (when I get some spare time).
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

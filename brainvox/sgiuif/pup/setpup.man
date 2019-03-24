@@ -1,0 +1,63 @@
+.TH SETPUP 3G OCLSC
+.SH NAME
+.B setpup
+\- sets the display characteristics of a given pop up menu entry
+.SH "C SPECIFICATION"
+.B void setpup(pup, entry, mode)
+.br
+.B long pup, entry;
+.br
+.B unsigned long mode;
+.SH PARAMETERS
+.TP
+.I pup
+expects the menu identifier of the menu whose entries you want to
+change. The menu identifier is the returned function value of the
+menu creation call to either
+.B newpup
+or
+.BR defpup .
+.TP
+.I entry
+expects the position of the entry in the menu, indexed from 1.
+.TP
+.I mode
+expects a symbolic constant that indicates the display
+characteristics you want to apply to the chosen entry.  For this
+parameter there are two defined symbolic constants:
+
+.BR PUP_NONE ,
+no special display characteristics, fully functional if
+selected. This is the default mode for newly created menu
+entries.
+
+.BR PUP_GREY ,
+entry is greyed-out and disabled.  Selecting a greyed-out
+entry has the same behavior as selecting the title bar.  If
+the greyed-out entry has a submenu associated with it, that
+submenu does not display.
+.SH DESCRIPTION
+Use
+.B setpup
+to alter the display characteristics of a pop up menu entry.
+Currently, you use this routine to disable and grey-out a menu entry.
+
+.SH EXAMPLE
+Here is an example that disables a single entry:
+
+.nf
+.ft C
+menu = newpup();
+addtopup(menu,"menu %t |item 1 |item 2 |item 3 |item 4",0);
+setpup(menu, 1, PUP_GREY);
+.ft R
+.fi
+
+Subsequent calls of
+.B dopup(menu)
+would display the menu with the menu entry labeled ``item 1'' is greyed out,
+and never gets a return value of 1.
+.SH "SEE ALSO"
+addtopup, changepup, defpup, dopup, freepup, newpup
+.SH NOTE
+This routine is available only in immediate mode.

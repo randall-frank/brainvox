@@ -1,0 +1,98 @@
+tal_roi_sample(Brainvox)                 tal_roi_sample(Brainvox)
+
+
+
+NNAAMMEE
+       tal_roi_sample − Resamples voxel values within a series of
+       ROIs into a text file.
+
+SSYYNNOOPPSSIISS
+       tal_roi_sample   [options]   inputtemp   roitemp   outfile
+       [pointset, pointset ...]
+
+DDEESSCCRRIIPPTTIIOONN
+       This  program  reads  an  input volume and a series of ROI
+       files (one ROI may exist for each image file).  The voxels
+       in each image which fall within the ROIs are output, minus
+       a constant, as a tab deliminated ASCII text file.  Option­
+       ally,  one or more Brainvox ’pointset’ files may be speci­
+       fied.  Additional  values,  one  for  each  pointset,  are
+       placed  into the output file.  These additional values are
+       the position along the line segment specified by the first
+       two  coordinates  in  each  pointset file.  The additional
+       values are normalized so that the first two coordinates in
+       each  pointset  file  are  1  and ‐1.  Values outside this
+       range are possible if pixels exist  outside  the  pointset
+       segment ends.
+
+       INPUTTEMP  is  the  input volume template.  ROITEMP is the
+       filename template for the ROIs.  OUTFILE is  the  name  of
+       the file into which the voxel samples will be written.  An
+       OUTFILE of ’‐’ is standard output.  A number  of  Brainvox
+       pointset files may be specified as well.
+
+       Options:
+
+       ‐x(dx) The  x  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐y(dy) The y axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐z(dz) The  image  depth in bytes.  The default is 2 bytes
+              (unsigned shorts).
+
+       ‐c(const)
+              16 bit data offset.  All 16 bit data have this off­
+              set  value  added  before  the  data  is used.  The
+              default is ‐256.
+
+       ‐f(start)
+              This specifies the slice number for the first image
+              in the volume.  Default:1.
+
+       ‐l(end)
+              This  specifies the slice number for the last image
+              in the volume.  Default:15.
+
+       ‐i(step)
+              This specifies the increment number to go from  one
+              slice to the next.  Default:1.
+
+       ‐b     This  specifies  that  16bit  images should be byte
+              swapped before using.
+
+       ‐k(xystep)
+              This specifies the pixel step  size  in  xy  plane.
+              The  default  is to sample every other pixel in the
+              xy plane the value is:2.
+
+       ‐p(interpixel)
+              This option specifies the interpixel spacing in mm.
+              The default:1.0
+
+       ‐s(interslice)
+              This option specifies the interslice spacing in mm.
+              The default:6.64
+
+       ‐r(scale)
+              This option specifies the ROI scaling factor.   The
+              ROI is scaled by this value before being applied to
+              the image.  The default is set for use  with  stan­
+              dard Brainvox ROIs and is:0.5.
+
+       ‐v     This    option    enables    verbose   mode.    The
+              default:quiet mode
+
+
+SSEEEE AALLSSOO
+       tal_programs
+
+NNOOTTEESS
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                         tal_roi_sample(Brainvox)

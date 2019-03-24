@@ -1,0 +1,45 @@
+
+Basic volume rendering speeds for voxlib using the heart dataset
+with the _solid.pal palette and _solid.opac opacity at rotation
+270 90 0.  Foreground speeds are only possible with Brainvox.
+Voxblast always renders in the background.
+
+4 Nov 94 
+
+Machine		Foreground	Background
+type		voxels/sec	voxels/sec	CPU
+-------------------------------------------------------------
+4D310VGX	650,000		na		33Mhz R3000A
+
+4D20		(timed)		260,000		12MHz R3000A
+4D30		(timed)		670,000		33MHz R3000A
+4D35		(timed)		750,000		36MHz R3000A
+Indigo Entry	(timed)		700,000		33MHz R3000A
+Indigo Elan	870,000		750,000		33MHz R3000A
+Crimson		(timed)	      1,650,000		100Mhz R4000
+Indigo2		(timed)	      2,410,000		150Mhz R4400
+Onyx (1CPU)	(timed)	      2,470,000		150Mhz R4400
+Onyx (2CPU)	(timed)	      4,440,000		150Mhz R4400
+Onyx (3CPU)	(timed)	      5,520,000		150Mhz R4400
+Onyx (4CPU)	(timed)	      7,000,000		150Mhz R4400
+
+HP9000 720	(timed)	      1,100,000		50MHz PA-RISC
+HP9000 730	(timed)	      1,400,000		66MHz PA-RISC
+HP9000 735	(timed)	      2,300,000		99MHz PA-RISC
+
+486DX2 (linux)	(timed)		700,000		66MHz 80486
+486DX2 (Windows)(timed)		650,000		66MHz 80486
+Pentium(Windows)(timed)	      1,480,000		90MHz Pentium
+Pentium(linux)  (timed)	      2,500,000		133MHz Pentium
+
+MacQuadra900	(timed)		250,000		25MHz 68040
+PowerPC (card)	(timed)		830,000		50MHz PPC601
+
+Sparcstation 2	(timed)		320,000		?MHz Sparc
+Sparcstation 10/30 -fast      1,100,000		?MHz Sparc
+Sparcstation 20/51            1,500,000		55?MHz Sparc
+Sparcstation 20/51 (2-CPU)    2,800,000		2x55?MHz Sparc
+
+RS6000 320(3.2) (timed)		610,000		?MHz RS6000
+
+DECstation5000	(timed)		960,000		40MHz R3000A

@@ -1,0 +1,101 @@
+.TH tal_gwcsf Brainvox
+.SH NAME
+tal_gwcsf \- Computes fractional tissue component images from a T1 MRI volume.
+.SH SYNOPSIS
+tal_gwcsf [options] intemp masktemp Gout Wout Cout Fout
+.SH DESCRIPTION
+.PP
+Description in progress...
+.PP
+Options:
+.TP
+-x(dx)
+The x axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-y(dy)
+The y axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-z(dz)
+The output depth in bytes (Gout,Wout,Cout).  Fout is always in float (-z4).
+The default is 4 bytes (float).
+.TP
+-f(start)
+This specifies the slice number for the first image in the volume.  Default:1.
+.TP
+-l(end)
+This specifies the slice number for the last image in the volume.  Default:124.
+.TP
+-i(step)
+This specifies the increment number to go from one slice to the next.  
+Default:1.
+.TP
+-b
+This specifies that 16bit images should be byte swapped before using.  
+Default: no swapping.
+.TP
+-v[v[v[v]]]
+This option specifies a verbosity level (number of v's).  Default:none.
+.TP
+-N(tmp)
+Specify a basename to save the local 8bit histograms to disk as text files.
+Default:none.
+.TP
+-sip(interpixel)
+Set the interpixel spacing.
+Default:1.0
+.TP
+-sis(interslice)
+Set the interslice spacing.
+Default:1.0
+.TP
+-p(params)
+Filename to save the run parameters to disk.  Default: none.
+.TP
+-S(savebase)
+Base filename to save local fit parameters to disk.  Default: none.
+.TP
+-rs(x:y:z)
+Select the size of the local fit regions in pixels.  Default: 45:45:45
+.TP
+-ri(x:y:z)
+Select the increment from one local fit region to the next region in pixels.
+Default: 10:10:10
+.TP
+-rt(x:y:z)
+Select the size of the region in pixels to compile final tissue fractions over.
+Default: 1:1:1
+.TP
+-rp(percent)
+Set the fraction of voxels in a local fit region (-rs) that must be
+inside the mask for the fit region to be considered valid.  Default: 0.10
+.TP
+-GXY(value)
+This is actually a collection of options.  'X' can be one of G, W or C and
+'Y' can be one of A, W or M.  Each option sets an initial value for the
+three paramters for the three gaussians for the global fit operation.  
+Defaults:
+.nf
+AG - amplitude,gray - 0.012
+AW - amplitude,white - 0.016
+AC - amplitude,csf - 0.002
+WG - width,gray - 13.0
+WW - width,white - 13.0
+WC - width,csf - 13.0
+MG - mean,gray - 157.0
+MW - mean,white - 210.0
+MC - mean,csf - 70.0
+.fi
+.TP
+-help
+This option will display a number of undocumented advanced options that
+can be set.  It should be avoided in general, but is provided for the
+user with specific problems cases.
+.SH SEE ALSO
+tal_programs, tal_math, tal_regress
+.SH NOTES
+Paper to appear in NeuroImage.
+.PP
+Currently, only 8bit mask volume are supported.
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

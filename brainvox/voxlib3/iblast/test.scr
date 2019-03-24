@@ -1,0 +1,4 @@
+color 100 100 100
+polyrender test.poly
+savergb /tmp/kjk
+!xmovie -rgb -cTRUECOLOR  /tmp/kjk

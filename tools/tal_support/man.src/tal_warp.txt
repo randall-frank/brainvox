@@ -1,0 +1,109 @@
+tal_warp(Brainvox)                             tal_warp(Brainvox)
+
+
+
+NNAAMMEE
+       tal_warp − Perform vector volume resampling.
+
+SSYYNNOOPPSSIISS
+       tal_warp [options] intemp outtemp dxtemp dytemp dytemp
+
+DDEESSCCRRIIPPTTIIOONN
+       This program computes an output volume from the input vol­
+       ume and a set of three vector component volumes.  For each
+       location in the output volume, a vector is formed from the
+       three component volumes.  This vector  may  be  normalized
+       and  then multiplied by a fixed vector value (from command
+       line options).  The voxel in the source volume located  at
+       the  current  location  in the destination volume plus the
+       computed vector value is sampled and  set  as  the  output
+       voxel value.
+
+       The  program  allows  the user to specify a mask volume as
+       well.  When a mask is specified, the sampling operation is
+       only  performed  for thos voxels in the destination volume
+       which are within the mask.
+
+       Options:
+
+       ‐x(dx) The x axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐y(dy) The  y  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐z(dz) The image depth in bytes.  The default is 1 byte.
+
+       ‐f(start)
+              This specifies the slice number for the first image
+              in the volume.  Default:1.
+
+       ‐l(end)
+              This  specifies the slice number for the last image
+              in the volume.  Default:119.
+
+       ‐i(step)
+              This specifies the increment number to go from  one
+              slice to the next.  Default:1.
+
+       ‐b     This  specifies  that  16bit  images should be byte
+              swapped before using.
+
+       ‐o(back)
+              This option allows the user to specify the value to
+              use  when the source location is outside the volume
+              or  the  destination  is  outside  the  mask.   The
+              default is:0
+
+       ‐s(x:y:z)
+              The vector is multiplied by a constant vector after
+              potential normalization.  This  option  allows  the
+              user to set this vector.  The default: 1.0:1.0:1.0.
+
+       ‐d(x:y:z)
+              The option allows the user to specify the  size  of
+              the  output  volume  separate  from the size of the
+              input volume.  The mask and vector volumes must  be
+              the  size  specified by this option.  The defult is
+              that the output volume size matches the input  vol­
+              ume.
+
+       ‐m(masktemp)
+              This  option allows the user to specify a mask vol­
+              ume for the computations.  The default: all  voxels
+              are resampled.
+
+       ‐R(template)
+              If  this option is set to a filename template, then
+              an additional 8bit volume  will  be  written.   The
+              values  in  this  volume  are equal to those in the
+              mask volume (if any).  The location  of  values  in
+              this  file  are equal to the non‐zero values of the
+              mask volume, only located  at  the  "source"  voxel
+              locations.  This volume is not computed by default.
+
+       ‐n     If this option is set,  the  vector  is  normalized
+              (made a unit vector) before being multiplied by the
+              constant scalar vector.  By default, no  normaliza­
+              tion is performed.
+
+       ‐I     If  this  option is set, trilinear interpolation is
+              used.  The default is nearest neighbor.
+
+
+SSEEEE AALLSSOO
+       tal_programs
+
+NNOOTTEESS
+       The output volume will always  use  a  incremental  naming
+       scheme,  ignoring  the  filename step parameter and always
+       starting at 1.
+
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                               tal_warp(Brainvox)

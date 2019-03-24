@@ -1,0 +1,372 @@
+tal_programs(Brainvox)                     tal_programs(Brainvox)
+
+
+
+NNAAMMEE
+       tal_programs − perform a number of general volume process­
+       ing tasks.
+
+SSYYNNOOPPSSIISS
+       See individual applications.
+
+DDEESSCCRRIIPPTTIIOONN
+       The programs described here constitute a suite of volumet­
+       ric  image  processing tools.  They were developed in con­
+       junction with the volume rendering  package  Brainvox,  as
+       support  tools  for PET and non‐standard image transforma­
+       tions.
+
+       Volumes are considered to be raw  binary  headerless  data
+       files  containing  pixel  values in 8bit,16bit or floating
+       point format.  There is one slice of the  volume  in  each
+       file.   Commandline options are used to specify the volume
+       dimensions and  depths.   Standard  command  line  options
+       include:
+
+       ‐x(dx) The  x  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐y(dy) The y axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐z(dz) The image depth in bytes.  The default is generally
+              2 bytes (unsigned shorts),  but  1=1byte/pixel  and
+              4=floating  point data are supported in most cases.
+
+       ‐o(offset)
+              16 bit data offset.  All 16 bit data have this off­
+              set  value  added  before  the  data  is used.  The
+              default is ‐256.
+
+       ‐f(start)
+              This specifies the slice number for the first image
+              in the volume.  Default:1.
+
+       ‐l(end)
+              This  specifies the slice number for the last image
+              in the volume.  Default:varies.
+
+       ‐i(step)
+              This specifies the increment number to go from  one
+              slice to the next.  Default:1.
+
+       ‐b     This  specifies  that  16bit  images should be byte
+              swapped before using.
+
+       All programs use the concept of  a  filename  template  to
+       specify volumes.  A filename template is an example of how
+       a filename should be constructed for a given slice number.
+       A  template consists of a text string with embedded number
+       fields.  A number field can be a single asterisk (*) or  a
+       run  or percent signs (%%%) of any length.  When the soft­
+       ware needs to generate the filename for a given  slice  of
+       the  volume, the number fields are replaced by a represen­
+       tation of the slice number.  A asterisk is replaced  by  a
+       varying width slice number.  Percent signs are replaced by
+       a fixed width slice number which is zero prefixed to  fill
+       the field of percent signs.  The software support the UNIX
+       compress utility directly with image files.  If  an  image
+       filename  ends  with  .Z,  the  file is assumed to be com­
+       pressed and is read through the UNIX compress filter.   If
+       an output image filename ends with .Z, the file is written
+       through the UNIX compress filter.  The  .gz  extension  is
+       also recognized and files will be read/written through the
+       gzip program as with the compress support.  A gain in data
+       throughput  and  reductions in disk space utilization make
+       the compressed formats very useful.
+
+       There are some additional filename template extensions.  A
+       filename  template  of "‐" specifies a volume within which
+       all voxels are considered to have the value 0.  A filename
+       template  of  the  form "=XXX" specifies a volume with all
+       voxel values are XXX.  A filename template with  no  slice
+       number  fields  specifies a single file to be read repeat­
+       edly for all slices.  All volumes may also  be  stored  as
+       ASCII  text files (one number per pixel).  Adding the suf­
+       fix "=t" to a filename template causes the files specified
+       by  that  template  to  be read and written in ASCII form.
+       For example, the template "junk_%%%.pic.Z=t"  will  result
+       in   compressed   text   files  using  the  base  template
+       "junk_%%%.pic".   Note: this option  should  not  be  used
+       with the network volume options described below.
+
+       A   filename   template   in  the  form:  XXXX:0_%%%  will
+       read/write data into  the  file  named  "XXXX"  where  all
+       slices  are  packed  contiguously into the file.  The full
+       form of such a template  is:  "XXXX:0_%%%{_aaa{_bbb}}{_f}"
+       where  ’aaa’  is  the  size  of the volume header in bytes
+       (number of bytes to skip before the first image) and ’bbb’
+       is  the number of bytes to skip between subsequent images.
+       The volume header must be specified if a slice  header  is
+       to be used.  If the template contains the string "_f", the
+       images are flipped vertically after being read and  before
+       being  written.   This is the same as the flipping options
+       in other programs.
+
+       The programs can also access volumes in  running  programs
+       as  sources  and  destinations.   Currently,  Brainvox and
+       voxnet based servers (Voxblast) can be accessed.   Special
+       forms  of filename templates are used to specify slices in
+       a   running   program.     For    Brainvox,    the    form
+       ":X_Y_%%%{_options}"  is  used.   Where X and Y are single
+       digits representing the index number of the copy of Brain­
+       vox  you  wish to access and the volume type respectively.
+       Brainvox index numbers begin at 0 and increment only  when
+       two  or  more  copies  of Brainvox are running on the same
+       machine.  Valid volume type numbers are 0=image volume and
+       1=texture  volume.  Two options exist which allow the user
+       to control how interpolations are handled when slices  are
+       "written" to a Brainvox program.  The "r" option specifies
+       that slice replication should be used  instead  of  linear
+       intrepolation.  The "d" option specifies that the interpo­
+       lations should be deferred until the tal_ program is  fin­
+       ished.   In  normal  use, the template ":0_0_%%%" would be
+       used to access the image volume and  ":0_1_%%%"  would  be
+       used  for  the texture volume.  Similarly for voxnet based
+       servers,            the            template             is
+       "::Y_%%%{_host{_port{_options}}}".   Y is the volume to be
+       accessed (0‐2 for R,G,B).  Optional hostnames,  port  num­
+       bers  and  options  my  be included as well.  Only the "r"
+       option described above is supportted for  voxnet  servers.
+       Note:  with  all  access  to data in running programs, the
+       image sizes must be specified on the command line to match
+       the  loaded  volumes.   The  program  "tal_ls" can help in
+       determining those sizes.  The programs  also  support  the
+       use  of  shared memory volumes created and destroyed using
+       the tal_mkshm and tal_rmshm  programs  respectively.   The
+       templates  for these volumes have the form ’:XX_%%%’ where
+       XX is replaced by the volume number.  Shared  memory  vol­
+       umes  can  also  be  examined using tal_ls.  Shared memory
+       volumes have no intrinsic format and can  be  accessed  in
+       any method which does not exceed the size of the volume.
+
+       Tal_programs  can  also read and write the NIFTI‐1/Analyze
+       file format. This format requires the  use  of  a  special
+       filename template.  The template takes the form: ’{header­
+       name.hdr|headername.nii}%%%[@opt=num[@opt=num]...]’.   The
+       programs assume that header files ending in .hdr will have
+       an uncompressed .img file with the  same  basename.   They
+       can  also read and write the single file .nii format.  The
+       field of %%% is required and is used to pass slice numbers
+       to the IO layer, they will not show up in filenames.
+
+       After  the  %%%  field, there can be some optional parame­
+       ters, each one has the form @{opt}=value.  The ’@nz=value’
+       parameter  is  used  for  write operations, it defines the
+       number of slices in the volume to be created.  It defaults
+       to  1.  The ’@nt=value’ parameter is used for write opera­
+       tions, it defines the number of timesteps in the volume to
+       be  created.  It defaults to 1.  The ’@nc=value’ parameter
+       is used for write operations, it  defines  the  number  of
+       components  in the volume to be created (e.g. @nc=3 speci­
+       fies a 3D vector).  It defaults  to  1.   The  ’@ip=value’
+       parameter  is  used  for  write operations, it defines the
+       interpixel spacing for  the  volume  to  be  created.   It
+       defaults  to  1.   The  ’@is=value’  parameter is used for
+       write operations, it defines the  interslice  spacing  for
+       the  volume  to  be  created.   It  defaults  to  1.   The
+       ’@it=value’ parameter is used  for  write  operations,  it
+       defines the spacing between timesteps for the volume to be
+       created.  It defaults to 1.
+
+       Note that tal_programs will overwrite the entire .img file
+       with zeros before writing any slices into it.
+
+       During  reading,  the  ’@t=value’  parameter  selects  the
+       timestep  for  files   with   multiple   timesteps.    The
+       ’@c=value’  selects  a specific component for volumes with
+       vector values.
+
+       These are ignored on writing  as  the  programs  can  only
+       write a single 3D volume into a NIFTI file.
+
+       Many  of  the  programs  assume the volume is in Talairach
+       space.  This assumes that the input volume  is  a  256x256
+       119   slice  volume  which  corresponds  to  the  Brainvox
+       Talairach specifications.  Coordinates reported  for  vol­
+       umes not this size will not be reported correctly.
+
+       Most of the programs support the concept of a volume mask.
+       A volume mask restricts the application’s operation  to  a
+       subset  of  the  voxels.   Mask volumes are generally 8bit
+       volumes where any  non‐zero  value  is  considered  to  be
+       "inside"  the  volume  mask.   Several  support the use of
+       Regions of Interest (ROIs) as masks.  An ROI is a  polygon
+       data  file  describing a closed contour on a single slice.
+       Brainvox is generally assumed to be  the  source  of  ROIs
+       (the  ROIs  are  scaled down by 2 and flipped over their X
+       axis before use by default).
+
+       The individual applications are listed here:
+
+       tal_CDA [options] inputtemp outputfile
+              Performs change‐distribution analysis on a  volume.
+
+       tal_centroid [options] inputtemp masktemp
+              Computes the weighted centroid of a volume.
+
+       tal_cluster [options] inputtemp
+              Performs  cluster  detection functions (flood fill­
+              ing) on volumes.
+
+       tal_cutting [options] roitemp inputtemp outputtemp
+              Paints voxels with respect to a set of ROIs.
+
+       tal_edm [options] inputvol outputvol
+              Computes volume or planar Euclidean distance  maps.
+
+       tal_euler [options] inputtemp tstart tend tstep
+              Computes the Euler characteristic of a volume.
+
+       tal_fft [options] imagevol freq_real_vol freq_imag_vol
+              Computes  the forward and reverse fourier transform
+              of a volume.
+
+       tal_gwcsf [options] intemp masktemp Gout Wout Cout Fout
+              Estimates Gray White and CSF tissue partitions from
+              an MRI volume.
+
+       tal_label [options] inputvol outputvol
+              Performs 2d and 3d connected components labeling.
+
+       tal_ls [options]
+              Lists status of network volume servers.
+
+       tal_math [options] expr outvol inputA inputB inputC inputD
+              Performs general purpose volumetric math operations
+              with up to 4 input volumes.
+
+       tal_mcubes [options] intemp outfile
+              Performs volume isosurface detection.
+
+       tal_median [options] intemp outtemp
+              Applies an adjustable median  smooth  filter  to  a
+              volume.
+
+       tal_merge [options] inputtemp inputtemp2 outputtemp
+              Performs simple linear volume math between two vol­
+              umes.
+
+       tal_mkshm nslices
+              Creates  a  shared  memory  volume  which  can   be
+              destroyed by tal_mkshm.
+
+       tal_mrinorm [options] input output
+              Performs slicewise normalization using a polynomial
+              fitting technique.
+
+       tal_nifti [options] inputhdrfile
+              Queries the information in an Analyze/NIFTI  header
+              file.
+
+       tal_normalize [options] inputtemp masktemp outputtemp
+              Normalizes  a  volume  with  respect to its globals
+              mean.
+
+       tal_optimal [options] inputtemp outputtemp
+              computes optimal surfaces  through  3D  cost  func­
+              tions.
+
+       tal_ortho [options] inputtemp outputtemp
+              Allows   for   orthogonal   planes   resampling  of
+              datasets.
+
+       tal_pca [options] ncomponents [‐|volume ...]
+              Computes the principle components of  a  series  of
+              volumes.
+
+       tal_probe [options] inputtemp
+              Probes  a volume for local values around a location
+              in the volume.
+
+       tal_regress [options] datafile
+              Used to perform multiple volume linear  regression.
+
+       tal_remask [options] inputtemp outputtemp
+              Computes a connected bounding mask.
+
+       tal_rerandom [options] n_subjects [‐|vol1temp ...]
+              Computes  non‐parametric  t‐statistics for a series
+              of volumes.
+
+       tal_resample [options] inputtemp outputtemp
+              Resamples  a  Brainvox   calibrated   volume   into
+              Talairach space.
+
+       tal_resize [options] inputtemp outputtemp
+              Performs  volumetric  cropping and rescaling/resam­
+              pling.
+
+       tal_rename [options] inputtemp outputtemp
+              Performs batch image file renaming operations.
+
+       tal_rmshm shmtemplate
+              Destroys  a  shared  memory   volume   created   by
+              tal_mkshm.
+
+       tal_roi2mesh [options] outputfile
+              Converts a series of ROIs into a triangulated poly­
+              gon mesh.
+
+       tal_roi_sample [options] invol roitemp  outfile  [pointset
+       ...]
+              Outputs voxel values within a region specified by a
+              set  of  ROIs.   The man page for tal_roi_sample is
+              under tal_roi_samp.
+
+       tal_skel [options] inputvol outputvol
+              Computes volume or planar skeletonization maps.
+
+       tal_smooth [options] inputtemp outputtemp
+              Performs volumetric Gaussian smoothing.
+
+       tal_spatial size FWHM dimension
+              Filters a list of tal_cluster points  for  signifi­
+              cance using spatial extent
+
+       tal_sphere [options] inputtemp
+              Implements  the  SPM  sphericity computation.  Per­
+              forms a non‐parametric T‐test on  differences  vol­
+              umes.
+
+       tal_standardize [options] inputtemp outputtemp
+              Performs  table based and statistical pixel mapping
+              operations.  The man page  for  tal_standardize  is
+              under tal_standard.
+
+       tal_stat [options] [‐|vol1temp ...]
+              General  purpose  volumetric statistics (global and
+              local).
+
+       tal_surface [options] inputtemp
+              Computes surface area and volume of a  binary  vol­
+              ume, possibly restricted to a second binary volume.
+
+       tal_thinmesh [options] infile outfile
+              Performs vertex reduction on a polygon mesh file.
+
+       tal_trace [options] inputtemp roibase
+              Performs slice‐wise contour detection in a  volume.
+
+       tal_vbin [options] binfile [xsize ysize [palettefile]]
+              Performs simple binary image viewing.
+
+       tal_warp [options] intemp outtemp dxtemp dytemp dytemp
+              Performs vector volume resampling.
+
+
+SSEEEE AALLSSOO
+       Brainvox Program Reference Guide
+
+NNOOTTEESS
+       All  programs  in  the suite were written by Randall Frank
+       with a great deal of input from  Thomas  Grabowski,  Hanna
+       Damasio, Carl Kice Brown and many others.
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                           tal_programs(Brainvox)

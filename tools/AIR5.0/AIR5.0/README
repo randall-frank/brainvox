@@ -1,0 +1,263 @@
+The latest version of this information can be found at
+http://bishopw.loni.ucla.edu/AIR5/config.html
+
+Configuring and Compiling AIR 5.0
+
+*	UNIX (including Linux and Mac OS X) 
+*	PC (DOS, Windows and Windows NT) 
+*	Configuring the src/config.h file
+
+
+UNIX (including Linux and Mac OS X)
+
+1.
+
+In the main AIR directory, type './configure'. This will execute a shell
+script that should automatically create three files. The first of these
+will be in the main AIR directory and is called 'Makefile'. The other
+two will be in the src/ subdirectory and are called 'Makefile' and
+'config.h'. If ./configure fails, it should print out some insight into
+the problem that you may be able to fix. Alternatively, you might
+consider some of the workarounds listed below If you troubleshoot
+./configure, you sometimes need to remove ./configure.cache to get
+./configure to forget results of earlier runs Caution To Developers: the
+Makefiles that are generated do not contain the level of dependency
+information needed for efficient software development. For example,
+changes to a subroutine in the src subdirectory will not cause all main
+programs that use that subroutine to be rebuilt without any unnecessary
+rebuilds of other routines. Developers should consider building a shared
+library from the src directory subroutines and linking to this shared
+library as a strategy for shifting such dependencies to runtime.
+
+
+2.
+
+In the src/ subdirectory, edit the 'config.h' file to meet any site
+specific preferences. Any text editor can be used (be sure to save any
+changes as plain text), configuration details are provided below.
+
+
+3.
+
+Optionally, review and edit the two files called 'Makefile' Experts may
+elect to override default optimization levels, etc.
+
+
+4.
+
+In the main AIR directory, type 'make all'. This should compile the code
+
+
+5.
+
+If you want the compiled programs moved to the bin subdirectory, type
+'make install' in the main AIR directory If you ultimately want the
+programs somewhere else entirely, it is much easier to copy them from
+/bin, so type 'make install' to move them to /bin first
+
+
+6.
+
+Before rebuilding AIR (e.g., after changing something in src/config.h)
+you must type 'make clean' in the main AIR directory before typing 'make
+all' again 'make clean' removes all of the compiled libraries and
+programs so that new, internally consistent versions can be built
+
+
+7.
+
+To start over from the beginning at any point, type 'make distclean' in
+the main AIR directory and return to step 1 'make distclean' removes all
+of the compiled libraries and programs as well as the configuration
+information and Makefiles
+
+
+
+
+Workarounds:
+
+1.
+
+If the ./configure script fails and you cannot get it to run correctly,
+you can simply create a file called src/config.h and copy any
+configuration lines that you feel are appropriate into it (an empty file
+called src/config.h is acceptable if you want to use all the default
+configurations in the AIR.h file) In this case, you will need to execute
+the MAKE.com file as described next rather than running 'make'
+
+
+2.	If the command 'make all' fails, (e.g., if you don't have the
+executable called 'make'), you can type 'sh MAKE.com' or 'sh MAKE.com
+bin' (the latter command will install the programs in the bin
+subdirectory) from the main AIR directory to compile the code. 3.	It
+is also possible to configure AIR manually in the AIR.h file as in older
+versions of AIR, but this should not generally be necessary.
+
+
+PC (DOS, Windows and Windows NT) Please note that different PC compilers
+have different requirements and only general recommendations are
+provided here.
+
+1.	In the src subdirectory, copy the file 'config_PC.h' to 'config.h'
+2.
+
+Edit the 'config.h' file to meet any site specific preferences Any plain
+text editor can be used, configuration details are provided below.
+
+
+3.
+
+In the main AIR directory, edit the files AIRmain.h and HEADERmain.h,
+removing the lines with UNIX style forward slashes and uncommenting the
+lines with the PC style backslashes After modification, AIRmain.h should
+read: #include "src\\AIR.h" After modification, HEADERmain.h should
+read: #include "src\\HEADER.h" There should not be any spaces or tabs
+before '#include' in either of these files
+
+
+4.
+
+Using your PC C compiler, compile all of the files in the src
+subdirctory into a library Consult your C compiler documentation for
+details
+
+
+5.
+
+Using your PC C compiler, compile each of the programs in the main AIR
+directory. For example, compile the file 'alignlinear.c' to generate the
+executable file 'alignlinear.exe'. You will need to link in the library
+compiled in the previous step. Consult your C compiler documentation for
+details Note that the files src/AIR.h, src/config.h and src/HEADER.h are
+required when compiling each of the programs in the main directory.
+
+
+
+
+Configuring the src/config.h file The following lines shown in green can
+be included or altered in config.h to provide site specific information:
+Omitting these lines causes their default values (defined in the AIR.h
+file) to be used.
+
+#define AIR_CONFIG_AUTO_BYTESWAP 0 
+
+If non-zero, AIR will attempt to
+detect image files (.hdr and .img), .air file, .warp files and .vector
+files that need to be byte swapped because they were generated on a
+different machine. If your machine does not conform to the IEEE Standard
+for Binary Floating PointArithmetic (ISO/IEEE Std 754-1985), you should
+set this value to zero because conformance with this standard is assumed
+when byte swapping. For the same reason, only data generated by machines
+that conform to this standard can be properly byte swapped for use by
+AIR. 
+
+#define AIR_CONFIG_OUTBITS 16 
+
+The only supported values are 8 and
+16. If you choose 8, data will be represented internally and saved as 8
+bits/pixel. If you choose 16, data will be represented internally and
+saved as 16 bits/pixel. (Either way, you will be able to read in 8 or 16
+bit data, this variable only controls output data). If you are not sure
+what to do here, the issue of 8 and 16 bit data is discussed elsewhere
+at length. 
+
+#define AIR_CONFIG_REP16 3 
+
+This variable is irrelevant if you
+have OUTBITS set to 8. The acceptable values are 1, 2 and 3. The
+variable controls the format of 16 bit data saved to disk by the AIR
+package. If you are not sure what to do here, the issue of 16 bit data
+types is discussed elsewhere at length. 
+
+#define AIR_CONFIG_THRESHOLD1 7000 
+#define AIR_CONFIG_THRESHOLD2 7000 
+
+AIR_CONFIG_THRESHOLD1 and AIR_CONFIG_THRESHOLD2 control the default
+pixel value thresholds used by the registration programs. If you have
+set AIR_CONFIG_OUTBITS to 8, only the first set of thresholds is used.
+If you have set AIR_CONFIG_OUTBITS to 16, only the second set is used.
+The thresholds should be values that will typically separate brain
+(suprathreshold) from nonbrain (subthreshold). The values used in the
+AIR distribution are not particularly likely to be useful in your
+laboratory. Look at some data to make a reasonable guess, and bear in
+mind that these thresholds are easily overridden on a per use basis. 
+
+#define AIR_CONFIG_VERBOSITY 0 
+
+If non-zero, this allows some non-essential information to be printed
+to the screen when AIR programs are run #define AIR_CONFIG_PIX_SIZE_ERR
+.0001 The variable decides how fussy the AIR package is about deciding
+that pixel sizes are identical. If you plan to round off pixel sizes
+only to the nearest .1 mm (not recommended), you need to make this
+value .1. If you like to type everything out to 15 decimal places, you
+can make the AIR package equally compulsive.
+
+The following lines may already appear in config.h as generated by
+./configure or as copied from config_PC.h. Adding them (if not already
+present) or altering their pre-existing values could render AIR
+uncompilable on your machine, so make changes with caution and make
+back up copies first
+
+#define AIR_CONFIG_REQ_PERMS 0 
+
+This controls whether AIR uses two C functions that are not part of the
+ANSI C standard, but that provide useful functionality if available.
+The non-ANSI functions stat() and lstat() make it possible to access
+UNIX file permissions. By using these functions, AIR can inform a user
+of specific reasons that a program failed (e.g., that the user lack
+write permission in the directory where data is supposed to be saved).
+Some non-UNIX C compilers also implement stat() and/or lstat() (even
+though the underlying operating system may not support all of the
+informative functionality). If stat() and/or lstat() are available, it
+is recommended that you use them. However, if they are not available,
+compilation will probably fail unless you set this value to 0. Possible
+configuration values are: *	0. AIR makes not use of stat() or
+lstat(). *	1. AIR will use stat(), but not lstat(). *	2. stat()
+and lstat() will be used.
+
+
+#define AIR_CONFIG_PIPES 0 
+
+This controls whether AIR will use a non-ANSI C function needed for
+safe on-the-fly decompression of image files. If non-zero, AIR will use
+the function popen() to pipe data from a decompression program into
+AIR. If your compiler does not support popen, you should set this value
+to zero. If this value is zero, you do not need to worry about
+AIR_CONFIG_DECOMPRESS, AIR_CONFIG_COMPRESSED_SUFFIX or
+AIR_CONFIG_DECOMPRESS_COMMAND because they have no effect in the
+absence of popen(). 
+
+#define AIR_CONFIG_DECOMPRESS 0 
+
+This parameter is only relevant if AIR_CONFIG_PIPES is non-zero. If
+this value is set to zero, code to decompress images on-the-fly is
+disabled. 
+
+
+#define AIR_CONFIG_COMPRESSED_SUFFIX ".gz" 
+
+This parameter is only relevant if AIR_CONFIG_PIPES and
+AIR_CONFIG_DECOMPRESS are both non-zero. This suffix identifies
+compressed header or image files. For example, if the value is ".gz",
+files ending with .hdr.gz will be recognized by AIR as compressed
+header files and files ending with .img.gz will be recognized as
+compressed image files. If you use the UNIX compress routine, you would
+need to change the suffix to ".Z".
+
+
+#define AIR_CONFIG_DECOMPRESS_COMMAND "gunzip -c " 
+
+This parameter is only relevant if AIR_CONFIG_PIPES and
+AIR_CONFIG_DECOMPRESS are both non-zero. This must identify a command
+that is able to decompress files ending with
+AIR_CONFIG_COMPRESSED_SUFFIX when followed by a file name ending in
+this suffix. In addition, the command must output to a pipe. If the
+decompression program is not on a user's search path, AIR may fail to
+find the command. In this case, you can give a fully qualified path for
+the decompression program (e.g., "/usr/local/bin/gunzip -c "). Note
+that a trailing space after the command is required.
+
+------------------------------------------------------------------------
+Modified: January 25, 2002
+
+© 2001-2002 Roger P. Woods, M.D.(rwoods@ucla.edu)

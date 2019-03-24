@@ -1,0 +1,76 @@
+.TH reg_lib Regression
+.SH NAME
+An Introduction to the progressive regression API.
+.SH SYNOPSIS
+See individual routine man pages.
+.SH DESCRIPTION
+The regression library defines a number of functions
+to enable access to progressive, parallel regression
+routines from 'C' and IDL applications.  The idea behind the library
+is to perform a number of independent general linear regressions
+simultaneously on a on an set of input variables.  The same
+model is applied to each regression.  The API allows the caller
+to set up a parallel set of regressions, then add observations
+one by one to the working set of regressions.  At any time,
+the caller may request information about the current regression
+state (e.g. regression coefficients, sums of squares, etc).
+Included are routines to remove observations from the regressions
+as well, in any order.  This allows for the library to
+perform windowing, where only a subset of a complete dataset
+are considered.
+The library efficiently allocates a fixed amount of memory,
+given a model, independent of the number of observations.
+The implementation is particularly well
+suited for use in real-time, progressive applications.
+.PP
+A regression consists of a model.  The model specifies the
+number of inputs to the model.  For example, if the model is:
+Y=b0+b1x1+b2x2, the number of inputs is 3 (one for each regression
+coefficient).  This model is to be applied to data such as
+an image, on each pixel independently.  If the image has
+64 pixels, each observation would be 64*3 values, one model's
+worth of data for each pixel in the image.  In this example,
+64 regressions will be computed in parallel.
+.PP
+The library allows for operations to be masked to a
+subset of the vector of values, both obervations and
+derived value computations.
+.PP
+The routines are listed here (each maps to an identically named
+IDL function):
+.PP
+reg_create - create a regression structure
+.PP
+reg_destroy - delete a regression structure
+.PP
+reg_add_obs - add a weighted observation to a regression
+.PP
+reg_remove_obs - remove a weighted observation from a regression
+.PP
+reg_calc_ss - compute sum of squares statistics from a regression
+.PP
+reg_calc_coef - compute regression coefficients from a regression
+.PP
+An IDL interface to the library is provided as well.
+The IDL interfaces are documented in with the 'C' API.  In general,
+the IDL API avoids the need for explicit buffer length parameters
+an preallocation of return variables, but otherwise maps to the 'C'
+API parameter for parameter.  The
+IDL interface will automatically provide type conversion functions
+as well.
+In the IDL man pages, parameters ending with an underscore '_'
+are return values.  All other parameters are inputs.  One other
+difference is that the "Regression" structure is opaque in the
+IDL API and a reference number is returned to the user.  This
+reference number is translated to a Regression structure by the
+IDL wrapper.  This allows the IDL DLM to avoid all memeory leaks
+by tracking Regression structures and cleaning them up for the
+user.
+.SH SEE ALSO
+.SH NOTES
+The regression library was written by Randall Frank, with
+input from Thomas Grabowski.  It is based on Morven Gentleman's
+Applied Statistics AS75 and AS274 routines.
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

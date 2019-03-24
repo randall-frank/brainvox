@@ -1,0 +1,108 @@
+
+Brainvox release notes:
+
+Version 3.14:
+	1) fixed two bugs in the scripting language.
+	2) added scripting history.
+	3) reworked filer handling of top level directories.
+
+Version 3.13:
+	1) support for nifti/analyze format files.
+	2) a new scripting language has been added.
+
+Version 3.12:
+	1) a couple of really nasty filename handling bugs fixed.
+
+Version 3.11:
+	1) fixed an issue with name handling in the region editor.
+	2) reworked MAP-3 to run under Windows.
+	3) removed many of the "system()" calls to simplify the API.
+
+Version 3.10:
+	1) added some support for dir names with spaces.
+	2) fixed more depth buffer issues.
+	3) added support for tal_programs w/brainvox.
+
+Version 3.09:
+        1) there is now a Windows (XP, 32bit) version.
+        2) fixed issues with depth buffer clipping for planes, etc.
+
+Version 3.08:
+	1) a large number of cosmetic changes (renaming, moving items, etc).
+	2) fixed an issue with clipping the 3D cursor display lines.
+	3) fixed an issue with MAP-3 on the Mac.
+
+Version 3.07:
+	1) added HW interpolation as an option.
+	2) added point voxel/texture probing.
+
+Version 3.06:
+	1) make the arrow keys work on the Mac.
+	2) added the ability to save the tracing images as a volume.
+ 
+Version 3.05:
+	1) fixed a problem that caused Brainvox to use too much CPU time.
+	2) added a means to allow 3D cursor movement for OSX (was alt-ctrl).
+	3) fixed OSX window resizing issue.
+
+Version 3.04 beta:
+	1) fixed a bug in brainvox_calc where ill-formed ROIs crashed it.
+	2) backup speed in trace window works now.
+	3) all windows mapped to double buffering...
+
+Version 3.03 beta:
+	1) made .gz and .Z file support intrinsic (needed for Win32).
+	2) fixed issue with finding the arb_paint program.
+	3) added "Preferences".
+	4) initial cut at OSX version.
+	5) added a "reload textures" option for use with tal_programs.
+	6) brainvox-tal_program connectivity re-enabled.
+
+Version 3.02 beta:
+	1) improved long filenames support.
+	2) fix for 16bit lit HW rendering.
+	3) fix for arb_mode angle issues ("hang").
+
+Version 3.01 beta:
+	1) initial version with support for longer filenames.
+	2) fixes for portability.
+
+Version 3.0 beta:
+
+	This is the first major revision in several years.
+
+	1) hardware accelerated volume rendering
+		Requires ARB_fragment_program support and 128MB of video RAM
+	2) mouse buttons switched to be more inline with other GUI toolkits
+		"setenv BRAINVOX_SWAP_BUTTONS 0" will revert to older mapping
+	3) brainvox no longer needs to be in the search path.  It will find
+		all its tools on the fly and use absolute pathnames.
+	4) added "drag and drop" launching in that the command line:
+		brainvox /my/path/name
+		will 'cd' to /my/path/name and then run brainvox.  Very
+		useful for "dropping" a directory on brainvox
+	5) added "auto-rendering"
+	6) remapped many of the interaction buttons for consistancy and
+		added a "help" menu
+	7) poinsets can be "shaded" when occluded (as well as being clipped)
+	8) the speed of the tracing "backup" has had limits added
+	9) the "quality" menu has been reworked for better options
+		organization
+	10) more of the code has been moved to libraries reducing replication
+	11) updates made for new Absoft Fortran compilers
+	12) allow voxel tracing on the "background"
+		If tracing in the 3D window is done with the 'Z' key held
+		down, the tracing is not clipped to the voxel surface, rather
+		the depth is set explictly to Z=0 (the center of the volume)
+		Very useful when creating pointsets to be used as clips in
+		the texture volume
+	13) ALT or CTRL key while rotating cube will rotate in the plane
+		of the display.
+
+	Many other minor changes.
+
+Outstanding items:
+	Overlay graphics clipping is still broken (since move to OpenGL)
+	Mac OSX and Windows support are works in progress
+	Long pathnames (>80 chars) cause buffer overflows
+

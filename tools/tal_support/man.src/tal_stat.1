@@ -1,0 +1,224 @@
+.TH tal_stat Brainvox
+.SH NAME
+tal_stat \- Computes global and local statistics for one or more volumes.
+.SH SYNOPSIS
+tal_stat [options] [-|vol1temp ...]
+.SH DESCRIPTION
+This program computes a number of global statistics for one or more input volumes.
+If a local kernal definition is specified, local statistics for the voxels in all the input
+volumes selected by placing the kernal at each output location can be saved into output
+volumes.  The program computes the following statistics: number of voxels, size of the
+volume, mean, variance, minimum voxel value, maximum voxel value, sum of all the
+voxel values, sum of the squares of all the voxel values, standard deviation and for
+global statistics, the number of input volumes is output.  The global statistics are output
+as ASCII text values on stdout.  Local statistics are output into floating point volumes.
+Filename templates of all the input volumes are specified on the command line.  If a "-" is
+used for the input volume template, the input volume template names are read from stdin.
+A volume mask may be used to restrict the operation to a portion of the volume.
+.PP
+The program also supports the computation of histograms from the pixel values of
+the input volumes.  The histogram range and bucketsize, as well as the handling
+of outliers, can be specified on the command line.  The histogram is written
+to disk as an ASCII text file with each line containing the center of a bucket
+and the number of pixels which fell into the bucket.
+.PP
+Options:
+.TP
+-x(dx)
+The x axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-y(dy)
+The y axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-z(dz)
+The image depth in bytes.  All input volume must have the same depth.
+The default is 2 bytes (unsigned shorts).
+.TP
+-f(start)
+This specifies the slice number for the first image in the volume.  Default:1.
+.TP
+-l(end)
+This specifies the slice number for the last image in the volume.  Default:15.
+.TP
+-i(step)
+This specifies the increment number to go from one slice to the next.  Default:1.
+.TP
+-b
+This specifies that 16bit images should be byte swapped before using.  Default: no
+swapping.
+.TP
+-d(back)
+This option specifies a background value to be output for pixels outside of the
+mask.  The default value:0.0
+.TP
+-v
+This option enables the verbose mode.
+.TP
+-o(offset)
+This option specifies an offset value added to each pixel before it is used. The default:0
+.TP
+-Hfile(histofile)
+This option specifies a file to save the multi-volume histogram into.
+The default:no histogram is saved.
+.TP
+-Hmin(minval)
+This option specifies the value of the center of the first histogram bucket.
+The default:0.0.  Note that the first bucket extends from this value plus
+and minus one-half of the bucketsize.
+.TP
+-Hmax(maxval)
+This option specifies the value of the center of the last histogram bucket.
+The default:255.0.  Note that the last bucket extends from this value plus
+and minus one-half of the bucketsize.
+.TP
+-Hsize(binsize)
+This option specifies the width of a histogram bucket.  The default:1.0.
+.TP
+-Hkeep
+This option specifies that pixels values which do not fall into the range
+from min to max are to be mapped into the closest bucket.  By default
+pixel values outside the min-max range are not counted.
+.TP
+-m(masktemp)
+This option allows the user to specify a filename template for a mask
+volume.  Statistics are only computed for voxels withing this volume.  The
+default is to compute for all voxels.
+.TP
+-k(kernalfile)
+This option specifies a filename of a kernal to be used for local stats.  These
+local stats must still be selected by -Lxxx options.
+By default, the kernal is a single pixel of weight 1.0.
+.PP
+The ASCII kernal file has the following format:
+.PP
+Xsize Ysize Zsize
+.PP
+Followed by Zsize 2D matrices of the following format:
+.PP
+v11 v21 v31 ... vXsize1
+.PP
+v12 v22 v32 ... vXsize2
+.PP
+v13 v23 v33 ... vXsize2
+.PP
+...
+.PP
+v1Ysize v2Ysize v3Ysize ... vXsizeYsize
+.PP
+A total of (Xsize*Ysize*Zsize) values follow the three value header line.
+These values specify weights for the voxels around each voxel that are to 
+be used in the
+computation of local statistics.  If a voxel selected via the kernal
+for local statistics is not within the mask volume, it is not used for the
+local statistic.  The relative weight of each voxel used in the local statistics
+is given by the kernal.  For even weighting, only the values 0 and 1 should be
+used in the kernal.  The local voxel count statistic should be used 
+instead of a fixed kernal based N value for any subsequent computations.
+.PP
+There is one extension to the kernal file format.  If line following the 
+kernal contains the ASCII text: "KERNALMASK", then it is expected
+that (Xsize*Ysize*Zsize) integer values will follow on the next
+lines.  This specifies a "mask" for the kernal.  Kernal weights where this 
+mask is zero will not be used in local computations.  This can be important
+for local statistics such as correlation or sum of squared differences,
+where a kernal weight of zero is significant and cannot be used to
+"mask" the kernel.
+.PP
+If a kernalfile is specified, output local statistical volumes may be
+generated.  The values
+in these volumes will be the value of statistics computed for voxels
+in the neighborhood defined by the kernal around the output voxel.
+Output volumes are always 4byte (float) volumes.  The
+following options allow the user to select local statistical volumes by
+setting their output filename templates.
+.TP
+-Lavg(meantemp)
+local mean stats are output in the meantemp volume.
+.TP
+-Lvar(vartemp)
+local variance stats are output in the vartemp volume.
+.TP
+-Lvol(voltemp)
+local volume counts are output in the voltemp volume.  The volume
+count is size of the local kernal used at each voxel as some
+of the kernal may be clipped by the mask volume.
+.TP
+-Lvox(voxtemp)
+local voxel counts are output in the voxtemp volume.  This is the
+total number of voxels used in the local statistic computation.
+.TP
+-Lsos(sstemp)
+local sum of squares stats are output in the sstemp volume.
+Note: this is actually the sum of voxel*voxel*kernel_value.
+.TP
+-Lsum(sumtemp)
+local voxel sum stats are output in the sumtemp volume.
+.TP
+-Lmin(mintemp)
+local min stats are output in the mintemp volume.
+.TP
+-Lmax(maxtemp)
+local max stats are output in the maxtemp volume.
+.TP
+-Lsdv(sdvtemp)
+local standard deviation stats are output in the sdvtemp volume.
+.TP
+-Lcor(cortemp)
+local correlation between the kernel and the voxel volumes.
+Defined as: sum(v*kernel) / sqrt(sum(v*v) * sum(kernel*kernel)).
+.TP
+-Lsds(sdstemp)
+local sum of the squared differences between the kernel and the voxel
+volume: sum((v*kernel) * (v*kernel)).
+.TP
+-Lcoc(coctemp)
+local correlation coefficient between the kernel and the voxel volumes.
+Defined as: r = (n*sum(v*kernel) - sum(v)*sum(kernel)) / sqrt(
+(n*sum(v*v) - sum(v)*sum(v))*(n*sum(kernel*kernel) - sum(kernel)*sum(kernel)) ).
+.TP
+-Lcus(custemp)
+This option allows the user to define a custom expression for a
+local statistic. The actual expression is given by the -e option.
+A compiled form of this expression can be specified by using 
+the '-e' and '-c' options.  This creates a new, custom executable
+that implements the expression directly in 'C', for increased
+performance.  The output is the sum of values generated by
+evaluating the expression for every voxel in the kernal, over
+all the input volumes.  This is done for every output voxel
+location.
+.TP
+-e(expression)
+This option allows the user to specify a custom expression for use
+with the -Lcus option.  The expression syntax follows the notation
+used with tal_math.  This expression can include the following
+variables: 'dx','dy','dz' - the location of the voxel being 
+processed within the kernal, 'pa' - the value of the source voxel 
+(including all volumes and all voxels within the kernal), 'pb' - the 
+value of the source voxel in
+the current volume at the center of the kernal, 'ka' - the value
+of the kernal at the source voxel location, 'kb' - the value of
+the kernal at its center, 'ks' - the sum of all the kernal weights.
+.TP
+-c(exename)
+This specifies that the program should create and compile a custom version
+of itself optimized for the given expression.  Tal_stat will create a
+custom C source module and link this into a new executable using the
+library /usr/local/lib/libtal_stat.a named by the option value.  This
+executable has many of the same options as tal_stat, but no command line
+expression is used.
+.TP
+-C(comment)
+This option allows the user to place a comment string in a custom executable
+(-c) to help organize custom programs.  The COMMENT can be any valid C sting
+and thus can include \\n for newlines and \\t for tabs.  The default is no
+comment string.
+.TP
+-help
+This option prints help on valid expressions and functions.
+.SH SEE ALSO
+tal_programs, tal_math, tal_regress, tal_smooth, tal_math (expressions)
+.SH NOTES
+Currently, only 8bit mask volume are supported.
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

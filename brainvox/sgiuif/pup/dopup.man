@@ -1,0 +1,41 @@
+.TH DOPUP 4G OCLSC
+.SH NAME
+.B dopup
+\- displays the specified pop-up menu
+.SH "C SPECIFICATION"
+.B
+long dopup(pup)
+.br
+.B
+long pup;
+.SH PARAMETERS
+.TP
+.B pup
+expects the identifier of the pop-up menu you want to display.
+.SH "FUNCTION RETURN VALUES"
+The returned value of the function is the value of the item selected from
+the pop-up menu.  If the user makes no menu selection, the returned value
+of the function is -1.
+.SH DESCRIPTION
+.B dopup
+displays the specified pop-up menu until the user makes a
+selection. If the calling program has the input focus, the menu is
+displayed and
+.B dopup
+returns the value resulting from the item selection.
+The value can be returned by a submenu, a function, or a number bound
+directly to an item.  If no selection is made,
+.B dopup
+returns -1.
+
+When you first define the menu (using
+.B defpup
+or
+.BR addtopup )
+you specify the list of menu entries and their corresponding actions.  See
+.B addtopup
+for details.
+.SH "SEE ALSO"
+addtopup, changepup, defpup, freepup, newpup, setpup
+.SH NOTE
+This routine is available only in immediate mode.

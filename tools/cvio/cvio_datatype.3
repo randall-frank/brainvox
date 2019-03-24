@@ -1,0 +1,33 @@
+.TH cvio_datatype 3
+.SH NAME
+cvio_datatype
+.SH SYNOPSIS
+.HP
+.B
+#include "cvio_lib.h"
+.HP
+.B
+int32 cvio_datatype(uint32 stream, int32 *type, int32 *ndims, int32 dims[3]);
+.PP
+IDL API:
+.HP
+.B
+err=CVIO_DATATYPE(stream,datatype_,num_dims_,dims_)
+.SH DESCRIPTION
+The cvio_datatype function is actually a convience function to return
+the basic format of a sample in an open cvio file.  This function can
+be realized using the cvio_getattribute fucntion, but this operation
+is so common a simplified interface is provided.
+.PP
+Stream is the identifier of an open cvio file.  Type, ndims and dims are
+the sample type, number of dimensions and the sizes of those
+dimensions.
+.PP
+The return value of the function is a cvio error code.  See
+cvio_get_error_message(3).
+.SH SEE ALSO
+cvio_lib(3), cvio_create(3), cvio_getattribute(3), cvio_get_error_message(3)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

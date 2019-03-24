@@ -1,0 +1,112 @@
+/* Copyright 1995-2001 Roger P. Woods, M.D. */
+/* Modified 5/11/01 */
+
+
+/* findcoords12.cf
+ *
+ * This code fragment finds the coordinates x_i, y_i, and z_i
+ * and computes related first and second derivatives
+ *
+ * It is meant to be included by other .c files such as uvderivsN12.c	
+ */
+
+
+			{
+				/*Calculate coordinates (i,j,k) of pixel r in standard file*/
+				unsigned int i,j,k;
+				{
+					unsigned long int tempplane=x_dim2*y_dim2;
+					unsigned long int tempremainder=r%tempplane;
+
+					k=(unsigned int)r/tempplane;
+					j=(unsigned int)tempremainder/x_dim2;
+					i=(unsigned int)tempremainder%x_dim2;
+				}
+					
+				/*Calculate coordinates (x_i,y_i,z_i) of corresponding pixel in reslice file*/
+				/*Skip further computations if pixel is out of bounds*/
+				{
+					double x_i, y_i, z_i;
+					
+					x_i=i*e00+j*e10+k*e20+e30;
+					if (x_i<0 || x_i>x_max1) continue;
+
+
+					y_i=i*e01+j*e11+k*e21+e31;
+					if (y_i<0 || y_i>y_max1) continue;
+
+
+					z_i=i*e02+j*e12+k*e22+e32;
+					if (z_i<0 || z_i>z_max1) continue;
+					
+					/* Compute non-zero first derivatives */
+					
+						
+					{
+						/*
+						 * Note that dx[0], dx[1], dx[2], dx[3]
+						 * are equal to dy[4], dy[5], dy[6], dy[7]
+						 * and to dz[8], dz[9], dz[10], dz[11], respectively
+						 *
+						 * Consequently, these are all treated as
+						 * dxyz[0], dxyz[1], dxyz[2], and dxyz[3]
+						 *
+						 */
+						 
+						double *dxyzptr=dxyz;
+						
+						*dxyzptr++=(double)i;
+						*dxyzptr++=(double)j;
+						*dxyzptr++=(double)k;
+						*dxyzptr=1.0;
+					}
+
+					
+					/* All second derivatives are zero */
+
+
+					/*Get the coordinates of the 8 voxels surrounding the designated pixel*/
+					/* in the reslice file*/
+					{
+						unsigned int x_up=(unsigned int)ceil(x_i);
+						unsigned int x_down=(unsigned int)floor(x_i);
+						unsigned int y_up=(unsigned int)ceil(y_i);
+						unsigned int y_down=(unsigned int)floor(y_i);
+						unsigned int z_up=(unsigned int)ceil(z_i);
+						unsigned int z_down=(unsigned int)floor(z_i);
+
+						if(x_up==x_down){
+							if(x_up<(unsigned int)x_max1) x_up++;
+							else x_down--;
+						}
+						a=x_i-x_down;
+						d=x_up-x_i;
+						
+						if(y_up==y_down){
+							if(y_up<(unsigned int)y_max1) y_up++;
+							else y_down--;
+						}
+						b=y_i-y_down;
+						e=y_up-y_i;
+
+						if(z_up==z_down){
+							if(z_up<(unsigned int)z_max1) z_up++;
+							else z_down--;
+						}
+						c=z_i-z_down;
+						f=z_up-z_i;
+
+
+						/*Get the values of these 8 voxels*/
+
+						n0=(int)pixel2[z_down][y_down][x_down];
+						n1=(int)pixel2[z_down][y_down][x_up];
+						n2=(int)pixel2[z_down][y_up][x_down];
+						n3=(int)pixel2[z_down][y_up][x_up];
+						n4=(int)pixel2[z_up][y_down][x_down];
+						n5=(int)pixel2[z_up][y_down][x_up];
+						n6=(int)pixel2[z_up][y_up][x_down];
+						n7=(int)pixel2[z_up][y_up][x_up];
+					}
+				}
+			}

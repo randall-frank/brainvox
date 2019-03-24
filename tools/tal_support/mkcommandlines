@@ -1,0 +1,5 @@
+#!/bin/csh
+rm -f commandlines
+foreach i ($argv)
+	./$i >>& commandlines
+end

@@ -1,0 +1,5 @@
+cd /batman/demo/heart
+chain setup
+lrender
+savergb /usr/tmp/j.rgb
+!xmovie -cTRUECOLOR -rgb /usr/tmp/j.rgb

@@ -1,0 +1,69 @@
+.TH tal_euler Brainvox
+.SH NAME
+tal_euler \- Computes the Euler characteristic of a volume.
+.SH SYNOPSIS
+tal_euler [options] inputtemp tstart tend tstep
+.SH DESCRIPTION
+This  program computes the Euler characteristic of a volume.  The Euler
+characteristic is computed for a number of different threshold starting at
+TSTART and going to TEND in steps of size TSTEP.  After all the Euler
+computations have been made, a threshold vs Euler number table is output
+on stdout.  Additionally, the 2 caliper diameter, (1/2) surface volume and
+volume values for the region are output (see referenced papers for
+definitions).
+The computation can be restricted to a masked sub-volume. 
+Voxels are only considered where the neighbors (in an Euler sense) are 
+all within the volume.  When a mask volume is specified, voxels outside the
+mask are considered to not make the threshold.
+.PP
+INPUTTEMP is the input volume template.  TSTART is the first threshold
+to be used for the computation.  TEND is the last threshold and TSTEP is
+the increment size from TSTART to TEND.
+.PP
+Options:
+.TP
+-x(dx)
+The x axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-y(dy)
+The y axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-z(dz)
+The image depth in bytes.  The default is 2 bytes (unsigned shorts).
+.TP
+-o(offset)
+16 bit data offset.  All 16 bit data have this offset value added before
+the data is used.  The default is -256.
+.TP
+-f(start)
+This specifies the slice number for the first image in the volume.  Default:1.
+.TP
+-l(end)
+This specifies the slice number for the last image in the volume.  Default:119.
+.TP
+-i(step)
+This specifies the increment number to go from one slice to the next.  Default:1.
+.TP
+-b
+This specifies that 16bit images should be byte swapped before using.
+.TP
+-m(masktemp)
+Specifies a filename template for an 8bit mask volume.
+.PP
+.SH SEE ALSO
+Brainvox Program Reference Guide, tal_programs
+.SH NOTES
+This program is based on information in the following papers:
+.PP
+Worsley KJ, Evans AC, Marrett S, Neelin P; A Three-Dimensional Statistical
+Analysis for CBF Activation Studies in Human Brain.
+J. Cereb Blood Flow Metab 12:900-918 (1992).
+.PP
+and
+.PP
+Worsley KJ, Marrett S, Neelin P, Vandal AC, Friston KJ, Evans AC, 
+A Unified Statistical Approach for Determining Significant Signals in Images of
+Cerebral Activation, (submitted Human Brain Mapping).
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

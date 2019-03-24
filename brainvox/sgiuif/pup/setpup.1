@@ -1,0 +1,132 @@
+
+
+
+     SSSSEEEETTTTPPPPUUUUPPPP((((3333GGGG))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((OOOOCCCCLLLLSSSSCCCC))))            SSSSEEEETTTTPPPPUUUUPPPP((((3333GGGG))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          sssseeeettttppppuuuupppp - sets the display characteristics of a given pop up
+          menu entry
+
+     CCCC SSSSPPPPEEEECCCCIIIIFFFFIIIICCCCAAAATTTTIIIIOOOONNNN
+          vvvvooooiiiidddd sssseeeettttppppuuuupppp((((ppppuuuupppp,,,, eeeennnnttttrrrryyyy,,,, mmmmooooddddeeee))))
+          lllloooonnnngggg ppppuuuupppp,,,, eeeennnnttttrrrryyyy;;;;
+          uuuunnnnssssiiiiggggnnnneeeedddd lllloooonnnngggg mmmmooooddddeeee;;;;
+
+     PPPPAAAARRRRAAAAMMMMEEEETTTTEEEERRRRSSSS
+          _p_u_p  expects the menu identifier of the menu whose entries
+               you want to change. The menu identifier is the returned
+               function value of the menu creation call to either
+               nnnneeeewwwwppppuuuupppp or ddddeeeeffffppppuuuupppp.
+
+          _e_n_t_r_y
+               expects the position of the entry in the menu, indexed
+               from 1.
+
+          _m_o_d_e expects a symbolic constant that indicates the display
+               characteristics you want to apply to the chosen entry.
+               For this parameter there are two defined symbolic
+               constants:
+
+               PPPPUUUUPPPP____NNNNOOOONNNNEEEE, no special display characteristics, fully
+               functional if selected. This is the default mode for
+               newly created menu entries.
+
+               PPPPUUUUPPPP____GGGGRRRREEEEYYYY, entry is greyed-out and disabled.  Selecting
+               a greyed-out entry has the same behavior as selecting
+               the title bar.  If the greyed-out entry has a submenu
+               associated with it, that submenu does not display.
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          Use sssseeeettttppppuuuupppp to alter the display characteristics of a pop up
+          menu entry.  Currently, you use this routine to disable and
+          grey-out a menu entry.
+
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEE
+          Here is an example that disables a single entry:
+
+          menu = newpup();
+          addtopup(menu,"menu %t |item 1 |item 2 |item 3 |item 4",0);
+          setpup(menu, 1, PUP_GREY);
+
+          Subsequent calls of ddddooooppppuuuupppp((((mmmmeeeennnnuuuu)))) would display the menu with
+          the menu entry labeled ``item 1'' is greyed out, and never
+          gets a return value of 1.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          addtopup, changepup, defpup, dopup, freepup, newpup
+
+
+
+     Page 1                                          (printed 2/21/91)
+
+
+
+
+
+
+     SSSSEEEETTTTPPPPUUUUPPPP((((3333GGGG))))            UUUUNNNNIIIIXXXX SSSSyyyysssstttteeeemmmm VVVV ((((OOOOCCCCLLLLSSSSCCCC))))            SSSSEEEETTTTPPPPUUUUPPPP((((3333GGGG))))
+
+
+
+     NNNNOOOOTTTTEEEE
+          This routine is available only in immediate mode.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                          (printed 2/21/91)
+
+
+

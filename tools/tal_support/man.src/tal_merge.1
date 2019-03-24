@@ -1,0 +1,63 @@
+.TH tal_merge Brainvox
+.SH NAME
+tal_merge \- Computes a simple linear combination between two volumes.
+.SH SYNOPSIS
+tal_merge [options] inputtemp inputtemp2 outputtemp
+.SH DESCRIPTION
+This program computes an output volume which is a linear combination
+of two input volumes.
+.PP
+INPUTTEMP is the first input volume template.  INPUTTEMP2 is the 
+second input volume template.  OUTPUTTEMP is the 
+volume template for the computed volume.  The output volume is computed
+according to the following formula:
+.PP
+OUTPUT = ((V1+OFFSET1)*MULT2) + ((V2+OFFSET2)*MULT2) + CONST
+.PP
+The default values for all the parameters will compute an output volume which is the
+average of the input volumes (the sum of 0.5 times each of the input volumes).
+.PP
+Options:
+.TP
+-x(dx)
+The x axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-y(dy)
+The y axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-z(dz)
+The image depth in bytes.  The default is 2 bytes (unsigned shorts).
+.TP
+-f(start)
+This specifies the slice number for the first image in the volume.  Default:1.
+.TP
+-l(end)
+This specifies the slice number for the last image in the volume.  Default:15.
+.TP
+-i(step)
+This specifies the increment number to go from one slice to the next.  Default:1.
+.TP
+-b
+This specifies that 16bit images should be byte swapped before using.
+.TP
+-m(mult1)
+This allows for the MULT1 parameter to be specified.  The default is:0.5.
+.TP
+-n(mult2)
+This allows for the MULT2 parameter to be specified.  The default is:0.5.
+.TP
+-o(offset1)
+This allows for the OFFSET1 parameter to be specified.  The default is:-256.
+.TP
+-p(offset2)
+This allows for the OFFSET2 parameter to be specified.  The default is:-256.
+.TP
+-c(const)
+This allows for the CONST parameter to be specified.  The default is:256.
+.PP
+.SH SEE ALSO
+tal_programs, tal_math
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

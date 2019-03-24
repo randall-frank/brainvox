@@ -1,0 +1,85 @@
+tal_sphere(Brainvox)                         tal_sphere(Brainvox)
+
+
+
+NNAAMMEE
+       tal_sphere − Computes the sphericity of a volume.
+
+SSYYNNOOPPSSIISS
+       tal_sphere [options] inputtemp
+
+DDEESSCCRRIIPPTTIIOONN
+       This   program loads a volume into memory and computes the
+       sphericity of the volume.  Sphericity is a measure of vol­
+       ume smoothness and is output in pixel units.  An 8bit mask
+       volume may be specified using the options and  the  output
+       sphericity  can  be volumetric, or a average of the planar
+       (2d) shericity of all the volume slices.
+
+       INPUTTEMP is the input volume template.
+
+       Options:
+
+       ‐x(dx) The x axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐y(dy) The  y  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐z(dz) The image depth in bytes.  The default is  2  bytes
+              (unsigned shorts).
+
+       ‐f(start)
+              This specifies the slice number for the first image
+              in the volume.  Default:1.
+
+       ‐l(end)
+              This specifies the slice number for the last  image
+              in the volume.  Default:119.
+
+       ‐i(step)
+              This  specifies the increment number to go from one
+              slice to the next.  Default:1.
+
+       ‐b     This specifies that 16bit  images  should  be  byte
+              swapped before using.
+
+       ‐m(masktemp)
+              Specifies a filename template for an 8bit mask vol­
+              ume.
+
+       ‐p     Option to output  the  average  planar  sphericity.
+              The default:3D sphericity.
+
+SSEEEE AALLSSOO
+       tal_programs
+
+NNOOTTEESS
+       This  program  is  based  on  information in the following
+       paper:
+
+       Friston KJ, Frith CD, Liddle PF,Frackowiak RSJ;  Comparing
+       Functional  (PET)  Image:  The  Assessment  of Significant
+       Change.  J. Cereb Blood Flow Metab 11:690‐699 (1991).
+
+       Only 8bit mask volumes are currently supported.
+
+       There are some differences between this implementation and
+       the SPM ks31.m computation.  These include:
+
+       1) Volumetric basis or averaged slice based.
+
+       2) Zero valued derivative values allowed.
+
+       3) Uses one less change value per 3D scanline than ks31.m.
+
+       Generally, these differences are insignificant if the num­
+       ber of voxels is large.
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                             tal_sphere(Brainvox)

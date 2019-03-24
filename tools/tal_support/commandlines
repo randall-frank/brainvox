@@ -1,0 +1,793 @@
+(Dec 13 2006:1.53) Usage: ./tal_resample [options] inputtemp outputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -p(ipx[:ipy]) interpixel spacing default:1.0[:1.0]
+         -s(interslice) interslice spacing default:6.64
+         -f(start) first image number default:1
+         -l(end) last image number default:124
+         -i(step) image number step default:1
+         -o(dz) output interslice spacing default:1.0
+         -d(value) background value default:0
+         -b swap bytes with 16bit images default:no
+         -t(talfile) calib input file default:_talairach
+         -u use unit scaling, _talairach file used for location and attitude
+         -L(minz:maxz) tal space Z sampling limits defaults:-44.00 74.50
+(Dec 13 2006:1.53) Usage: ./tal_normalize [options] inputtemp masktemp outputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -f(start) first image number default:1
+         -l(end) last image number default:15
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -n(norm) normalized average value default:50.0
+         -c(const) additive constant default:256
+         -o(offset) additive constant default:0
+         -m values outside mask set to 0 default:no special treatment
+ output = (p+offset)*((normal_value)/(volume_mean)) + const
+Note: Mask volume must be 8bit.
+(Dec 13 2006:1.53) Usage: ./tal_merge [options] inputtemp inputtemp2 outputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -f(start) first image number default:1
+         -l(end) last image number default:15
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -m(mult1) default:0.5
+         -n(mult2) default:0.5
+         -o(offset1) default:-256.0
+         -p(offset2) default:-256.0
+         -c(const) default:256.0
+ output = ((p1+offset1)*mult1) + ((p2+offset2)*mult2) + const 
+(Dec 13 2006:1.53) Usage: ./tal_smooth [options] inputtemp outputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -f(start) first image number default:1
+         -l(end) last image number default:15
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -v verbose mode
+         -m(masktemp) filename template for a mask volume
+         -d(back) background value output outside of the mask default:0.0
+         -r(dx[:dy:dz]) radius of averaging filter default:7:7:7
+ output =  mean(pixels within radius)
+(Dec 13 2006:1.53) Usage: ./tal_CDA [options] inputtemp outputfile
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -s(ddx) step size in x default:1
+         -t(ddy) step size in y default:1
+         -u(ddz) step size in z default:1
+         -v analyze full volume default:talairach space only
+         -g iterate the computation of g2/g1 yielding one datam per pass
+         -verbose report g2/g1 on each pass when using -g option
+         -o(offset) data offset (p+offset) default:-256
+         -d(stddev) sd's for significance level default:2.575
+         -ties(max_ties) maximum fraction of ties default:.25
+         -n(num) number of patients summed to make volume default:1
+         -f(start) first image number default:1
+         -l(end) last image number default:15
+         -i(step) image number step default:1
+         -m(masktemp) volume template name default:none
+         -b swap bytes with 16bit images default:no
+         -r(dx[:dy:dz]) radius of max/min check default:2:2:2
+         -vcheck(tempname) (min) (max) dump an 8bit visual check volume
+         scaling the pet values from min to max. default:none
+         -thres(V) report all local max/mins with abs values > V
+         -tail- use only values less than zero default:all values
+         -tail+ use only values greater than zero default:all values
+Note: if a tailX options is used, the mean value is assumed to be zero.
+(Dec 13 2006:1.53) Usage: ./tal_centroid [options] inputtemp masktemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -f(start) first image number default:1
+         -l(end) last image number default:15
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -o(offset) additive constant default:0
+         -e(frac) frac of mean for edge default:0.75
+         -v(value) value for edge default:use frac of mean
+ output = centroid(p + offset)
+Note:Mask must be an 8bit volume.
+(Dec 13 2006:1.53) Usage: ./tal_cutting [options] roitemp inputtemp outputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -f(start) first image number default:1
+         -l(end) last image number default:15
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -noflip do not flip ROIs over the X axis default:flip them
+         -v(value) default:0
+         -s(scale) ROI scaling factor default:0.5
+         -o paint inside of roi default:paint outside of roi
+ output = (pixels outside (-o=inside) ROI are set to (value))
+(Dec 13 2006:1.53) Usage: ./tal_roi_sample [options] inputtemp roitemp outfile [pointset, pointset ...]
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -k(xystep) pixel step in xy plane default:2
+         -f(start) first image number default:1
+         -l(end) last image number default:15
+         -i(step) image number step default:1
+         -p(ipx[:ipy]) interpixel spacing default:1.0[:1.0]
+         -s(interslice) interslice spacing default:6.64
+         -b swap bytes with 16bit images default:no
+         -c(const) additive constant default:-256
+         -r(scale) ROI scaling factor default:0.5
+         -noflip do not flip ROIs over the X axis default:flip them
+         -Radial use radial axis system (requires at least 3 pointsets)
+         -Left use lefthand rule for radial axis default:righthand rule
+         -S smooth the poinset before use default:no
+         -v enable verbose mode default:quiet
+         Output = (Pixel + const) inside ROI
+(Dec 13 2006) Usage: ./analyze2raw [options] inputfile outputtemp
+Options: -h print out hdr contents only
+
+The files {inputfile}.img and {inputfile}.hdr will be read and individual
+files will be written to disk
+(Dec 13 2006:1.53) Usage: ./tal_probe [options] inputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -o(offset) data offset (p+offset) default:0
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -m(masktemp) filename template for a mask volume
+         -r(radius) radius of analysis default:3
+         -t compute only total stats for all points
+
+Input is tal space lines of: xxx yyy zzz score 
+Program will stop at end of input file
+(Dec 13 2006:1.53) Usage: ./tal_math [options] expression outputtemp inputA inputB ... inputW
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -f(start) first image number default:1
+         -l(end) last image number default:15
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -s(scale) ROI scaling factor default:0.5
+         -m(masktemp) filename template for a mask volume default:none
+         -d(back) background value output outside of the mask default:0.0
+         -noflip do not flip ROIs over the X axis default:flip them
+         -help print help on expressions
+         -c(exename) Create a custom executable to execute the expression.
+         -C(comment) Supply a user comment for a custom executable.
+         outputtemp and inputs(A-W) are ignored with this option.
+Image depths are 1=unsigned char,2=unsigned short,4=float
+Mask volumes are 8bit
+(Dec 13 2006:1.53) Usage: ./tal_histcheck [options] infile1 infile2
+Options: -o(outputfile) file to output data to default:stdout
+         -b(bucketsize) bucketsize for axis default:0.1
+         -d(bucketsize) bucketsize for data default:10
+         -n(numberofbuckets) number of buckets for data default:20
+         -x(column) column to use as axis default:1
+         -y(column) column to use as second axis default:2
+         -2 perform comparisons along two axis default: single axis
+Input is data lines of whitespace deliminated floats.
+(Dec 13 2006:1.53) Usage: ./tal_stat [options] [-|vol1temp ...]
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -f(start) first image number default:1
+         -l(end) last image number default:15
+         -i(step) image number step default:1
+         -d(back) background value output outside of the mask default:0.0
+         -b swap bytes with 16bit images default:no
+         -v verbose mode
+         -o(offset) value added to each pixel default:0
+         -Hfile(histofile) file to save multi-volume histogram in default:none
+         -Hmin(minval) minimum histogram bin center value default:0.0
+         -Hmax(maxval) maximum histogram bin center value default:255.0
+         -Hsize(binsize) size (width) of a histogram bin default:1.0
+         -Hkeep map pixels outside min/max to min/max bins default:drop them
+         -m(masktemp) filename template for a mask volume
+         -k(kernalfile) filename of a kernal used for local stats
+         -help print help on expressions
+         -c(exename) Create a custom executable to execute the expression.
+         -C(comment)  Supply a user comment for a custom executable.
+         -e(expression) custom local statistic expression. default:none
+If a kernalfile is specified, output volumes may be generated.  The voxels
+in these volumes will be the values of statistics computed for voxels
+in the neighborhood defined by the kernal around the output voxel.
+The default kernal is a single pixel of weight 1.0.
+Output volumes templates are selected by setting local statistics templates.
+Output volumes are always 4byte (float) volumes.
+         -Lavg(meantemp) local mean stats are output in the meantemp volume
+         -Lvar(vartemp) local variance stats are output in the vartemp volume
+         -Lvol(voltemp) local volume counts are output in the voltemp volume
+         -Lvox(voxtemp) local voxel counts are output in the voxtemp volume
+         -Lsos(sstemp) local sum-squares stats are output in the sstemp volume
+         -Lsum(sumtemp) local sum stats are output in the sumtemp volume
+         -Lmin(mintemp) local min stats are output in the mintemp volume
+         -Lmax(maxtemp) local max stats are output in the maxtemp volume
+         -Lsdv(sdvtemp) local st-dev stats are output in the sdvtemp volume
+         -Lcor(cortemp) local correlation is output in the cortemp volume
+         -Lsds(sdstemp) local sum of diff squares is output in sdstemp volume
+         -Lcoc(coctemp) local corr coef is output in the coctemp volume
+         -Lcus(custemp) local custom expr output in the custemp volume
+output =  stats of (p+offset)
+If '-' is used for the input volume, the template names are read from stdin.
+Note:mask volumes must be 8bit
+(Dec 13 2006:1.53) Usage: ./tal_cluster [options] inputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -o(offset) data offset (p+offset) default:0
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -m(masktemp) template for a mask volume
+         -t(thres) cluster threshold value default:100
+         -csize output volume value is cluster size default:index number
+         -clessthan search clusters less than thres default:greater than thres
+         -6 use six neighbor rules for clustering default:26 neighbor rule
+         -b swap bytes with 16bit images default:no
+         -h(histofile) file to save cluster histogram in default:not saved
+         -cvol(outtemp) template to save 16Bit cluster volume to disk
+         -cmin(min) report only cluster sizes above min default:0
+         -seeded use list of input seeds as cluster starting points
+         -seed+thres like -seeded but a 4th input value is used as seed thres
+         -notal seed points are in pixel coords default:Talairach coords
+         -r(radius) radius to search for clusters around seeds default:3.0
+The -r option is only used with the -seeded option.
+When -seeded is specified, points are read from standard input in the form:
+(XXX YYY ZZZ stat)
+stat is used as the threshold value for the seed when -seed+thres is used.
+Otherwise, stat is ignored.
+Note: Mask volumes must be 8Bit volumes.
+(Dec 13 2006:1.53) Usage: ./tal_euler [options] inputtemp tstart tend tstep
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -o(offset) data offset (p+offset) default:-256
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -m(masktemp) template for a mask volume
+         -b swap bytes with 16bit images default:no
+Note: Mask volumes must be 8Bit volumes.
+(Dec 13 2006:1.53) Usage: ./tal_sphere [options] inputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -m(masktemp) template for a mask volume
+         -b swap bytes with 16bit images default:no
+         -p average planar sphericity default:3D sphericity
+Note: Mask volumes must be 8Bit volumes.
+Differences from SPM ks31.m computation:
+1) Volumetric basis or averaged slice based.
+2) Zero valued derivative values allowed.
+3) Uses one less change value per 3D scanline than ks31.m.
+(Dec 13 2006:1.53) Usage: ./tal_regress [options] datafile
+Options: -v[v[v[v]]]	verbose mode
+
+Datafile definition language:
+	VOLPARAMS
+		DX value (image x dimensions default=256)
+		DY value (image y dimensions default=256)
+		FIRST value (first slice number default=1)
+		LAST value (last slice number default=119)
+		STEP value (slice number increment default=1)
+		OFFSET value (data offset value default=0)
+		MASK template (8bit mask volume template default=full volume)
+		WEIGHT template (float weight volume template default= =1.0)
+		SWAP (enables byte swapping default=no byte swapping)
+		ADJ_ALL_VARS (adj Y by covariates and class variables)
+		ADJ_COV_ONLY (adj Y by covariates only, this is the default)
+		LOG_TRANSFORM (Apply a log10 transform to all input data)
+		SINGLE_FIT (Perform a single regression default=voxelwise)
+		Y_BOOLEAN (Y value is boolean 0 or 1, use weighted regression)
+		INPUT_PREFIX dirname (prepended to input files default=none)
+		OUTPUT_PREFIX dirname (prepended to output files default=none)
+	MODEL
+		Y name dz
+		Y_CONST name
+		CONST
+		COVARIABLE_VOL name mean dz
+		COVARIABLE_CONST name mean
+		CLASS classname
+		LABELCLASS classname
+	OUTPUT
+		SS_ERROR template (SS error remaining)
+		SS_VARIABLE varname template
+		P_SS_VARIABLE varname template
+		SS_TOTAL template
+		SS_MODEL template
+		SS_PRESS template
+		R2_MODEL template
+		R2_ADJ_MODEL template
+		R2_PRED_MODEL template
+		ADJ_Y_MEAN template
+		ADJ_Y_CLASS_MEAN classname classlevel template
+		COVARIABLE_SLOPE covname template
+		COVARIABLE_STD_ERROR covname template
+		COEF_COVARIANCE varname1 varname2 template
+	OBSERVATIONS
+		For Y: template [weight]
+		For Y_CONST: value [weight]
+		For CONST: value (generally it should be 1.0)
+		For COVARIABLE_VOL: template
+		For COVARIABLE_CONST: value
+		For CLASS: level
+		For LABELCLASS: level
+	END
+(Dec 13 2006:1.53) Usage: ./tal_edm [options] inputtemp outputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:1
+         -o(offset) data offset (p+offset) default:0
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -t(thres) threshold value default:100
+         -b swap bytes with 16bit images default:no
+         -2d perform plane by plane 2d operation default:3d operation
+         -h(histofile) file to save histogram in default:not saved
+         -s(scale) scale EDM output volumes by integer scale default:no
+         -sip(ipx[:ipy]) specify interpixel spacing default:1.0[:1.0]
+         -sis(islice) specify interslice spacing default:1.0
+Note: Scaled EDM output volumes are 16bit instead of 8bit.
+      -sip and -sis are only supported when -s is used
+      and output volumes are always reported in pixels.
+Output volumes are 8bit
+(Dec 13 2006:1.53) Usage: ./tal_skel [options] inputtemp outputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:1
+         -o(offset) data offset (p+offset) default:0
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -t(thres) threshold value default:100
+         -b swap bytes with 16bit images default:no
+         -2d perform plane by plane 2d operation default:3d operation
+         -h(histofile) file to save histogram in default:not saved
+Output volumes are 8bit
+(Dec 13 2006:1.53) Usage: ./tal_rad_sample [options] inputtemp outtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:1
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -p(ipx[:ipy]) interpixel spacing default:1.0[:1.0]
+         -s(interslice) interslice spacing default:1.0
+         -b swap bytes with 16bit images default:no
+         -v enable verbose mode default:quiet
+         -d(val) set the background value default:0.0
+         -oX:Y:Z Select a new origin for sampling default:128:128:44
+(Dec 13 2006:1.53) Usage: ./tal_standardize [options] inputtemp outputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:4
+         -f(start) first image number default:1
+         -l(end) last image number default:15
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -o(offset) default:0.0
+         -c command line mode
+         -df1(degrees) degrees of freedom 1 default:1
+         -df2(degrees) degrees of freedom 2 default:1
+         -tmin(min) lookup table min value default:-10.0
+         -tmax(max) lookup table max value default:10.0
+         -tstep(step) lookup table step size default:0.01
+         -tprec(prec) set the precision for table generation default:5.0e-16
+         -At2z Choose t dist to z dist. This is the default.
+         -At2p Convert abs(t) score to a cumulative one tailed probability
+         -Az2p Convert abs(z) score to a cumulative one tailed probability
+         -Af2p Convert abs(f) score to a cumulative one tailed probability
+(Dec 13 2006:1.53) Usage: ./tal_rerandom [options] nsubjects [-|vols1 vols2 ...]
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:4
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -s(seed) specify a seed for the random sample generator default:1
+         -R(file) specify the base filename for checkpointing default:none
+         -M(maxtrials) set the max number of randomizations default:1000
+         -v verbose mode
+         -V(outvolume) T volume template for correct AB mapping. default:none
+         -W(outvolume) variance vol temp for correct AB mapping. default:none
+         -Oabs use absolute values when computing Tmax default:direct value
+         -Otmax(file) file to output the Tmax distribution to default:none
+         -Ostats(file) file to output stats to default:stdout
+         -o(offset) value added to each pixel default:0
+         -Hfile(histofile) file to save Tmax histogram in default:none
+         -Hmin(minval) minimum histogram bin center value default:-10.0
+         -Hmax(maxval) maximum histogram bin center value default:10.0
+         -Hsize(binsize) size (width) of a histogram bin default:0.1
+         -Hkeep map pixels outside min/max to min/max bins default:drop them
+         -m(masktemp) filename template for a mask volume
+         -k(kernalfile) filename of a kernal used for smoothing of var
+output =  stats of (p+offset)
+If '-' is used for the input volume, the template names are read from stdin.
+Note:mask volumes must be 8bit.
+(Dec 13 2006:1.53) Usage: ./tal_spatial size FWHM dimension
+       size : Number of voxels in the search
+       FWHM : Smoothness of the process
+       dim  : Dimension of the process (3=3D,2=2D)
+
+This application is a filter which takes the output of tal_cluster and
+appends a column containing the Probability basd on the equations
+found in:
+Friston KJ, Worsley KJ, Frackowiak RSJ, Mazziotta JC, Evans AC;
+	Assessing the Significance of Focal Activations Using Their
+	Spatial Extent. Human Brain Mapping 1:210-220 (1994).
+
+Note:It is assumed that the clustered volume is a
+     normal (Z) volume (SPM{z})
+(Dec 13 2006:1.53) Usage: ./tal_surface [options] inputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:1
+         -f(start) first image number default:1
+         -l(end) last image number default:124
+         -i(step) image number step default:1
+         -p(ipx[:ipy]) interpixel spacing default:1.0[:1.0]
+         -s(interslice) interslice spacing default:1.0
+         -m(masktemp) template for a mask volume
+         -t(thres) binary threshold value default:128
+         -b swap bytes with 16bit images default:no
+         -r(radius) radius to smooth to before computingarea default:1 (int)
+Note: Mask volumes must be 8Bit volumes.
+(Dec 13 2006:1.53) Usage: ./tal_remask [options] inputtemp outputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:1
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -t(threshold) above this is part of object default:1.0
+ output =  8bit mask around objects above threshold
+(Dec 13 2006:1.53) Usage: ./tal_mrinorm [options] input output
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -f(start) first image number default:1
+         -l(end) last image number default:124
+         -i(step) image number step default:1
+         -v verbose mode
+         -m use exp end model default:linear
+         -s(is) interslice spacing (used w/-m to scale template) default:1.6
+         -o(order) fit order default:4
+         -d(dumpfile) save the polynomial fit default:none
+         -r(dumpfile) read the polynomial fit default:none
+         -e(err) maximum error allowed in an applied fit default:100
+         -axis(X|Y|Z) axis to correct along default:Z
+         -avg(X|Y|Z)(X|Y|Z) line profile averages in (dim)(report) default:none
+         -N restrict output pixel values to the original histogram default:not
+(Dec 13 2006:1.53) Usage: ./tal_resize [options] inputtemp outputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -f(start) first image number default:1
+         -l(end) last image number default:15
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -s Enable smoothing filter default:no
+         -c(x:y:z) Select corner to copy from default:0:0:0
+         -r(x:y:z) Select rect to copy default:dx:dy:slices
+         -o(x:y:z) Select output rect default:-r values
+         -Px(st:en) Set X axis padding before:after output rect default:0:0
+         -Py(st:en) Set Y axis padding before:after output rect default:0:0
+         -Pz(st:en) Set Z axis padding before:after output rect default:0:0
+         -Pv(v) Set padding value default:0.0
+         -v verbose mode
+Voxnet does not run on this machine.
+(Dec 13 2006:1.53) Usage: ./tal_fft [options] datatemp realtemp imagtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:1
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -v verbose mode
+         -r perform reverse transform
+         -w perform wrap-around data reordering
+         -1 perform dx*dy 1D FFTs in the Z dimension
+         -o(offset) offset added to datatemp default:0
+(Dec 13 2006:1.53) Usage: ./tal_median [options] intemp outtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:1
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -m(masktemp) template for a mask volume
+         -v verbose mode
+         -r(x:y:z) median box size default:(3:3:3)
+(Dec 13 2006:1.53) Usage: ./tal_rename [options] intemp outtemp
+Options: -f(istart) first input file number default:1
+         -l(iend) last input file number default:124
+         -i(istep) input file number increment default:1
+         -F(ostart) first output file number default:(istart)
+         -I(ostep) output file number increment default:(istep)
+         -v verbose mode
+         -t test mode (print the commands only)
+         -c(cmd) unix command to issue default:mv
+(Dec 13 2006:1.53) Usage: ./tal_pca [options] ncomponents [-|vols1 vols2 ...]
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:4
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:2
+         -b swap bytes with 16bit images default:no
+         -s(skip) specify a step factor for the X,Y plane default:2
+         -v verbose mode
+         -c center columns before SVD (subtract mean) Default: not centered
+         -o(offset) value added to each pixel default:0
+         -O(num):(template) save eigen vector volume (num) to disk
+         -m(masktemp) filename template for a mask volume
+         -p(projfile) file where the projection data are saved Default:stdout
+If '-' is used for the input volume, the template names are read from stdin.
+Note:mask volumes must be 8bit.
+(Dec 13 2006:1.53) Usage: ./tal_ortho [options] inputtemp outputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:1
+         -f(start) first image number default:1
+         -l(end) last image number default:100
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -p(ipx[:ipy]) interpixel spacing default:1.0[:1.0]
+         -s(interslice) interslice spacing default:1.0
+         -r(interslice) output interslice spacing default:1.0
+         -Dx(x:y:z) Select output X axis direction default:1:0:0
+         -Dy(x:y:z) Select output Y axis direction default:0:1:0
+         -Dz(x:y:z) Select output Z axis direction default:0:0:1
+         -d(x:y:z) Select output volume dimensions default:256:256:100
+         -v verbose mode
+(Dec 13 2006:1.53) Usage: ./tal_label [options] inputtemp outputtemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:1
+         -o(offset) data offset (p+offset) default:0
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -t(thres) threshold value default:100
+         -b swap bytes with 16bit images default:no
+         -2d perform plane by plane 2d operation default:3d operation
+         -h(histofile) file to save histogram in default:not saved
+         -c(conn) specify connectivity default:4 or 6
+	 Valid connectivity values: 2D:4,8  3D:6,18,26
+Output volumes are 8bit
+(Dec 13 2006:1.53) Usage: ./tal_roi2mesh [options] outputfile
+Options: -t(thin) fraction to thin contours by (default:1.0)
+         -o(x:y:z) origin coords to subtract (default:0:0:0)
+         -m(x:y:z) scale to multiply by (default:1:1:1)
+         -g write in geomview format (default:OBJ)
+Stdin consists of lines of:
+ROINAME ZDEPTH
+One for each contour in the object.  The ROIs can be presented in any order.
+(Dec 13 2006:1.53) Usage: ./tal_optimal [options] inputtemp outputimg
+Options: -x(dx) cost function dx default:256
+         -y(dy) cost function dy default:256
+         -f(start) first slice number default:1
+         -l(end) last slice number default:20
+         -i(step) slice number step default:1
+         -b swap bytes with 16bit images default:no
+         -c(x:y) connectivity rules for each dim default:(1:1)
+         -w(axis) select wrap-around rules for one axis (0-1) default:none
+         -v select verbosity level default:quiet
+Output image depth is 16bits.
+Input cost function is floating point depth.
+(Dec 13 2006:1.53) Usage: ./tal_mcubes [options] inputtemp outputfile
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:1
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -v verbose mode
+         -p(ipx:[ipy]) interpixel spacing default:1.0[:1.0]
+         -s(interslice) interslice spacing default:1.0
+         -o(x,y,z) origin coords to subtract default:0:0:0
+         -m(masktemp) filename template for a mask volume
+         -t(threshold) threshold to isosurface at default:128
+         -g write in geomview format default:obj
+ output = triangle mesh at threshold t
+(Dec 13 2006:1.53) Usage: ./tal_thinmesh [options] inputfile outputfile
+Options: -t(thin) fraction of triangles to remove default:0.0
+         -b(size) block triangle count fraction default:0.1
+         -v enable verbose mode
+         -g read/write in geomview format default:OBJ
+(Dec 13 2006:1.53) Usage: ./tal_trace [options] inputtemp roibase
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:1
+         -f(start) first image number default:1
+         -l(end) last image number default:124
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -t(threshold) value to autotrace at default:1
+         -s(scale) ROI scaling factor default:2.0
+         -noflip do not flip ROIs over the X axis default:flip them
+         -omax pixels outside the image are maximum valued default:minumum
+Note: float input volumes not currently supported.
+(Dec 13 2006:1.53) Usage: ./tal_rmshm shmtemplate
+(Dec 13 2006:1.53) Usage: ./tal_mkshm [options] nslices
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:1
+Output:stdout = shmtemplate (slices=1-nslices)
+(Dec 13 2006:1.53) Usage: ./tal_warp [options] intemp outtemp dxtemp dytemp dytemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:1
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -b swap bytes default:no
+         -n normalize the dx,dy,dz vectors default:no
+         -I trilinear interpolate values default:nearest
+         -o(back) value for src or dst outside of mask default:0.0
+         -s(x:y:z) vector to multiply the vectors by default:1.0:1.0:1.0
+         -d(x:y:z) dims of output, vector and mask vols default:input vol dims
+         -m(masktemp) filename template for a mask volume default:none
+         -R(srctemp) template for source mask volume output default:none
+intemp=z,outtemp=z,dxtemp=dytemp=dztemp=z4
+Notes:Normalization occurs before multiplication.
+      Mask, output and vector volumes are the same
+      size and are number starting at 1 and stepping by 1.
+(Dec 13 2006:1.53) Usage: ./tal_gwcsf [options] intemp masktemp Gout Wout Cout Fout
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) output image depth in bytes (1 or 4 only) default:4
+         Note: the Fout volume is always float format (dz=4)
+         -f(start) first image number default:1
+         -l(end) last image number default:124
+         -i(step) image number step default:1
+         -b swap bytes default:no
+         -sip(ipx[:ipy]) interpixel spacing default:1.0:1.0]
+         -sis(interslice) interslice spacing default:1.0
+         -p(params) save the run parameters to disk default:none
+         -S(savebase) save the fit data to disk default:none
+         -N(temp) save 8bit histogram index data to disk default:none
+         -v(vv...) increasing levels of verbose output default:none
+         -rs(x:y:z) define local rect sizes in pixels default:45:45:45
+         -ri(x:y:z) define local rect increment in pixels default:10:10:10
+         -rt(x:y:z) define local test rect in pixels default:1:1:1
+         -rp(percent) percent of valid voxels in a rect default:0.10
+         -GXY(value) change an initial value for the global fit. X=GWC Y=AWM
+                 Default values:
+                             (G)ray (W)hite (C)SF
+                 (A)mplitude  0.012  0.016  0.002
+                 (W)idth       13.0   13.0   13.0
+                 (M)ean       157.0  210.0   70.0
+          -help list additional advanced options
+
+intemp=z1,masktemp=z1,Gout=Wout=Fout=Cout=zX
+(Dec 13 2006:1.53) Usage: ./tal_prandom [options] nsubA nsubB [-|vols1 vols2 ...]
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:4
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -b swap bytes with 16bit images default:no
+         -s(seed) specify a seed for the random sample generator default:1
+         -R(file) specify the base filename for checkpointing default:none
+         -M(maxtrials) set the max number of randomizations default:1000
+         -v verbose mode
+         -V(outvolume) T volume template for correct AB mapping. default:none
+         -W(outvolume) variance vol temp for correct AB mapping. default:none
+         -Oabs use absolute values when computing Tmax default:direct value
+         -Otmax(file) file to output the Tmax distribution to default:none
+         -Ostats(file) file to output stats to default:stdout
+         -o(offset) value added to each pixel default:0
+         -Hfile(histofile) file to save Tmax histogram in default:none
+         -Hmin(minval) minimum histogram bin center value default:-10.0
+         -Hmax(maxval) maximum histogram bin center value default:10.0
+         -Hsize(binsize) size (width) of a histogram bin default:0.1
+         -Hkeep map pixels outside min/max to min/max bins default:drop them
+         -m(masktemp) filename template for a mask volume
+         -k(kernalfile) filename of a kernal used for smoothing of var
+output =  stats of (p+offset)
+If '-' is used for the input volume, the template names are read from stdin.
+Note:mask volumes must be 8bit.
+(Dec 13 2006:1.53) Usage: ./tal_pts2vol [options] poinset volumetemp
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+	 -z(dz) image dz default:1
+         -f(start) first image number default:1
+         -l(end) last image number default:124
+         -i(step) image number step default:1
+         -d(value) background value default:0
+         -p(interpixel) interpixel spacing default:1.0
+         -s(interslice) interslice spacing default:1.0
+	 -r perform tranform from volume to pointset
+	 -t lower threshold default:1.0
+	 -u upper threshold default:255
+	 -v(value) (0-13) default:2
+	 -n use intensity value from the volume to be the pointset
+Note that if the -n option is used, the volume should be 8bit.
+The intensity range should be 1-13 for intensities to be converted to points.
+(Dec 13 2006:1.53) Usage: ./tal_rft [options] inputtemp threshold
+Options: -x(dx) image dx default:256
+         -y(dy) image dy default:256
+         -z(dz) image depth in bytes default:2
+         -f(start) first image number default:1
+         -l(end) last image number default:119
+         -i(step) image number step default:1
+         -m(masktemp) template for a mask volume
+         -b swap bytes with 16bit images default:no
+         -r(:x:y:z) specify x, y, z, resel size in voxels:1.0:1.0:1.0
+         -t(:start:stop:step) (test statistic threshold):1
+         -df1(degrees) degrees of freedom 1 default:1
+         -df2(degrees) degrees of freedom 2 default:1
+         -Pzv Use gaussian field: default field
+         -Ptv Use t field with v (df1) degress of freedom
+         -Pfv Use F field with k (df1) and v (df2) degrees of freedom
+         -Pxv Use a Chisqu field with v (df1) degrees of freedom
+	 -c Use 2/3 correction factor for diamaters and surfaces
+Note: Mask volumes must be 8Bit volumes.
+Note: The threshold is used for defining which voxels constitute the small volume.
+
+Note: For t and chi-square statistics, the df1 option should be used to specify the degrees of freedom.
+For an F statistic, df1 and df2 specify the numerator and denominator degrees of freedom respectively.
+(Dec 13 2006:1.53) Usage: ./tal_nifti [options] nifti-header
+Options: -xy Output -x -y values in command line form
+	 -z  Output -z value in command line form
+	 -f  Output -f -l slice limits in command line form
+	 -ip Output interpixel value
+	 -is Output interslice value
+	 -hp(hdr) Output header for interpixel value (default:-p)
+	 -hs(hdr) Output header for interslice value (default:-s)
+(Dec 13 2006) Usage ./worsley : func [params...]
+
+Function  Parameters
+FWHMz     FWHMz dorig dnew [stopdnew step]
+          
+Psv       resels svalue Pvar n [stoptval step]
+          
+Pzv       resels Zvalue [stoptval step]
+          3D gaussian-field
+Ptv       resels tvalue n [stoptval step]
+          3D t-field
+Pfv       resels Fvalue kn vn [stoptval step]
+          3D f-field
+Pxv       resels ChiSquvalue n [stoptval step]
+          3D ChiSqu-field
+From: Worsley KJ, Marrett S, Neelin P, Vandal AC, Friston KJ, Evans AC, A
+Unified Statistical Approach for Determining Significant Signals in Images of
+Cerebral Activation, (submitted Human Brain Mapping)
+
+Pzsv      3Dres 2Dres 1Dres 0Dres Zvalue FWHM(min) FWHM(max) [stoptval step]
+          3D gaussian scale space (resels computed at min FWHM)
+From: Worsley KJ, Marrett S, Neelin P, Evans AC, Searching Scale Space for
+Activation in PET Images, (submitted Human Brain Mapping)
+
+Note: N values used here should be N and not df (N-1)
+(Dec 13 2006:1.53) Usage: ./tal_vbin [options] binfile [xsize ysize [palettefile]]
+Options:   -pid  : echo process ID to stdout
+          -wait  : run in foreground
+        -head h  : header size in bytes
+       -pos x y  : position LL of window at x,y
+         -z1|-8  : force as 8 bit image
+        -z2|-16  : force as 16 bit image
+        -z3|-24  : force as 24 bit rgb image
+     -z4|-float  : force as binary floating point image
+       -max max  : select max value
+       -min min  : select min value
+          -swap  : force image swap bytes
+        -noswap  : force no image swap bytes
+        -noflip  : no image flipping
+        -pal palfile  : option form of palettefile argument

@@ -1,0 +1,91 @@
+tal_euler(Brainvox)                           tal_euler(Brainvox)
+
+
+
+NNAAMMEE
+       tal_euler − Computes the Euler characteristic of a volume.
+
+SSYYNNOOPPSSIISS
+       tal_euler [options] inputtemp tstart tend tstep
+
+DDEESSCCRRIIPPTTIIOONN
+       This  program computes the Euler characteristic of a  vol­
+       ume.  The Euler characteristic is computed for a number of
+       different threshold starting at TSTART and going  to  TEND
+       in  steps of size TSTEP.  After all the Euler computations
+       have been made, a threshold vs Euler number table is  out­
+       put  on  stdout.   Additionally,  the  2 caliper diameter,
+       (1/2) surface volume and volume values for the region  are
+       output  (see referenced papers for definitions).  The com­
+       putation can be restricted to a masked sub‐volume.  Voxels
+       are  only  considered  where  the  neighbors  (in an Euler
+       sense) are all within the volume.  When a mask  volume  is
+       specified,  voxels  outside the mask are considered to not
+       make the threshold.
+
+       INPUTTEMP is the input volume  template.   TSTART  is  the
+       first  threshold  to be used for the computation.  TEND is
+       the last threshold and TSTEP is the  increment  size  from
+       TSTART to TEND.
+
+       Options:
+
+       ‐x(dx) The  x  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐y(dy) The y axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐z(dz) The  image  depth in bytes.  The default is 2 bytes
+              (unsigned shorts).
+
+       ‐o(offset)
+              16 bit data offset.  All 16 bit data have this off­
+              set  value  added  before  the  data  is used.  The
+              default is ‐256.
+
+       ‐f(start)
+              This specifies the slice number for the first image
+              in the volume.  Default:1.
+
+       ‐l(end)
+              This  specifies the slice number for the last image
+              in the volume.  Default:119.
+
+       ‐i(step)
+              This specifies the increment number to go from  one
+              slice to the next.  Default:1.
+
+       ‐b     This  specifies  that  16bit  images should be byte
+              swapped before using.
+
+       ‐m(masktemp)
+              Specifies a filename template for an 8bit mask vol­
+              ume.
+
+
+SSEEEE AALLSSOO
+       Brainvox Program Reference Guide, tal_programs
+
+NNOOTTEESS
+       This  program  is  based  on  information in the following
+       papers:
+
+       Worsley KJ, Evans AC, Marrett S, Neelin P; A  Three‐Dimen­
+       sional  Statistical Analysis for CBF Activation Studies in
+       Human Brain.  J. Cereb Blood Flow Metab 12:900‐918 (1992).
+
+       and
+
+       Worsley  KJ,  Marrett  S, Neelin P, Vandal AC, Friston KJ,
+       Evans AC, A Unified Statistical Approach  for  Determining
+       Significant  Signals  in  Images  of  Cerebral Activation,
+       (submitted Human Brain Mapping).
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                              tal_euler(Brainvox)

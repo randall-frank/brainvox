@@ -1,0 +1,54 @@
+.TH reg_create 3
+.SH NAME
+reg_create, reg_delete
+.SH SYNOPSIS
+.HP
+.B
+#include "regression.h"
+.HP
+.B
+Regression *reg_create(long int nvars, long int *nclasses, long int nvalues, char *mask);
+.HP
+.B
+void reg_destroy(Regression *r);
+.PP
+IDL API:
+.HP
+.B
+r=REG_CREATE(nclasses,nvalues[,mask])
+.HP
+.B
+err=REG_DESTROY(r)
+.SH DESCRIPTION
+The reg_create function creates a registration object.  The object defines
+the model to be applied and the number of parallel regressions to be
+computed.  The model is represented by the nclasses array and the nvars
+parameter.  nvars is the number of values in the nclasses array.  Each
+value in the nclasses array is the number of levels in the input
+variable, in the case where the input variable is a class  variable with
+fixed levels of values.  If the nclasses value is zero for a varibale,
+it is a covariable.  If non-zero, it is the number of levels of the
+class variable.  The nvalues parameter specifies the number of
+regressions to be performed in parallel (e.g. the number of voxels
+in a volume).  The mask parameter is optional.  If NULL, all the
+regressions will be tracked.  Otherwise, only those regressions for
+which the corresponding mask value is non-zero will be tracked.  This
+allows for culling of the computations to a much smaller region.
+The returned regression object is used in all the susequent
+function calls.  A return value of NULL specifies an error.
+.PP
+In the IDL API, the nvars variable is not necessary.  It is determined
+intrinsically by the length of nclasses.  The mask parameter is
+optional and need not be specified.  A return value of -1 specifies
+an error.
+.PP
+The reg_destroy function releases all the memory allocated for
+a given regression object.  The object can no longer be used
+as input to a regression function.  The IDL API will return
+0 for success or -1 on error.
+.SH SEE ALSO
+reg_lib(3)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

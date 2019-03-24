@@ -1,0 +1,36 @@
+.TH cvio_mk 1
+.SH NAME
+cvio_mk - create a CVIO file
+.SH SYNOPSIS
+cvio_mk [options] file
+.SH DESCRIPTION
+The program creates an empty CVIO file.  It is very useful for
+creating shared memory CVIO files.
+.PP
+Options:
+.TP
+-v
+Selects verbose mode
+.TP
+-z(dz)
+Select the sample datatype.  0=string, 1=byte, 2=short, 3=unsigned short, 4=float.
+Default: 1.
+.TP
+-n(ndims)
+Select the number of dimensions of the sample.  The default: 1.
+.TP
+-d(d0:d1:d2)
+Select the dimensionality of the sample.  The default is a scalar: 1:1:1.
+.TP
+-l(num)
+Set the maximum number of samples for the file.  This is critical for
+shared memory files.  The default: 100000.
+.TP
+-c
+Select that the output file be saved in compressed form.
+.SH SEE ALSO
+cvio_intro(1), cvio_build(1), cvio_cp(1)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

@@ -1,0 +1,105 @@
+.TH cvio_lib CVIO_Library
+.SH NAME
+An Introduction to the CVIO I/O library API.
+.SH SYNOPSIS
+See individual routine man pages.
+.SH DESCRIPTION
+The CVIO library defines a number of functions and datatypes
+to enable access to CVIO files from 'C' and IDL applications.
+A valid application will take the form:
+.PP
+.nf
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include "cvio_lib.h"
+
+int main(int argc, char **argv)
+{
+    if (cvio_init() != CVIO_ERR_OK) {
+        fprintf(stderr,"Unable to initialize CVIO library\n");
+        exit(1);
+    }
+    ... make some CVIO calls ...
+    cvio_cleanup(0);
+    exit(0);
+}
+.fi
+.PP
+It is critical to call cvio_init() and cvio_cleanup() to ensure
+the library is properly setup and shutdown. 
+.PP
+CVIO files are accessed via a 32bit stream identifier.  The
+identifier is returned by a successful cvio_open() call.
+All other cvio calls that operate on files use this 
+identifier to select the file to access. 
+.PP
+The library provides a complete set of error handling routines
+as well.  All cvio functions return a 32bit error code.  Routines
+are provided to convert cvio error codes to ASCII strings
+for sensible error dialogs
+.PP
+The routines are listed here (each maps to an identically named
+IDL function, with the exceptions of cvio_init and cvio_cleanup,
+which are automatically called by the DLM):
+.PP
+cvio_init - initialize the library
+.PP
+cvio_cleanup - shutdown (close open files, flush buffers, etc)
+.PP
+cvio_get_error_message - get an ASCII string for an error code
+.PP
+cvio_listshmem - list the files currently in shared memory
+.PP
+cvio_create - create a CVIO file
+.PP
+cvio_delete - delete a CVIO file
+.PP
+cvio_open - open a CVIO file for reading or writing
+.PP
+cvio_close - close a CVIO file
+.PP
+cvio_has_writer - detect if a CVIO file has an active writer
+.PP
+cvio_max_length - return the maximum length of a CVIO file
+.PP
+cvio_add_samples - add some samples to a CVIO file
+.PP
+cvio_read_samples - read some samples from a CVIO file
+.PP
+cvio_getattribute - get the value of an attribute
+.PP
+cvio_setattribute - set the value of an attribute
+.PP
+cvio_getattriblist - get a list of available attributes
+.PP
+cvio_current_time - get the current system tiemstamp
+.PP
+cvio_read_next_samples - read the N next samples from the file
+.PP
+cvio_tell - get current file postion information
+.PP
+cvio_seek - set the current file position
+.PP
+cvio_datatype - get information about the samples in a file
+.PP
+The IDL interfaces are documented in with the 'C' API.  In general,
+the IDL API avoids the need for explicit buffer length parameters 
+an preallocation of return variables, but otherwise maps to the 'C' 
+API parameter for parameter.  The 
+IDL interface will automatically provide type conversion functions
+as well (e.g. if the file datatype is an unsigned short and floats
+are passed, the IDL wrapper will automatically provide the conversion).
+In the IDL man pages, parameters ending with an underscore '_'
+are return values.  All other parameters are inputs.  IDL users
+should refer to the 'C' header file 'cvio_lib.h' for definitions
+of the various symbolic values referred to in the 'C' man pages.
+.SH SEE ALSO
+cvio_intro(1)
+.SH NOTES
+The CVIO library was written by Randall Frank, Derek Foreman and Chris Smyser, with 
+input from Thomas Grabowski and Lizann Bolinger.
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

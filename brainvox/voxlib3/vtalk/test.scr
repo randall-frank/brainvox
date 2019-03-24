@@ -1,0 +1,11 @@
+set j 1.2
+set k 3.4
+set zzz $(j) pow $(k)
+echo $(j) to the $(k) is $(zzz)
+set i 1.0
+label temp
+set i $(i) + 1
+set z $(i) ^ 2.0
+echo $(i) squared is $(z)
+if ($(i) <= 10.0) goto temp
+end

@@ -1,0 +1,142 @@
+tal_cluster(Brainvox)                       tal_cluster(Brainvox)
+
+
+
+NNAAMMEE
+       tal_cluster − Detects and reports on connected clusters in
+       a volume.
+
+SSYYNNOOPPSSIISS
+       tal_cluster [options] inputtemp
+
+DDEESSCCRRIIPPTTIIOONN
+       This  program searches for clusters  of  voxels  within  a
+       volume (and optionally within a masked volume) that exceed
+       a given threshold.  Voxels are considered part of a  clus­
+       ter  if  they  can  trace a connected neighborhood to each
+       other.  The algorithm works by starting a threshold "flood
+       fill"  at  each  valid  location in the volume.  A list of
+       clusters and their sizes is  output  to  stdout.   Options
+       exist to output a tagged volume from the clustering and to
+       seed the clustering from  used  specified  locations.  The
+       output  volume  can  be  tagged by an index value for each
+       cluster or by the size of the cluster.   Both  are  useful
+       for  thresholded volume rendering of the resultant volume.
+       The software is designed for use in Talairach  space,  but
+       there are options to ease this restriction.
+
+       INPUTTEMP is the input volume template.
+
+       Options:
+
+       ‐x(dx) The  x  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐y(dy) The y axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐z(dz) The  image  depth in bytes.  The default is 2 bytes
+              (unsigned shorts).
+
+       ‐o(offset)
+              16 bit data offset.  All 16 bit data have this off­
+              set  value  added  before  the  data  is used.  The
+              default is 0.
+
+       ‐f(start)
+              This specifies the slice number for the first image
+              in the volume.  Default:1.
+
+       ‐l(end)
+              This  specifies the slice number for the last image
+              in the volume.  Default:119.
+
+       ‐i(step)
+              This specifies the increment number to go from  one
+              slice to the next.  Default:1.
+
+       ‐b     This  specifies  that  16bit  images should be byte
+              swapped before using.
+
+       ‐m(masktemp)
+              Specifies a filename template for an 8bit mask vol­
+              ume.
+
+       ‐t(thres)
+              Specifies   the  threshold  value  for  clustering.
+              Default:100.
+
+       ‐csize Specifies that the value in the  output  volume  is
+              the  cluster  size  in  voxels.  Default:The output
+              values are unique  index  numbers.   One  for  each
+              cluster.
+
+       ‐clessthan
+              The  search  should  be for clusters of voxels with
+              values less than the threshold value. Default:look­
+              ing for clusters of voxels with values greater than
+              the threshold.
+
+       ‐6     Use six neighbor rule for  clustering.   Default:26
+              neighbor rule.
+
+       ‐h(histofile)
+              Specifies  a filename to save the cluster size his­
+              togram data into.  A filename of "‐" specifies std­
+              out.  Default:histogram data are not saved.
+
+       ‐cvol(outtemp)
+              Specifies  a  filename  template  to save the 16Bit
+              cluster volume to disk.  The values in the  cluster
+              volume  are  determined  by  the  ‐csize  flag.  By
+              default, the volume is not saved.
+
+       ‐cmin(min)
+              Report only cluster sizes above the  specified  min
+              value.  Default:0.
+
+       ‐seeded
+              In  this  mode, a list of "seed" point is read from
+              stdin.  These points are used as starting locations
+              for the clustering.  No other locations in the vol­
+              ume are used as cluster search starting  locations.
+              By  default  the  seed points are read as Talairach
+              space locations, reading three  numbers  per  input
+              line  until  an  EOF  is  reached.   See  "‐r"  and
+              "‐notal" options.
+
+       ‐seed+thres
+              This mode is identical  to  "‐seeded"  except  that
+              each  seed  point  has  a separate threshold value.
+              This value is input as a fourth value on the  input
+              line.   If  no  fourth value is specified, the "‐t"
+              value is used instead.
+
+       ‐notal Seed points locations and output locations  are  in
+              pixel  coordinates. Default: Talairach coordinates.
+
+       ‐r(radius)
+              This option allows for a search radius  around  the
+              seed points to be specified.  All voxels within the
+              radius around each of the seed points are  used  as
+              starting  locations  for  the  cluster search.  The
+              default radius is 3.0.
+
+
+SSEEEE AALLSSOO
+       Brainvox Program Reference Guide, tal_programs
+
+NNOOTTEESS
+       The ‐r option is only used with the ‐seeded option.   When
+       ‐seeded  is specified, points are read from standard input
+       in the form: (XXX YYY ZZZ stat) Stat is ignored, except in
+       "‐seed+thres"  mode, where it is used as the threshold for
+       the individual seed point.
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                            tal_cluster(Brainvox)

@@ -1,0 +1,23 @@
+.TH NEWPUP 3G OCLSC
+.SH NAME
+.B newpup
+\- allocates and initializes a structure for a new menu
+.SH "C SPECIFICATION"
+.B
+long newpup()
+.SH PARAMETERS
+.I none
+.SH "FUNCTION RETURN VALUE"
+The returned value of this function is a menu identifier.
+.SH DESCRIPTION
+.B newpup
+allocates and initializes a structure for a new menu; it returns a positive
+menu identifier. Use
+.B newpup
+with
+.B addtopup
+to create pop-up menus.
+.SH "SEE ALSO"
+addtopup, changepup, defpup, dopup, freepup, setpup
+.SH NOTE
+This routine is available only in immediate mode.

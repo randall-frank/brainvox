@@ -1,0 +1,67 @@
+.TH tal_probe Brainvox
+.SH NAME
+tal_probe \- Returns information about voxels at a point in a volume.
+.SH SYNOPSIS
+tal_probe [options] inputtemp
+.SH DESCRIPTION
+This program takes as input a list of Talairach space coordinates and a voxel volume.
+The list of points is used to probe the volume for the values of voxels around each of
+the points.
+.PP
+INPUTTEMP is the input volume template.  The input volume is assumed to be in
+Talairach space.  Tal_probe expects on standard input a
+series of ASCII Talairach space locations of the form (score is ignored):
+.PP
+xxx yyy zzz score
+.PP
+Output is ASCII test to standard output.  It includes the mean, min and maximum 
+voxel values within the specified radius around each probe point.
+In the case of the total option '-t' the average probe location is output.
+The program will stop when the end of standard input is reached.
+.PP
+Options:
+.TP
+-x(dx)
+The x axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-y(dy)
+The y axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-z(dz)
+The image depth in bytes.  The default is 2 bytes (unsigned shorts).
+.TP
+-o(offset)
+16 bit data offset.  All 16 bit data have this offset value added before
+the data is used.  The default is 0.
+.TP
+-f(start)
+This specifies the slice number for the first image in the volume.  Default:1.
+.TP
+-l(end)
+This specifies the slice number for the last image in the volume.  Default:119.
+.TP
+-i(step)
+This specifies the increment number to go from one slice to the next.  Default:1.
+.TP
+-b
+This specifies that 16bit images should be byte swapped before using.
+.TP
+-r(radius)
+This allows the user to specify the radius of voxels around the probe
+points to be analyzed. Default radius:3 voxels.
+.TP
+-t
+This option computes only total stats for all points input.
+.TP
+-m(masktemp)
+This option selects a filename template for a mask volume.  If a mask volume 
+is specified, only those voxels within the mask volume are considered to be
+within the specified radius (mask voxel > 0).  The default: no masking
+is performed.
+.PP
+.SH SEE ALSO
+tal_programs
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

@@ -1,0 +1,21 @@
+.TH tal_rmshm Brainvox
+.SH NAME
+tal_rmshm \- removes a shared memory volume created using tal_mkshm.
+.SH SYNOPSIS
+tal_rmshm shmtemplate
+.SH DESCRIPTION
+This program is used to remove a shared memory volume created using tal_mkshm.
+SHMTEMPLATE is a template in the form ':XX_%%%' (or any filename in the
+series) which corresponds to a given shared memory volume.  The template
+name can come from tal_mkshm or tal_ls.
+.PP
+Options:
+.TP
+None
+.PP
+.SH SEE ALSO
+tal_mkshm, tal_ls, tal_programs
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

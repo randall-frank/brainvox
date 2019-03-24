@@ -1,0 +1,36 @@
+this is an implementation of an SGI dopup() compatible popup menu library.
+for the most part it looks and feels like the standard gl/4Sight menu
+but is written entirely in gl and has a few handy improvements that
+I felt were desirable:
+
+	optional ``state'' markers on menu items so you can use
+	the same menu item to turn off and on some feature in your
+	program and get a visual cue as to whether it is off or on.
+
+	radio menu items - the ability to group a set of related
+	but mutually exclusive menu items with a ``state'' marker to
+	indicate which one is currently active.  (similar to radio buttons
+	in various tool kits).  there can be more than one such group
+	per menu (max 10).
+
+	you can specify which button the menu is used with (i.e.
+	LEFTMOUSE, MIDDLEMOUSE or RIGHTMOUSE).
+
+	you can turn on an option to make the menu save which item
+	was selected last and draw the menu with that item positioned
+	under the cursor the next time the menu is drawn.
+
+	you can call a routine to change a single menu item in
+	an existing menu.
+
+the remainder of the menu is plug compatible with the default gl library
+(i.e. includes addtopup(), defpup(), newpup(), freepup(), dopup(), newpup() &
+setpup()) and it completely replaces the SGI pup implementation (i.e. I use
+the same routine names).  A caveat is that the FORTRAN binding is present,
+but not quite correct (who writes graphics programs in FORTRAN anyway :-)  A
+lesser caveat is that appearance-wise it is not a perfect imitation of the
+sgi pup, but its close enough.
+
+	david blythe
+	ontario centre for large scale computation
+	drb@clsc.utoronto.ca

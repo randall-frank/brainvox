@@ -1,0 +1,82 @@
+#!/usr/bin/nawk -f
+BEGIN {
+	if (ARGC == 1) {
+		printf("Usage: %s [bucksize=size][average=1][countonly=1][incstdev=weight]\n",ARGV[0])
+		printf("[pweighted=1][vweighted=1][include=1] inputfile\n")
+		printf(" The program computes histograms of the data in the\n")
+		printf(" first column along the vectors in the other columns.\n\n")
+		printf(" The default bucket size is 0.1\n")
+		printf(" The default is to sum the data values in the bin.\n")
+		printf(" The average=1 option will report the average of the data values\n")
+		printf(" in the bin.\n")
+		printf(" The countonly=1 option will report the number of data values\n")
+		printf(" in the bin.\n")
+		printf(" The pweighted=1 option will report the bin mean, weighted by\n")
+		printf(" the percentage of data values in the bin.\n")
+		printf(" The vweighted=1 option will report the bin mean, weighted by\n")
+		printf(" the reciprical of the variance of data values in the bin.\n")
+		printf(" The default is to only report values from -1.0 to 1.0.\n")
+		printf(" The include=1 option causes all the non-zero buckets\n")
+		printf(" to be printed.\n")
+		printf(" The incstdev=1 option adds a standard deviation column to\n")
+		printf(" be added after each data column.\n")
+		exit(0)
+	}
+	n = 0
+	if (bucksize == 0.0) bucksize = 0.1
+	maxb = -99999
+	minb = 99999
+	offset = 100.0 - (bucksize/2)
+}
+{
+        j = NF
+        n = n + 1
+        for(i=1;i<j;i++) {
+		k = int(($(i+1)+offset)/bucksize)
+                sum[i,k] = sum[i,k] + $1
+		ss[i,k] = ss[i,k] + ($1 * $1)
+                cnt[i,k] = cnt[i,k] + 1
+		if (k < minb) minb = k
+		if (k > maxb) maxb = k
+		count[i] = count[i] + 1
+        }
+}
+END {
+	if (ARGC == 1) exit(0)
+	if (include == 0.0) {
+		minb = int((-1.0+offset)/bucksize)
+		maxb = int((1.0+offset)/bucksize)
+	}
+	for(k=minb;k<=maxb;k++) {
+		printf("%f",(k*bucksize)-offset+(bucksize/2))
+        	for(i=1;i<j;i++) {
+			name = i SUBSEP k
+			if (name in sum) {
+				mean = sum[name]/cnt[name];
+				var = ((1.0/cnt[name])*ss[name]) - (mean * mean)
+				if (var == 0.0) var = 1.0
+				if (countonly != 0.0) {
+					printf("\t%f",cnt[name])
+				} else if (average != 0.0) {
+					printf("\t%f",mean)
+				} else if (vweighted != 0.0) {
+					printf("\t%f",mean/var)
+				} else if (pweighted != 0.0) {
+					printf("\t%f",mean*(cnt[name]/count[i]))
+				} else {
+					printf("\t%f",sum[name])
+				}
+				if (incstdev != 0.0) {
+					printf("\t%f",incstdev*sqrt(var))
+				}
+			} else {
+				printf("\t%f",0.0)
+				if (incstdev != 0.0) {
+					printf("\t%f",0.0)
+				}
+			}
+		}
+		printf("\n")
+	}
+}
+

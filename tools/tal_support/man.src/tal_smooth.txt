@@ -1,0 +1,100 @@
+tal_smooth(Brainvox)                         tal_smooth(Brainvox)
+
+
+
+NNAAMMEE
+       tal_smooth − Performs gaussian smoothing on a volume.
+
+SSYYNNOOPPSSIISS
+       tal_smooth [options] inputtemp outputtemp
+
+DDEESSCCRRIIPPTTIIOONN
+       This  program  smoothes  the input volume by convolving it
+       with a  gaussian  filter.   This  filter  sigma  value  is
+       selected  such  that  the FWHM of the filter occurs at the
+       extent of the x dimension radius.  Individual radii can be
+       specified in each dimension.
+
+       INPUTTEMP is the input volume template.  OUTPUTTEMP is the
+       volume template for the output smoothed volume.
+
+       Options:
+
+       ‐x(dx) The x axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐y(dy) The  y  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐z(dz) The image depth in bytes.  The default is  2  bytes
+              (unsigned shorts).
+
+       ‐o(offset)
+              16 bit data offset.  All 16 bit data have this off­
+              set value added  before  the  data  is  used.   The
+              default is ‐256.
+
+       ‐f(start)
+              This specifies the slice number for the first image
+              in the volume.  Default:1.
+
+       ‐l(end)
+              This specifies the slice number for the last  image
+              in the volume.  Default:15.
+
+       ‐i(step)
+              This  specifies the increment number to go from one
+              slice to the next.  Default:1.
+
+       ‐b     This specifies that 16bit  images  should  be  byte
+              swapped before using.
+
+       ‐v     This  enables  verbose  mode.  In verbose mode, the
+              coefficient values for the gaussian kernal are out­
+              put  to standard output in the kernal form that can
+              be used by tal_stat.
+
+       ‐r(dx[:dy:dz])
+              This option sets the radius for the  gaussian  ker­
+              nal.   When  only  a  single value is specified is:
+              7:7:7.
+
+       ‐m(masktemp)
+              This option selects a filename template for a  mask
+              volume.   If  a  mask  volume  is specified, output
+              smoothed values are computed only for those  voxels
+              which  are inside the mask volume (mask voxel > 0).
+              The default: no masking is performed.
+
+       ‐d(back)
+              This option selects the background value to be out­
+              put outside of the mask.  The default value is:0.0.
+
+
+SSEEEE AALLSSOO
+       tal_programs, tal_stat
+
+NNOOTTEESS
+       Currently, the FWHM of the kernal is  selected  by  the  x
+       dimension  radius  when  differing radii are specified and
+       the spherical kernal is simply truncated early or extended
+       in  other dimensions.  Future versions will implement true
+       ellipsoidal kernals for differing FWHM in each  dimension.
+
+       When  a  mask  volume  is  specified,  the mask is used to
+       select which output voxels the convolution is to  be  com­
+       puted  for.   Voxels  used  in the convolution (not at the
+       same coordinate as the output voxel) are  not  clipped  to
+       the mask volume.
+
+       When smoothing to a particular FWHM value, the output vol­
+       ume FWHM is equal to the square root of the squares of the
+       input volume FWHM and the gaussian filter FWHM.
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                             tal_smooth(Brainvox)

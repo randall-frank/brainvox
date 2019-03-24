@@ -1,0 +1,264 @@
+tal_regress(Brainvox)                       tal_regress(Brainvox)
+
+
+
+NNAAMMEE
+       tal_regress  −  Performs  linear  regression  pixelwise or
+       pooled across many input volumes.
+
+SSYYNNOOPPSSIISS
+       tal_regress [options] datafile
+
+DDEESSCCRRIIPPTTIIOONN
+       This program reads an ASCII format DATAFILE  containing  a
+       description of a multiple regression operation in the lan­
+       guage syntax described below.  The  program  performs  the
+       requested  regression at each pixel in the input data vol­
+       umes.  Each input data  volume  provides  a  single  pixel
+       value for each regression (unless the SINGLE_FIT option is
+       used, in which case individual pixel observations are col­
+       lapsed  into  a  single  regression).   A number of output
+       regression statistics can be selected and these are output
+       as  floating point volumes.  The program supports continu­
+       ous and discrete valued data.  Discrete valued data (CLASS
+       data)  is  handled though the use of dummy variables which
+       are not visible to the user.  Tal_regress uses enough mem­
+       ory  to  hold a single slice of every input volume for all
+       observations and every output volume specified at the nat­
+       ural  volume  pixel depth plus memory for a single regres­
+       sion (one vector and a matrix).
+
+       The datafile regression description consists of three sec­
+       tions.  Each section is begun by a keyword.
+
+       The  first section is the VOLPARAMS section.  This section
+       allows the user to specify the  types  and  sizes  of  the
+       input  volumes  as  well  as an optional 8bit mask volume.
+       Parameters regarding the computation  of  ANCOVA  adjusted
+       output values and an optional input log transform are also
+       set in this section.  The SINGLE_FIT parameter can be  set
+       to  select a single regression over all pixels (each pixel
+       is  a  single  observation)  instead  of  performing  many
+       regressions,  one  at each pixel.   The _PREFIX parameters
+       allow for a base directory specification  for  both  input
+       and  output files (which is not used with the ’=’, ’‐’ and
+       shared memory filespecs).
+
+       The second section is the MODEL  section  which  describes
+       the data model to be used in the regressions.  Regressions
+       are specified in the form:  Y=A0+A1X1+A2X2...   The  first
+       line  in  this  section  must describe the Y value for the
+       regression.  The Y values can have either be provided by a
+       volume, specified by a name and the depth of the volume in
+       bytes or a single value for  each  observation.   In  this
+       latter  case  the  Y_CONST  form  is  used  which does not
+       require a volume depth.  If a constant is to be allowed in
+       the  regression,  the  next  line should contain the CONST
+       keyword.  The remainder of this section may be filled with
+       X  variables.  These come in four flavors.  The first is a
+       COVARIABLE_VOL, which is a volume  containing  a  separate
+       value for this variable for each pixel in the volume (this
+       variable requires a name, a mean value for ANCOVA adjusted
+       Y value output and the volume depth in bytes).  The second
+       is a COVARIABLE_CONST, which is a single  value  for  this
+       variable  for  all  pixels  in  the  volume (this variable
+       requires a name and a mean value  for  ANCOVA  adjusted  Y
+       value  output).   The  third  variable  type  is  a  CLASS
+       variable.  This variable is level valued  (MALE,FEMALE  or
+       HIGH,MEDIUM,LOW)  such as a classical ANOVA (only the name
+       of this class needs to be specified in this section).  The
+       fourth  variable type is LABELCLASS.  This variable is NOT
+       included in the regression, rather it is  a  level  valued
+       variable  (like  the  CLASS variable) which can be used to
+       enhance output volume selection.  Since it is not used  in
+       the  regression,  no  SS_VARIABLE  or P_SS_VARIABLE can be
+       output  for  a  LABELCLASS   variable.    ADJ_Y_CLASS_MEAN
+       (adjusted  for the other regression variables) can be out­
+       put for a LABELCLASS variable.
+
+       The third section is the OUTPUT  section  which  describes
+       which  statistical  volumes are to be written out with the
+       results of the  regressions.   Various  values  from  each
+       regression  can  be  saved into floating point output vol­
+       umes.  Most output volumes are selected by a keyword and a
+       volume  template  name.  SS_ERROR saves the sum of squares
+       (SS) remaining after the regression.  SS_VARIABLE requires
+       the name of a X variable of any type and saves the sequen­
+       tial  SS  attributed  to  that  variable.    P_SS_VARIABLE
+       requires  the  name  of a X variable of any type and saves
+       the partial SS attributed to that variable in the presence
+       of  all  other variables in the model.  SS_TOTAL saves the
+       total SS for each regression.  SS_MODEL saves  SS_TOTAL  ‐
+       SS_ERROR.   ADJ_Y_MEAN adjusts each Y value by normalizing
+       each X variable (to the mean value specified in the  MODEL
+       section  or  to  the  first level of each CLASS variable).
+       The adjusted Y values are saved.  ADJ_Y_CLASS_MEAN outputs
+       the  mean  adjusted  Y  value for a specific classname and
+       classlevel.  COVARIABLE_SLOPE saves the regression coeffi­
+       cient  for  any  X  covariable specified by name.  COVARI­
+       ABLE_STD_ERROR saves the coefficient  standard  error  for
+       any  X covariable specified by name.  R2_MODEL outputs the
+       R  squared   value   for   the   regression   (1‐SSE/SST).
+       R2_ADJ_MODEL   outputs   the   adjusted  R  squared  value
+       (1‐(SSE/(n‐p))/(SST/(n‐1))).  SS_PRESS outputs the predic­
+       tion  sum of squares error (PRESS).  R2_PRED_MODEL outputs
+       the prediction R squared value (1‐PRESS/SST).   Currently,
+       outputs  which  require  the computation of the HAT matrix
+       diagonal (such as PRESS_MODEL and R2_PRED_MODEL)  can  not
+       be  computed  if the SINGLE_FIT option is specified unless
+       the size of the data volumes is one voxel.  Note,  if  the
+       SINGLE_FIT parameter is specified, no output files will be
+       written (the output templates are ignored),  instead,  the
+       requested  results  will  be sent in tab form to stdout as
+       there will only be  a  single  value  for  each  requested
+       result (only one regression is performed).
+
+       The  fourth  section  is  the  OBSERVATIONS  section which
+       describes the actual input observation.  There is one line
+       in  the  file  for  each line in the MODEL description for
+       each observation.  The lines are different for each  vari­
+       able  type and do not contain any keywords.  For a Y vari­
+       able, only a volume template is needed.  For a  Y_CONST  a
+       single  value  is  specified.   For  CONST,  the value 1.0
+       should be specified.  For COVARIABLE_VOL,  a  volume  tem­
+       plate  is specified.  For COVARIABLE_CONST, a single value
+       is specified.  For a CLASS  or  LABELCLASS  variable,  the
+       name of the level for this observation is specified.
+
+       The  regression  definition  datafile is terminated by the
+       END keyword.
+
+       Options:
+
+       ‐v[v[v[v]]]
+              This option  selects  the  verbosity  level.   Each
+              additional  character  adds to the verbosity level.
+              Levels above 3 are useful only for debugging.
+
+       The datafile regression description language syntax  (key­
+       words are in CAPS, parameters in lowercase and comments in
+       parenthesis):
+
+       VOLPARAMS
+
+       DX value (image x dimensions default=256)
+
+       DY value (image y dimensions default=256)
+
+       FIRST value (first slice number default=1)
+
+       LAST value (last slice number default=119)
+
+       STEP value (slice number increment default=1)
+
+       OFFSET  value  (data  offset  value  for   16bit   volumes
+       default=0)
+
+       MASK template (8bit mask volume template default=full vol­
+       ume)
+
+       SWAP (enables byte swapping for 16 bit volumes  default=no
+       byte swapping)
+
+       ADJ_ALL_VARS (adj Y by covariates and class variables)
+
+       ADJ_COV_ONLY  (adj  Y  by  covariates  only,  this  is the
+       default)
+
+       LOG_TRANSFORM (Apply a log10 transform to all input data)
+
+       SINGLE_FIT (Perform a single regression default=voxelwise)
+
+       Y_BOOLEAN (Y value is boolean 0 or 1, use weighted regres­
+       sion)
+
+       INPUT_PREFIX   dirname   (prepended   to    input    files
+       default=none)
+
+       OUTPUT_PREFIX   dirname   (prepended   to   output   files
+       default=none)
+
+       MODEL
+
+       Y name dz
+
+       Y_CONST name
+
+       CONST
+
+       COVARIABLE_VOL name mean dz
+
+       COVARIABLE_CONST name mean
+
+       CLASS classname
+
+       LABELCLASS classname
+
+       OUTPUT
+
+       SS_ERROR template (SS error remaining)
+
+       SS_VARIABLE varname template
+
+       P_SS_VARIABLE varname template
+
+       SS_TOTAL template
+
+       SS_MODEL template
+
+       SS_PRESS template
+
+       R2_MODEL template
+
+       R2_ADJ_MODEL template
+
+       R2_PRED_MODEL template
+
+       ADJ_Y_MEAN template
+
+       ADJ_Y_CLASS_MEAN classname classlevel template
+
+       COVARIABLE_SLOPE covname template
+
+       OBSERVATIONS
+
+       For Y: template [weight]
+
+       For Y_CONST: value [weight]
+
+       For CONST: value (generally it should be 1.0)
+
+       For COVARIABLE_VOL: template
+
+       For COVARIABLE_CONST: value
+
+       For CLASS: level
+
+       For LABELCLASS: level
+
+       END
+
+SSEEEE AALLSSOO
+       tal_programs, tal_math, tal_stat
+
+NNOOTTEESS
+       This program is based on information in the  SAS  program­
+       ming manual and the following paper:
+
+       Friston  KJ,  Frith  CD,  Liddle  PF,  Dolan RJ, Lammersma
+       AA,Frackowiak RSJ; The  Relationship  Between  Global  and
+       Local  Changes  in  PET  Scans.  J. Cereb Blood Flow Metab
+       10:458‐466 (1990).
+
+       The program also makes use of Applied Statistics algorithm
+       274  (AS274) for the actual regression.  This is an exten­
+       sion of Morven Gentleman’s AS75 routines  by  Alan  Miller
+       (Applied Statistics 41/1992).
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                            tal_regress(Brainvox)

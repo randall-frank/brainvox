@@ -1,0 +1,65 @@
+.TH tal_sphere Brainvox
+.SH NAME
+tal_sphere \- Computes the sphericity of a volume.
+.SH SYNOPSIS
+tal_sphere [options] inputtemp
+.SH DESCRIPTION
+This  program loads a volume into memory and computes the sphericity of
+the volume.  Sphericity is a measure of volume smoothness and is output in pixel units.
+An 8bit mask volume may be specified using the options and the output sphericity can
+be volumetric, or a average of the planar (2d) shericity of all the volume slices.
+.PP
+INPUTTEMP is the input volume template.
+.PP
+Options:
+.TP
+-x(dx)
+The x axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-y(dy)
+The y axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-z(dz)
+The image depth in bytes.  The default is 2 bytes (unsigned shorts).
+.TP
+-f(start)
+This specifies the slice number for the first image in the volume.  Default:1.
+.TP
+-l(end)
+This specifies the slice number for the last image in the volume.  Default:119.
+.TP
+-i(step)
+This specifies the increment number to go from one slice to the next.  Default:1.
+.TP
+-b
+This specifies that 16bit images should be byte swapped before using.
+.TP
+-m(masktemp)
+Specifies a filename template for an 8bit mask volume.
+.TP
+-p
+Option to output the average planar sphericity.  The default:3D sphericity.
+.SH SEE ALSO
+tal_programs
+.SH NOTES
+This program is based on information in the following paper:
+.PP
+Friston KJ, Frith CD, Liddle PF,Frackowiak RSJ;
+Comparing Functional (PET) Image: The Assessment of Significant Change.
+J. Cereb Blood Flow Metab 11:690-699 (1991).
+.PP
+Only 8bit mask volumes are currently supported.
+.PP
+There are some differences between this implementation and the SPM
+ks31.m computation.  These include:
+.PP
+1) Volumetric basis or averaged slice based.
+.PP
+2) Zero valued derivative values allowed.
+.PP
+3) Uses one less change value per 3D scanline than ks31.m.
+.PP
+Generally, these differences are insignificant if the number of voxels is large.
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

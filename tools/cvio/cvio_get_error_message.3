@@ -1,0 +1,77 @@
+.TH cvio_get_error_message 3
+.SH NAME
+cvio_get_error_message
+.SH SYNOPSIS
+.HP
+.B
+#include "cvio_lib.h"
+.HP
+.B
+int32 cvio_get_error_message(int32 errorval, char *buffer, int32 *bufferlen);
+.PP
+IDL API:
+.HP
+.B
+err=CVIO_GET_ERROR_MESSAGE(errval,msg_)
+.SH DESCRIPTION
+The cvio_get_error_message function is used to convert a cvio error
+number into a printable text string.  Nearly all cvio functions
+return such error codes.
+.PP
+The error code to be converted is passed as errorval.  The caller
+passes a pointer to a buffer to hold the error message in buffer and
+a pointer to the length of the buffer in bufferlen.  On return,
+bufferlen will contain the actual length of the error message.
+This function may return the error CVIO_ERR_SHORTBUFFER if the
+length of the caller supplied buffer is insufficient to hold
+the error string.
+.PP
+The IDL API automatically handles the buffer allocation for the
+user, so the bufferlen parameter is not required.  The actual
+values for the error codes can be found in cvio_lib.h.
+.PP
+Error codes:
+.PP
+CVIO_ERR_OK - no error has occurred (Note: this value is 0)
+.PP
+CVIO_ERR_SHORTBUFFER - a user supplied buffer was too short
+.PP
+CVIO_ERR_NOMEMORY - the operation ran out of system memory
+.PP
+CVIO_ERR_UNKNOWN_ATTR - the requested attribute could not be found
+.PP
+CVIO_ERR_INVALIDACCESS - the requested file access could not be supplied
+.PP
+CVIO_ERR_MAXSTREAMS - the maximum number of open files has been reached
+.PP
+CVIO_ERR_BADSTREAM - an invalid stream identifier was supplied
+.PP
+CVIO_ERR_BADFILENAME - the passed filename was invalid
+.PP
+CVIO_ERR_MISSINGREQTAGS - a cvio header file was invalid
+.PP
+CVIO_ERR_NOCOMPSHMEM - compression is not allowed with shared memory files
+.PP
+CVIO_ERR_NOSHMEM - no free shared memory could be allocated
+.PP
+CVIO_ERR_SHMEMLOCKED - a shared memory block could not be deleted
+.PP
+CVIO_ERR_BADACCESS - the requested file access is invalid
+.PP
+CVIO_ERR_TIMESEQ - an invalid sequence of timestamps was specified
+.PP
+CVIO_ERR_NOSAMPLE - no valid sample could be generated
+.PP
+CVIO_ERR_EOF - the end of the cvio file was reached
+.PP
+CVIO_ERR_INVALIDRULE - an invalid timestep rule was specified
+.PP
+CVIO_ERR_BADDATATYPE - the specified datatype is invalid
+.PP
+CVIO_ERR_BADDIMENSIONS - the specified dimensions are invalid
+.SH SEE ALSO
+cvio_lib(3)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

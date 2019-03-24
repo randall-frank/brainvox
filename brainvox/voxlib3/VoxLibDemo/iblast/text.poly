@@ -1,0 +1,43 @@
+OBJECT 16  ! type material light v1 v2 v3 (type font size rot center flip)
+CL.xx. 0 0 0 0 0
+PO.SM. 0 0 0 1 2
+PO.VC. 1 0 6 7 8
+PO.VC. 1 0 3 4 5
+PO.VC. 1 0 4 5 9
+TA.xx. 0 10 0 0 0
+TE.VC.wz 0 0 10 0 0
+0Hello 0
+TA.xx. 0 12 45 0 0
+TE.VC.wz 0 0 11 0 0
+2Hello 45
+TA.xx. 1 18 90 0 0
+TE.VC.wz 0 0 12 0 0
+4Hello 90
+TA.xx. 2 24 180 0 0
+TE.VC.wz 0 0 13 0 0
+6Hello 180
+TA.xx. 3 12 270 0 0
+TE.VC.wz 0 0 14 0 0
+8Hello 270
+EN.xx. 0 0 0 0 0
+VERTEX 15  ! x y z nx ny nz
+-100 -100 0 0 0 1
+100 -100 0 0 1 0  
+100 100 0 1 0 0
+-100 4 20 0 0 1
+140 130 140 0 1 0  
+80 -30 -20 1 0 0
+-100 -200 50 0 0 1 
+-40 130 140 0 1 0  
+20 -30 -20 1 0 0
+240 30 40 .5 .5 .5
+0 0 0 1 1 1
+0 20 0 1 1 1
+0 40 0 1 1 1
+0 60 0 1 1 1
+0 80 0 1 1 1
+LIGHT 1   ! amb diff nx ny nz
+0.5 0.5 0 0 1
+MATERIAL 2  !Dr Dg Db Ar Ag Ab Sk Sn A
+1.0 .5 .5 1.0 .3 .3 0.0 0.0 1.0
+0.0 1.0 .6 0.1 .6 .1 0.0 0.0 0.5

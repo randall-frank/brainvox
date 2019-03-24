@@ -1,0 +1,112 @@
+.TH tal_standardize Brainvox
+.SH NAME
+tal_standardize \- Performs statistical table lookups and transforms on volumes.
+.SH SYNOPSIS
+tal_standardize [options] inputtemp outputtemp
+.SH DESCRIPTION
+This program reads and input volume, performs a lookup table based transform
+and writes an output volume.
+.PP
+INPUTTEMP is the input volume template. OUTPUTTEMP is the 
+volume template for the computed volume.  The program computes the values of
+a function between two user specified values (at a given resolution).  These
+values are placed into a table.  Each pixel value in the input image is looked
+up on this table for an output value.  Linear interpolation is performed for
+input values which fall between table values.  Input values falling outside 
+the table range are clamped to the output values at the table extremes and 
+the user is warned that this clamping occurred.
+.PP
+Options:
+.TP
+-A(tabletype)
+This option allows the user to select the type of table operation they wish to
+perform.  TABLETYPE can be one of the following:
+.PP
+t2z
+.PP
+This is the default table transform.  It assumes the input pixel values are
+from a T distribution with degrees of freedom given by -df1.  The output
+pixel value is the Z score with the same CDF value as the CDF value of the
+T score.
+.PP
+t2p
+.PP
+This is the t to p transform.  It assumes the input pixel values are
+from a T distribution with degrees of freedom given by -df1.  The output
+pixel value is area under the PDF curve from the absolute value of the input
+pixel to infinity. (One tailed cumulative probability above the absolute
+value of the t score.)
+.PP
+z2p
+.PP
+This is the z to p transform.  It assumes the input pixel values are
+from a normal distribution.  The output
+pixel value is area under the PDF curve from the absolute value of the input
+pixel to infinity. (One tailed cumulative probability above the absolute
+value of the z score.)
+.PP
+f2p
+.PP
+This is the f to p transform.  It assumes the input pixel values are
+from an f distribution with degrees of freedom given by -df1 and -df2. 
+The output
+pixel value is area under the PDF curve from the absolute value of the input
+pixel to infinity. (One tailed cumulative probability above the absolute
+value of the f score.)
+.TP
+-x(dx)
+The x axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-y(dy)
+The y axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-z(dz)
+The image depth in bytes.  The default is 4 bytes (floating point).
+.TP
+-f(start)
+This specifies the slice number for the first image in the volume.  Default:1.
+.TP
+-l(end)
+This specifies the slice number for the last image in the volume.  Default:15.
+.TP
+-i(step)
+This specifies the increment number to go from one slice to the next.  Default:1.
+.TP
+-b
+This specifies that 16bit images should be byte swapped before using.
+.TP
+-c
+This specifies command line mode.  The input and output templates are ignored.
+The user is prompted for an input value and the program outputs the input
+value followed by the table generated output value in tab form on standard out.
+This mode continues until an end of file is reached.  This can be useful when
+standard statistic tables are not immediately available.
+.TP
+-tmin(min)
+This option allows the user to specify the minimum input value in the table.  The default is:-10.0
+.TP
+-tmax(max)
+This option allows the user to specify the maximum input value in the table.  The default is:10.0
+.TP
+-tstep(step)
+This option allows the user to specify the step size for input values in the table.  The default is:0.01.
+.TP
+-o(offset)
+This allows a pixel value offset parameter to be specified.  This value is
+subtracted from the pixel value before it is looked up from the table and
+added to the table output value.  The default is:0.
+.TP
+-df1(df)
+This allows the user to specify a degrees of freedom parameter for statistical
+table (such as the Student's t) which require it.  The default is:1.
+.TP
+-df2(df)
+This allows the user to specify a second degrees of freedom parameter for statistical
+table (such as Chi-square) which require it.  The default is:1.
+.PP
+.SH SEE ALSO
+tal_programs, tal_math
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

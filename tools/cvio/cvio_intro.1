@@ -1,0 +1,189 @@
+.TH cvio_intro CVIO_Library
+.SH NAME
+An Introduction to the CVIO I/O library.
+.SH SYNOPSIS
+See individual programs and routine man pages.
+.SH DESCRIPTION
+The CVIO library defines a file format and more importantly an
+access method for files of time stamped samples.  Every sample
+in a CVIO file has an individual 32bit timstamp associated with it.
+A CVIO file is a collection of such samples with monotonically
+increasing timestamps.  Each file may contain a single type of
+sample. 
+.PP
+Samples may be of floats, 16bit unsigned shorts,  8bit
+unsigned chars or C format strings.  With the exception of
+strings, the sample may be a 1d, 2d or 3d array of unlimited
+lengths.  Note that each sample in an individual file must
+be of the same type and size.  String samples may only have
+one dimension, the maximum length of the string.
+.PP
+In addition to the file data, a file contians a set of
+attributes.  Several are predefined, but the user may add
+their own attributes as well.  Attributes consist of a
+name and a value.  The type of the value is included in
+the attribute name as its suffix.
+.PP
+_ST - String attribute
+.PP
+_US - Unsigned 16bit integer
+.PP
+_TI - Timestamp value (unsiged 32bit integer)
+.PP
+_UL - Unsigned 32bit integer
+.PP
+_F - IEEE float
+.PP
+Built-in attributes
+all begin the "REQ_".  Built-in attributes include
+the following:
+.PP
+"REQ_ATTR_DATE_ST" - The date of file creation as a string.
+.PP
+"REQ_ATTR_TYPE_US" - The (C) type of the samples in the file.
+.PP
+"REQ_ATTR_FTYPE_US" - The type of the file: disk or shared memory.
+.PP
+"REQ_ATTR_NDIM_US" - The number of dimensions for each sample.
+.PP
+"REQ_ATTR_DIMS_US" - The actual dimensions of each sample (3 unsigned shorts).
+.PP
+"REQ_ATTR_SPACING_F" - The spacing between samples in x,y,z (3 floats).
+.PP
+"REQ_ATTR_COMP_US" - A flag specifing if the file is in compressed format.
+.PP
+"REQ_ATTR_NSAMP_UL" - The number of samples in the file.
+.PP
+"REQ_ATTR_TIMESTAMPBASE_UL" - The number of timestamp ticks in one second for this file.
+.PP
+"REQ_ATTR_CURRSAMP_UL" - The current sample number in the file.
+.PP
+"REQ_ATTR_CURRTIME_TI" - The timestamp for the current sample.
+.PP
+"REQ_ATTR_TIMEIN_TI" - The first timestamp in the file.
+.PP
+"REQ_ATTR_TIMEOUT_TI" - The last timestamp in the file.
+.PP
+"REQ_ATTR_TIMERULE_US" - The current rule for accessing samples via timestamp.
+.PP
+User defined attributes must be of type string and their names must
+end in '_ST'.
+.PP
+A CVIO file can have three formats, a disk format, a
+socket format and a
+shared memory format.  The shared memory and socket formats are not
+documented as it must be accessed via the library API.
+.PP
+A disk CVIO file is actually three files.  An ASCII
+text file containing file header information in a
+tag, value format is the main file.  The name of this
+file is used in all references to the data.  The '.tim'
+file is a binary file consisting of 32bit unsigned long
+timestamp values, one for each sample in the file.  The
+interpretation of the timestamps may be determined by
+the checking the value of the "REQ_ATTR_TIMESTAMPBASE_UL"
+attribute.  This file is named by adding the
+'.tim' extension to the header file name.  The '.dat'
+file is a binary file containing the actual data 
+samples.  It is a packed array of the samples and
+is named by adding the '.dat' extension to the header
+file name.  Note: in general, the CVIO library API
+should be used to access all CVIO files to ensure the
+data values are properly interpreted (e.g. Endian
+issues).  Disk based files may be stored in
+compressed (gzip) format.  Note: random access
+of compressed files can be extremely slow.
+.PP
+Shared memory files are a special case.  These
+are named using the syntax: ':shmem:XXX', where
+XXX is any ASCII string.  These files actually
+exist in shared system memory.  This allows for
+dynamic read/write access to files.  A single
+writer is allowed along with any number of readers.
+Each reader is automatically informed of file
+changes and data.  Additionally, I/O to such
+files is extremely rapid and can be random.
+High performance random access is not guaranted
+with disk files.
+.PP
+Socket files are a special case.  Theses are
+named using the syntax: ':sock:host:XXX[:option=v]'
+The host is the machine the creator of a socket file
+is running on (e.g. localhost).  These files do not
+support random access and will always have a 
+writer.  If the process creating the file terminates,
+the file also terminates.  Any data that has been
+transferred to other readers will still be readable.
+The socket file transfers data asynchronously and
+buffers the data on both the writer and any readers.
+It also supports a single writer and multiple readers.
+Memory utilization is much lower than the shmem
+case, making is ideal for connections between two
+processes on a single machine that only stream
+data between processes.  The amount of data a
+reader "sees" depends on when it connects as
+once a writer has sent the data, it is "forgotten".
+The "[wait=n]" option, when passed to the creator,
+tells the writer to buffer and not send any data
+until at least 'n' readers have connected to it.
+This will preserve the entire stream for 'n'
+readers.  Note: the writer will not send any data
+to any readers until 'n' readers have connected.
+In general, the blocking form of the read calls
+work better with sockets.
+.PP
+Tools:
+.PP
+Several tools exist as part of the CVIO package
+to allow for general manipulation of CVIO files.
+Most tools are simple wrappers around individual
+library commands to aid in shell scripting of 
+CVIO file manipulations.
+.TP
+cvio_info [options] file [file...]
+Dumps basic information about one or more CVIO files.
+.TP
+cvio_cp [options] srcfile dstfile
+Copies a CVIO file and it attributes.
+.TP
+cvio_cat [options] srcfile
+Copies the data in a CVIO file to stdout in ASCII format.
+.TP
+cvio_sample [options] srcfile dstfile
+Samples a CVIO file at any given timestamps.
+.TP
+cvio_impulse [options] impulseresp impulses timefile dst
+Computes the convolution of two CVIO files and outputs the result.
+.TP
+cvio_rm [options] file [file...]
+Removes a CVIO file from disk or shared memory.
+.TP
+cvio_mk [options] dstfile
+Creates an empty CVIO file.
+.TP
+cvio_build [options] textfile cviofile
+Creates a CVIO file from an ASCII text file.
+.TP
+cvio_attr file [attrib [value]]
+Allows for attribute manipulation: list, add, remove.
+.TP
+cvio_image_tag options] src dst dirname startnum numimages
+Specialized application to dynamically fill a CVIO file from a source of 
+images, with timestamping.
+.TP
+cvio_ls
+Lists the names of any CVIO files currently in shared memory.
+.PP
+The core CVIO library is 'C' callable (from C or C++).  Additionally,
+a wrapper for IDL is provided with a simplified interface.  The
+individual library calls are documented in additional man pages.
+.SH SEE ALSO
+cvio_ls(1), cvio_cp(1), cvio_info(1), cvio_sample(1), cvio_cat(1),
+cvio_impulse(1), cvio_rm(1), cvio_build(1), cvio_mk(1), cvio_attr(1),
+cvio_image_tag(1), cvio_lib(3)
+.SH NOTES
+The CVIO library was written by Randall Frank, Derek Foreman and Chris Smyser, with 
+input from Thomas Grabowski and Lizann Bolinger.
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

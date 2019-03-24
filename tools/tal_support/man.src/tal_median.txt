@@ -1,0 +1,78 @@
+tal_median(Brainvox)                         tal_median(Brainvox)
+
+
+
+NNAAMMEE
+       tal_median − Performs median smoothing on a volume.
+
+SSYYNNOOPPSSIISS
+       tal_median [options] inputtemp outputtemp
+
+DDEESSCCRRIIPPTTIIOONN
+       This  program  applies  a  median smoothing filter to each
+       voxel in a volume.  The filter can be of  any  rectangular
+       size and is clipped at the edges of the volume.  The voxel
+       is replaced by the median of all its neighbors within  the
+       rectangle, centered on the voxel in question.
+
+       INPUTTEMP is the input volume template.  OUTPUTTEMP is the
+       volume template for the output filtered volume.
+
+       Options:
+
+       ‐x(dx) The x axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐y(dy) The  y  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐z(dz) The  image  depth  in  bytes.   The  default  is  1
+              byte/pixel.
+
+       ‐f(start)
+              This specifies the slice number for the first image
+              in the volume. Default:1.
+
+       ‐l(end)
+              This specifies the slice number for the last  image
+              in the volume. Default:119.
+
+       ‐i(step)
+              This  specifies the increment number to go from one
+              slice to the next. Default:1.
+
+       ‐b     This specifies that 16bit  images  should  be  byte
+              swapped before using.
+
+       ‐m(masktemp)
+              This   specifies  a  mask  for  the  voxels  to  be
+              smoothed.  Only voxels which are  inside  the  mask
+              are  used  when  computing any median.  Default:all
+              voxels are processed.
+
+       ‐v     This enables verbose mode.  Currently, this is next
+              to useless.
+
+       ‐r(dx:dy:dz)
+              This option sets the size of the rectangular median
+              kernal (domain).  For a 2D filter, specify  one  of
+              the sizes to one.  The default is: 3:3:3.
+
+
+SSEEEE AALLSSOO
+       tal_programs, tal_smooth
+
+NNOOTTEESS
+       The  algorithm is the "Select" algorithm (ACM 489).  It is
+       a quicksort algorithm which avoids sorting all the  values
+       in each partition.
+
+       Support for a mask volume should be added in the future.
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                             tal_median(Brainvox)

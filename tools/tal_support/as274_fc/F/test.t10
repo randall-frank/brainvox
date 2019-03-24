@@ -1,0 +1,30 @@
+#!/bin/sh
+
+rows=20
+blocks=5
+ill=1e-12
+gamma=1e2
+delta=10
+
+./t10.test << ENDOFINPUTS
+$rows
+$blocks
+$ill
+$gamma
+$delta
+ENDOFINPUTS
+
+rows=2
+blocks=2
+ill=1e-12
+gamma=1e2
+delta=10
+
+./t10.test << ENDOFINPUTS
+$rows
+$blocks
+$ill
+$gamma
+$delta
+ENDOFINPUTS
+

@@ -1,0 +1,15 @@
+eps = 1e-05
+Errors in regression coefficients:
+Vector work      : -1.11e-16 2.041e-06 2.554e-08 1.136e-06 2.562e-08 2.56e-08 2.562e-08 -2.195e-06 -1.085e-06 
+eps = 1e-06
+Errors in regression coefficients:
+Vector work      : 0 0.0002987 0.0002111 0.0001001 -0.000122 -0.000122 -0.000122 -1.096e-05 -0.000233 
+eps = 1e-07
+Errors in regression coefficients:
+Vector work      : -1.11e-16 0.01873 0.03063 0.008427 0.008427 -0.002676 -0.002676 -0.02488 -0.03598 
+eps = 1e-08
+Errors in regression coefficients:
+Vector work      : -4.441e-16 -0.5974 0.4026 0.4026 0.4026 0.4026 0.4026 0.4026 -1.818 
+eps = 1e-09
+Errors in regression coefficients:
+Vector work      : 7.105e-15 -14.75 -13.75 -13.75 208.3 -13.75 -13.75 -235.8 97.27 

@@ -1,0 +1,62 @@
+.TH cvio_create 3
+.SH NAME
+cvio_create, cvio_delete
+.SH SYNOPSIS
+.HP
+.B
+#include "cvio_lib.h"
+.HP
+.B
+int32 cvio_create(char *filename, int32 nsamples, int32 type, int32 ndims, int32 dims[3], int32 flags);
+.HP
+.B
+int32 cvio_delete(char *filename);
+.PP
+IDL API:
+.HP
+.B
+err=CVIO_CREATE(name,nsamples,datatype,ndims,dims,flags)
+.HP
+.B
+err=CVIO_DELETE(filename)
+.SH DESCRIPTION
+The cvio_create function creates a new, empty cvio file.  This can be
+a disk or shared memory file, based on the filename. The function will
+create the header and any ancillary files.  The filename parameter
+is the name of the header file or shared memory block.  The maximum
+number of samples the file can contain is passed as nsamples.
+The type parameter can be one of the following:
+.PP
+CVIO_TYP_STRING - 'C' format ASCII strings
+.PP
+CVIO_TYP_BYTE - unsigned 8bit values
+.PP
+CVIO_TYP_USHORT - unsigned 16bit values
+.PP
+CVIO_TYP_SHORT - signed 16bit values
+.PP
+CVIO_TYP_FLOAT - IEEE float
+.PP
+The number of dimensions for the samples is passed as ndims.  The
+actual size of those dimensions are passed as the dims parameter.
+If a datatype of CVIO_TYP_STRING is specified, only a single
+dimension is allowed and its length is the maximum number of
+characters in the strings.
+.PP
+The flags parameter is formed by a bitwise or of the following
+values:
+.PP
+CVIO_CREATE_GZIP - Specify that the file should be in compressed format.  Note: this flag is not valid for a shared memory file.
+.PP
+The cvio_delete function deletes a given cvio file, including all
+ancillary files or associated shared memory blocks.  Note: the file
+in question should be closed before it is deleted.
+.PP
+The return values of the functions are cvio error codes.  See
+cvio_get_error_message(3).
+.SH SEE ALSO
+cvio_lib(3), cvio_get_error_message(3), cvio_mk(1)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

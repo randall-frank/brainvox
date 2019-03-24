@@ -1,0 +1,109 @@
+.TH tal_resize Brainvox
+.SH NAME
+tal_resize \- Performs volume resampling/rescaling.
+.SH SYNOPSIS
+tal_resize [options] inputtemp outputtemp
+.SH DESCRIPTION
+This program reads the input volume into memory.  It then takes a user
+specified rectangular portion of the volume and saves it to disk as the
+output volume after optional independant axis scaling.
+.PP
+Another way to think of the operation is that a selected 3D rectangle
+from the input volume is written out after being resampled to a user
+specified 3D resolution (possibly independant of the input volume).
+.PP
+INPUTTEMP is the input volume template.  OUTPUTTEMP is the 
+volume template for the output resampled volume.  The -c and -r options 
+are used to define a rectangular region of interest in the input volume.
+They select the corner and size of the region in pixels/slices.  The -o
+option specifies the 3D rectangle for the output volume.  Each axis is
+scaled independantly so that the selected region completely fills the
+output volume.  Finally, the output volume can be expanded (padded) with
+a rim of output voxels whose thickness can be selected independantly for
+the limits of each axis.  Optional filtering is available.
+.PP
+Options:
+.TP
+-x(dx)
+The x axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-y(dy)
+The y axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-z(dz)
+The image depth in bytes.  The default is 2 bytes (unsigned shorts).
+.TP
+-f(start)
+This specifies the slice number for the first image in the volume.  Default:1.
+.TP
+-l(end)
+This specifies the slice number for the last image in the volume.  Default:15.
+.TP
+-i(step)
+This specifies the increment number to go from one slice to the next.  Default:1.
+.TP
+-b
+This specifies that 16bit images should be byte swapped before using.
+.TP
+-v
+This enables verbose mode.
+.TP
+-s
+This enables a set of 3D filters which are applied axis-wise in a manner
+appropriate for the scaling for each axis.  When scaling along an axis 
+is magnifing, the filter is applied post-sampling.  When the scaling
+along the axis is decimating, the filter is applied pre-sampling.  The
+kernal is a 242 linear filter.
+.TP
+-c(x:y:z)
+This option selects the bottom,lower,left-hand corner of the region to be
+written to the output volume.  Units are in pixels/slices.  Default: 0:0:0.
+.TP
+-r(x:y:z)
+This option selects the width,height and depth of the region to be written
+to the output volume. Units are in pixels/slices.  Default: dx:dy:slices 
+(the whole volume is selected by default).
+.TP
+-o(x:y:z)
+This option sets the size of the output volume in pixels/slices.  The region
+selected by -c and -r is scaled linearly in three dimensions (independantly)
+to fill this volume.  Default: (values specifed by -r) (the selected region
+would be copied verbatim, with no scaling).
+.TP
+-Px(minpad:maxpad)
+This option selects padding to be added along the X axis outside of the output
+region.  Thus, the final output X axis size is the output region size (-o) 
+plus minpad (in the negative direction) and maxpad (in the positive direction).
+This allows the output region to be placed anywhere inside a larger buffer 
+volume.  Default: 0:0 (no padding).
+.TP
+-Py(minpad:maxpad)
+This option selects padding to be added along the Y axis outside of the output
+region.  Thus, the final output Y axis size is the output region size (-o) 
+plus minpad (in the negative direction) and maxpad (in the positive direction).
+This allows the output region to be placed anywhere inside a larger buffer 
+volume.  Default: 0:0 (no padding).
+.TP
+-Pz(minpad:maxpad)
+This option selects padding to be added along the Z axis outside of the output
+region.  Thus, the final output Z axis size is the output region size (-o) 
+plus minpad (in the negative direction) and maxpad (in the positive direction).
+This allows the output region to be placed anywhere inside a larger buffer 
+volume.  Default: 0:0 (no padding).
+.TP
+-Pv(value)
+This option selects the voxel value to be placed in any padded regions
+specified by the (-Px,-Py,-Pz) padding options.  The default: 0.0
+.PP
+.SH SEE ALSO
+tal_programs
+.SH NOTES
+Currently, the filter kernal is a fixed size and FWHM.  This should be
+changed to match the scaling operation.
+.PP
+The selection origin and size are currently limitted to integer values. 
+Floating point values should be supportted (especially for partial slice
+resampling).
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

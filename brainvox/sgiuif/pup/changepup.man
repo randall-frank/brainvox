@@ -1,0 +1,182 @@
+.TH ADDTOPUP 3G OCLSC
+.SH NAME
+.B changepup
+\- changes an item in an existing pop-up menu
+.SH "C SPECIFICATION"
+.B
+void changepup(pup, item, str, arg)
+.br
+.B long pup, item;
+.br
+.B String str;
+.br
+.B long arg;
+.SH PARAMETERS
+.TP
+.B pup
+expects the menu identifier of the menu which you want to
+change.  The menu identifier is the returned function value of the
+menu creation call to either
+.B newpup
+or
+.B defpup
+functions.
+.TP
+.I item
+expects the number of the menu item you want to change.  Item numbers
+start at 1.  Item number 0 allows you to change the menu title, menu function,
+button number, and whether the item memory is enabled.
+.TP
+.I str
+expects a pointer to the text with which you want to replace the menu
+item.  In addition, you have the option of pairing an "item type"
+flag with each menu item. There are thirteen menu item type flags:
+
+.RS .5i
+.TP
+.BI %b n
+specifies which mouse button controls the menu.
+.I n
+must be 1, 2 or 3 corresponding to LEFTMOUSE, MIDDLEMOUSE and RIGHTMOUSE
+respectively and
+.I n
+must be part of the text string, not the
+.I arg
+parameter.  If
+.BI %b n
+is not specified then RIGHTMOUSE is assumed.  To change the button,
+.I item
+must be 0.
+.TP
+.B %s
+indicates that the menu should remember the last item selected and draw the
+menu with that item positioned under the cursor the next time the menu is drawn.
+If selection memory is already enabled, it is disabled (i.e. %s is a toggle).
+To change the selection memory state,
+.I item
+must be 0.
+.TP
+.B %t
+marks item text as the menu title string.  To change the title,
+.I item
+must be 0.
+.TP
+.B %F
+invokes a routine for every selection from this menu except
+those marked with a %n.  You must specify the invoked
+routine in the
+.I arg
+parameter.  The value of the menu item
+is used as a parameter of the executed routine.  Thus, if
+you select the third menu item, the system passes 3 as a
+parameter to the function specified by %F.  To change the menu function
+.I item
+must be 0.
+.TP
+.B %d
+disables the menu entry causing it to appear greyed-out.  
+Selecting a disabled entry has the same behavior as selecting the title bar.
+If the greyed-out entry has a submenu associated with it, that
+submenu does not display.  If the entry is already disabled then it
+is re-enabled (i.e. %d is a toggle).
+.TP
+.B %f
+invokes a routine when this particular menu item is
+selected.  You must specify the invoked routine in the
+.I arg
+parameter. The value of the menu item is passed as a
+parameter of the routine.  Thus, if you select the third
+menu item, the system passes 3 as a parameter to the
+routine specified by %f.  If you have also used the %F flag
+within this menu, then the result of the %f routine is
+passed as a parameter of the %F routine.
+.TP
+.B %i
+indicates that this item is a toggle.  Once it has been selected, 
+whenever the menu is drawn this item will have a glyph drawn beside it
+indicating that this toggle is active.  Once the item has been
+selected again, the glyph will no longer be displayed, signifying that the
+toggle is now inactive, until the item is selected next and so on.
+.TP
+.B %I
+like
+.B %i
+but sets the initial toggle state to active rather than inactive.  The glyph
+will be drawn by the item initially and subsequent selections of this item
+will disable the glyph, then enable it, etc.
+.TP
+.B %l
+adds a line under the current entry.  You can use this as a
+visual cue to group like entries together.
+.TP
+.B %m
+pops up a menu whenever this menu item is selected. You
+must provide the menu identifier of the new menu in the
+.I arg
+parameter.
+.TP
+.B %n
+like %f, this flag invokes a routine when the user selects
+this menu item.  However, %n differs from %f in that it
+ignores the routine (if any) specified by %F. The value of
+the menu item is passed as a parameter of the executed
+routine.  Thus, if you select the third menu item, the
+system passes 3 as a parameter to the function specified by %f.
+.TP
+.BI %r n
+specifies that the item is part of radio group
+.IR n .
+A radio group is a set of menu items that are mutually exclusive.  When the
+menu is drawn, a glyph will be drawn beside the currently active item
+in each radio group.  When a new item is selected from a radio group
+the glyph is moved to that item in subsequent displays of the menu.  To
+specify the initial active element of a radio group use
+.B %I 
+in addition to
+.BI %r n.
+The radio group number
+.IR n,
+must be between 0 and 9 inclusive and must be entered as part of the
+text string.  Do not use the
+.I arg
+parameter to specify the group number.  It is helpful to use lines
+(with
+.BR %l )
+to demarcate the members of a radio group.
+.TP
+.BI %x n
+assigns a numeric value to this menu item.  This values
+overrides the default position-based value assigned to this
+menu item (e.g., the third item is 3).  You must enter the
+numeric value as the
+.I n
+part of the text string.  Do not use
+the
+.I arg
+parameter to specify the numeric value.
+
+.B NOTE:
+You can not use the vertical bar delimter, "|" to specify multiple
+changes.  You can only change one menu item per call.
+.RE
+.TP
+.I arg
+expects the command or submenu that you want to assign to the
+menu item.  You can have only one
+.I arg
+parameter for each call to
+.BR changepup .
+
+.SH DESCRIPTION
+.B changepup
+changes (replaces) the specified item in an existing pop-up menu.
+To activate and display the menu, submit the menu to
+.BR dopup .
+.SH "SEE ALSO"
+changepup, defpup, dopup, freepup, newpup, setpup
+.SH NOTES
+This routine is available only in immediate mode.
+
+When using the Distributed Graphics Library (DGL), you can not call other
+DGL routines within a function that is called by a popup menu, i.e. a
+function given as the argument to a %f or %F item type.

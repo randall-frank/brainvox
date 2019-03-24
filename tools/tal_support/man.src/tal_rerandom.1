@@ -1,0 +1,203 @@
+.TH tal_rerandom Brainvox
+.SH NAME
+tal_rerandom \- Computes a t map threshold for a series of volumes using a non-parametric re-randomization technique.
+.SH SYNOPSIS
+tal_rerandom [options] n_subjects [-|vol1temp ...]
+.SH DESCRIPTION
+This program takes a number of volumes specified on the command line by
+N_SUBJECTS.  It assumes that these volumes are differences between two
+other volumes.  If the two original volumes are given the labels A and B then
+the input volumes can be assumed to be A-B.  This package computes T score 
+maps for all combinations of N_SUBJECTS/2 being relabeled B-A. A distribution
+of maximum T values for all such re-randomizations is computed.  The
+significance of the original labeling is taken to be proportional to the
+location of its Tmax value in the distribution.  The original T map can
+be thresholded at a level determined by the Tmax distribution.  The program
+can output the correct T map volume as well as the Tmax distribution.
+.PP
+Filename templates of all the input volumes are specified on the command line.
+If a "-" is used for the input volume template, the input volume template names
+are read from stdin.  A volume mask may be used to restrict the operation to a
+portion of the volume.  By default the program will attempt to compute all
+the possible rerandomizations.  The user may specify a maximum number of 
+rerandomizations to compute.  If this number is exceeded, the program will 
+sample the rerandomization distribution (with replacement) instead of computing
+all the possible cases.  In the case of an odd number of subjects, 
+rerandomizations will be computed for n choose (n/2) and (n/2)+1. For n=7,
+the complete 7C3 and 7C4 pools will be computed.  In case of sampling with
+an odd number of subjects, the 7C3 pool or 7C4 pool is selected at random for
+each trial.
+.PP
+Because of the extremely long computational times this program requires,
+a simple checkpointing mechinism has been implemented which allows the program
+to be stopped and restarted where it left off at a later time.  See the "-R"
+option.
+.PP
+The program also supports the computation of histograms from the Tmax values of
+the re-randomization distribution.  The histogram range and bucketsize, as
+well as the handling
+of outliers, can be specified on the command line.  The histogram is written
+to disk as an ASCII text file with each line specifying the center of a bucket
+and the number of pixels which fell into the bucket.
+.PP
+Options:
+.TP
+-x(dx)
+The x axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-y(dy)
+The y axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-z(dz)
+The image depth in bytes.  All input volume must have the same depth.
+The default is 4 bytes (floats).
+.TP
+-f(start)
+This specifies the slice number for the first image in the volume.  Default:1.
+.TP
+-l(end)
+This specifies the slice number for the last image in the volume.  Default:119.
+.TP
+-i(step)
+This specifies the increment number to go from one slice to the next.  
+Default:1.
+.TP
+-s(seed)
+This specifies the seed for the random number generator used when in 
+sampling mode.  It can be used to help reproduce "random" results.
+Default:1.
+.TP
+-R(basename)
+This option specifies that the checkpointing mechinism is to be enabled using
+the base filename BASENAME.  If a file by the name "basename".kill is created
+in the working directory of this program, the program will write its current
+state to the file "basename".restart_data and write a simple shell script to
+the file "basename".restart.  To continue the computation where it left off,
+run the script file "basename".restart.  Do NOT delete the file "basename".kill
+as the program will do this automatically and uses it to determine if the
+file "basename".restart_data is to be read.  Default:none
+.TP
+-b
+This specifies that 16bit images should be byte swapped before using.  Default: no
+swapping.
+.TP
+-v[v[v[v]]]
+This option specifies a verbosity level (number of v's).
+.TP
+-o(offset)
+This option specifies an offset value added to each pixel before it is used. The default:0
+.TP
+-M(maxtrials)
+This option allows the user to set a maximum number of rerandomizations to
+attempt.  If the number of rerandomizations exceeds this number, the program
+will switch into a sampling mode and generate MAXTRIALS rerandomizations at
+random choosing them with replacement.  The default:1000
+.TP
+-Hfile(histofile)
+This option specifies a file to save a Tmax histogram into.
+The default:no histogram is saved.
+.TP
+-Hmin(minval)
+This option specifies the value of the center of the first histogram bucket.
+The default:0.0.  Note that the first bucket extends from this value plus
+and minus one-half of the bucketsize.
+.TP
+-Hmax(maxval)
+This option specifies the value of the center of the last histogram bucket.
+The default:255.0.  Note that the last bucket extends from this value plus
+and minus one-half of the bucketsize.
+.TP
+-Hsize(binsize)
+This option specifies the width of a histogram bucket.  The default:1.0.
+.TP
+-Hkeep
+This option specifies that pixels values which do not fall into the range
+from min to max are to be mapped into the closest bucket.  By default
+pixel values outside the min-max range are not counted.
+.TP
+-V(outvoltemplate)
+This option specifies the name of a volume to be saved containing the Tmap
+for the "proper" remapping.  This should be thresholded using information in
+the file output by the -Otmax option. The volume is a floating point volume.
+Default: do not save.
+.TP
+-W(outvoltemplate)
+This option specifies the name of a volume to be saved containing the
+smoothed variance map for the "proper" remapping.
+The volume is a floating point volume.
+Default: do not save.
+.TP
+-Oabs
+Specifies that the comparison for declaring a Tmax value to be greater than
+another should be performed on absolute values.  Default: use signed values
+.TP
+-Otmax(file)
+This option specifies the name of a file which includes a list of all
+Tmax values for every re-randomization.  The list contains columns 
+sorted by iteration and by T value and includes a column of the rank of
+each observation.  This file is updated after each iteration. 
+Default: do not save.
+.TP
+-Ostats(file)
+This option specifies the name of a file which will contain some extra 
+information regarding the number of iterations and the rank of the 
+proper labeling.  Default: stdout.
+.TP
+-m(masktemp)
+This option allows the user to specify a filename template for a mask
+volume.  Statistics are only computed for voxels withing this volume.  The
+default is to compute for all voxels.
+.TP
+-k(kernalfile)
+This option specifies a filename of a kernal to be used for smoothing the
+variance locally before the T value is computed.  Default: no smoothing is
+used.
+.PP
+The ASCII kernal file has the following format:
+.PP
+Xsize Ysize Zsize
+.PP
+Followed by Zsize 2D matrices of the following format:
+.PP
+v11 v21 v31 ... vXsize1
+.PP
+v12 v22 v32 ... vXsize2
+.PP
+v13 v23 v33 ... vXsize2
+.PP
+...
+.PP
+v1Ysize v2Ysize v3Ysize ... vXsizeYsize
+.PP
+A total of (Xsize*Ysize*Zsize) values follow the three value header line.
+These values specify what voxels around each voxel are to be used in the
+computation of local statistics.  A value of 0 in the kernal signifies that
+a particular voxel is not to be used. 
+The relative weight of each voxel used in the smoothing function
+is given by the kernal.  For even weighting, only the values 0 and 1 should be
+used in the kernal. 
+.SH SEE ALSO
+tal_programs, tal_math, tal_regress, tal_stat, tal_smooth
+.SH NOTES
+Input difference images are converted to a 16bit fixed point format
+internally (1+6.9).  This means that the input data can only range from
++64 to -64 and are brought into the computation with a resolution of
+0.00195 (1/512) units.  This greatly reduces the program's memory usage 
+at the expense of some dynamic range and resolution.  All computations
+using this fixed point data (Sums,Sum of Squares,Variances,
+Variance smoothing, and T scores) are done at full floating point resolution.
+.PP
+In the current smoothing implementation, a strip around the border of each
+image (xy plane only) the same width as the radius of the smoothing kernal
+is not smoothed.  It is assumed that useful data is not located within this
+band.  If a single point kernal is used, the strip has no width, but no
+smoothing is performed either.
+.PP
+This program is based on ideas and methodology presented in:
+Holmes AP, Blair RC, Watson JDG, Ford I; Non-Parametric Analysis Of Statistic
+Images from Functional Mapping Experiments. JCBFM (in press)
+.PP
+Currently, only 8bit mask volume are supported.
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

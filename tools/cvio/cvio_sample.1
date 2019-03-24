@@ -1,0 +1,37 @@
+.TH cvio_sample 1
+.SH NAME
+cvio_sample - sample a CVIO file at a new set of timestamps
+.SH SYNOPSIS
+cvio_sample [options] src dst
+.SH DESCRIPTION
+This program reads a list of timestamps on stdin.  It samples
+the file given by SRC at the timestamps and outputs the
+resulting samples to the file DST.  A number of options
+exist to control the nature of the sampling operation.
+.PP
+Options:
+.TP
+-v
+Selects verbose mode
+.TP
+-c
+Selects the output file be saved in compressed mode.
+.TP
+-A
+If this option is set, user defined attributes will not be copied
+to the desitnation file.  By default, all user attributes will be
+copied.
+.TP
+-t(timerule)
+This option allows the user to select the sampling rule.  0=floor, select
+the sample whose timestamp is closest but smaller than the input timestamp.
+1=ceil, select the sample whose timestamp is closest but larger than
+the input timestamp.  2=select the sample whose timestamp is closest to
+the input timestamp (round).  3=interpolate a new sample value linearly from
+the samples immediately before and after the input timestamp.  The default: 2.
+.SH SEE ALSO
+cvio_intro(1)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

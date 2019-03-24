@@ -1,0 +1,3 @@
+LIBRARY			idl_cvio
+DESCRIPTION		'CVIO library DLM'
+EXPORTS			IDL_Load		@1

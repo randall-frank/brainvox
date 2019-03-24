@@ -1,0 +1,70 @@
+Fitting nasty cubic; 1st 4 betas should be 1
+
+sing() returned -1
+SSerr =               286, expect 286.
+
+
+Variable order: 0 1 2 3 4 
+Vector Beta      : 1 1 1 1 0 
+Vector d         : 11 110 858 6178 0 
+rbar matrix:
+            45          2035         92475          2080
+                          90        6092.8            91
+                                       135             1
+                                                       0
+Vector thetab    : 9.456e+04 6184 136 1 0 
+
+
+Variable order: 1 2 3 4 0 
+Vector Beta      : 1 1 1 0 1 
+Vector d         : 2.238e+04 2.203e+05 1.723e+06 0 7.545e-07 
+rbar matrix:
+       45.4423       2074.84       46.4423      0.022113
+                     90.3488             1  -0.000494345
+                              -1.73072e-16   1.10316e-05
+                                                       0
+Vector thetab    : 2121 91.35 1 0 1 
+
+
+Variable order: 2 3 4 0 1 
+Vector Beta      : -1.051e-09 1 1 1 0 
+Vector d         : 4.645e+07 4.397e+08 0.4163 7.545e-07 0 
+rbar matrix:
+       45.8709        1.0219   0.000481964     0.0219016
+                -0.000490484  -2.18212e-05  -0.000490484
+                                 0.0669802             1
+                                                       0
+Vector thetab    : 46.89 0.9995 1.067 1 0 
+
+
+Variable order: 3 4 0 1 2 
+Vector Beta      : 1 1 1 1.051e-09 0 
+Vector d         : 9.817e+10 2.269e+05 0.00179 0.0001609 0 
+rbar matrix:
+     0.0221758   1.03622e-05   0.000473126     0.0217027
+                     0.00142     0.0425147      0.957485
+                                   14.5985      -14.5985
+                                                      -1
+Vector thetab    : 1.022 1.001 1 1.051e-09 0 
+
+
+Variable order: 4 0 1 2 3 
+Vector Beta      : 1 1 1.051e-09 0 1 
+Vector d         : 4.85e+07 0.2068 0.1035 0 6178 
+rbar matrix:
+   0.000471731     0.0214343      0.978566       44.8832
+                     22.1644      -22.1644      -46922.2
+                                        -1       -6192.2
+                                                       0
+Vector thetab    : 45.88 -4.692e+04 -6192 0 1 
+
+
+Variable order: 0 1 2 3 4 
+Vector Beta      : 1 1 1 1 0 
+Vector d         : 11 110 858 6178 0 
+rbar matrix:
+            45          2035         92475          2080
+                          90        6092.8            91
+                                       135             1
+                                                       0
+Vector thetab    : 9.456e+04 6184 136 1 0 

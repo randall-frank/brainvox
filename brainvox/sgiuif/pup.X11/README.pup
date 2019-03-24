@@ -1,0 +1,145 @@
+
+           ~4Dgifts/toolbox/src/exampleCode/opengl/xlib README.pup
+
+
+   The code in pup.c and pup.h was ripped out of glws, shredded a bit, and 
+   reassembled for opengl usage.  Its pure X code and as such has 2 new 
+   parameters in defpup() and newpup() (dpy and screen), but otherwise is 
+   identical to the IrisGL version (except it doesn't understand the 
+   GLresources).  The code is not pretty.  Beats using some bloato toolkit, 
+   though for now, things are still a bit beefy....
+
+
+
+   long newpup(Display *dpy, int screen)
+   void addtopup(long pup, char *str, ...)
+   long defpup(Display *dpy, int screen, char *str, ...)
+   long dopup(long menu)
+   void freepup(long menu)
+   void setpup(long menu, long item, unsigned long arg)
+
+
+
+
+
+   long newpup(Display *dpy, int screen)
+
+     dpy     pointer to display one is rendering to
+
+     screen  screen number (usually 0) one is rendering to
+
+
+   ------------------------------------------------------------------------
+
+
+   void addtopup(long pup, char *str, ...)
+
+     pup      expects the menu identifier of the menu to which you want to
+              add. The menu identifier is the returned function value of the
+              menu creation call to either newpup or defpup functions.
+
+     str      expects a pointer to the text that you want to add as a menu
+              item. In addition, you have the option of pairing an "item type"
+              flag with each menu item. There are seven menu item type flags:
+
+              %t   marks item text as the menu title string.
+
+              %F   invokes a routine for every selection from this menu except
+                   those marked with a %n.  You must specify the invoked
+                   routine in the arg parameter.  The value of the menu item
+                   is used as a parameter of the executed routine.  Thus, if
+                   you select the third menu item, the system passes 3 as a
+                   parameter to the function specified by %F.
+
+              %f   invokes a routine when this particular menu item is
+                   selected.  You must specify the invoked routine in the arg
+                   parameter. The value of the menu item is passed as a
+                   parameter of the routine.  Thus, if you select the third
+                   menu item, the system passes 3 as a parameter to the
+                   routine specified by %f.  If you have also used the %F flag
+                   within this menu, then the result of the %f routine is
+                   passed as a parameter of the %F routine.
+
+              %l   adds a line under the current entry.  You can use this as a
+                   visual cue to group like entries together.
+
+              %m   pops up a menu whenever this menu item is selected. You
+                   must provide the menu identifier of the new menu in the arg
+                   parameter.
+
+              %n   like %f, this flag invokes a routine when the user selects
+                   this menu item.  However, %n differs from %f in that it
+                   ignores the routine (if any) specified by %F. The value of
+                   the menu item is passed as a parameter of the executed
+                   routine.  Thus, if you select the third menu item, the
+                   system passes 3 as a parameter to the function specified by
+                   %f.
+
+              %xn  assigns a numeric value to this menu item.  This values
+                   overrides the default position-based value assigned to this
+                   menu item (e.g., the third item is 3).  You must enter the
+                   numeric value as the n part of the text string.  Do not use
+
+
+   ------------------------------------------------------------------------
+
+
+   long defpup(Display *dpy, int screen, char *str, ...)
+
+     dpy     pointer to display one is rendering to
+     
+     screen  screen number (usually 0) one is rendering to
+
+     str    expects a pointer to the text that you want to add as a menu item.
+            In addition, you have the option of pairing an ``item type'' flag
+            with each menu item. There are seven menu item type identical to
+            the ones enumerated above in addtopup.
+
+
+   ------------------------------------------------------------------------
+
+
+   long dopup(long menu)
+
+     menu    expects the identifier of the pop-up menu you want to display.
+
+
+   ------------------------------------------------------------------------
+
+
+   void freepup(long menu)
+
+     menu    expects the menu identifier of the pop-up menu that you want 
+             to deallocate.
+
+
+   ------------------------------------------------------------------------
+
+
+   void setpup(long menu, long item, unsigned long arg)
+
+     menu    expects the menu identifier of the menu whose entries you want to
+             change. The menu identifier is the returned function value of the
+             menu creation call to either newpup or defpup.
+
+     item    expects the position of the item in the menu, indexed from 1.
+
+     arg     expects a symbolic constant that indicates the display
+             characteristics you want to apply to the chosen entry.  You can
+             specify more than one at a time by adding or logically or-ing
+             these values together.  For this parameter there are four defined
+             symbolic constants:
+
+             PUP_NONE, no special display characteristics, fully functional if
+             selected.  This is the default mode for newly created menu
+             entries.
+
+             PUP_GREY, entry is greyed-out and disabled.  Selecting a greyed-
+             out entry has the same behavior as selecting the title bar.  If
+             the greyed-out entry has a submenu associated with it, that
+             submenu does not display.
+
+             PUP_BOX Entry has an empty box to the left.
+
+             PUP_CHECK Entry has a checked box to the left.
+

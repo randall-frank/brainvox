@@ -1,0 +1,124 @@
+C    ======================================================================     
+C    THIS SOFTWARE IS THE PROPERTY OF:                                          
+C         The Image Analysis Facility                                     
+C         71 HBRF     
+C         The University of Iowa, Iowa City, Iowa                               
+C    ======================================================================     
+C       Copyright (C) 1989 Image Analysis Facility, University of Iowa
+C    ======================================================================     
+C                                                                               
+C    -- OVERVIEW --------------                                                 
+C                                                                               
+C    MODULE NAME    : tr_read_images
+C    VERSION        : 1.0 
+C    LOCATION       :  
+C    LAST EDIT      :  
+C    STATUS         :  (Development,Testing,Production,Obsolete)
+C    LANGUAGE       : FORTRAN
+C    PACKAGE        : brainvox_trace
+C
+C
+C    -- CREATION --------------                                                 
+C                                                                               
+C    PROGRAMMER     : rjf
+C    DATE           : 20 Sep 89       
+C    LINE-BY-LINER  :    
+C    APPROVAL       : 
+C
+C    DESCRIPTION    :  	This routine reads images from dynamic memory
+C                                                                               
+C    -- REVISION HISTORY --------------                                         
+C
+C                                                                               
+C    -- GENERAL --------------                                                  
+C                                                                               
+C    SYNTAX         :     
+C	Call tr_read_images(num,I1,I2)
+C    INPUTS         :          Num : image number
+C				(roots are unused..)
+C    OUTPUTS        : I1,I2 images that were read......
+C
+C    LIMITATIONS    :      
+C    NOTES          :      
+C                 
+C                                                                               
+C    ====================================================================== 
+	Subroutine tr_read_images(num,I1,I2)
+
+	Implicit None
+
+	Include 'fgl.h'
+	Include 'fdevice.h'
+	Include 'sgiuif.h'
+	Include '../libs/vt_inc.f'
+	Include 'tr_inc.f'
+	
+	Integer*4	num
+	Character*80	filename
+	Integer*4	I,id,fnum,ii,kk,k
+	Integer*4	x,y,ptr,mult
+	Integer*4	open,read,close
+C
+	Integer*2	I1(512*512)
+	Integer*2	I2(512*512)
+	Byte		image(512*512)
+	Byte		timage(512*512)
+	External	open,read,close
+C
+C	Get the PD and T2 images
+C
+	do fnum=num,num+skip-1  !read one or two images...
+C
+C	Call the dynamic memory routine to retrieve an image 
+C
+		Call vt_read_realimage(fnum,image) ! use shared memory
+C		Call vt_image_io_sub(IPC_READ,num,timage,
+C     +			%val(texture_addr))
+C
+C	Handle the file.  Convert to 512x512 and to I*2
+C
+C	ptr is index into output image
+C	mult is the square repeat factor
+C
+		ptr = 1
+		mult = 512/imagesize
+C
+C	over all scan line in source
+C
+		Do y = 0, imagesize-1
+C
+C	repeat scan lines
+C
+		  Do kk = 1, mult
+C
+C	over a single scan line in the source
+C
+		    Do x = 1, imagesize
+			ii = image(x + (y*imagesize))
+			if (ii .lt. 0) ii = 256 + ii
+			ii = ii + 256
+C
+C	repeat pixels along the scan line
+C
+			Do k = 1, mult
+				If (fnum .eq. num) then
+					I1(ptr) = ii
+				Else
+					I2(ptr) = ii
+				Endif
+				if (skip .eq. 1) I2(ptr) = I1(ptr)
+				ptr = ptr + 1
+			Enddo  ! next pixel repeat
+		    Enddo   ! next pixel
+		  Enddo  ! next scan line repeat
+		Enddo  ! next scan line  
+C
+	Enddo ! next image
+C
+	Return
+C
+100	Call ringbe
+C
+	Return
+	End
+C

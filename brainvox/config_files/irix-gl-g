@@ -1,0 +1,75 @@
+#
+#	Configuration file for Irix
+#
+OS=irix
+GFX=GFX_IGL
+#
+#	Various file extensions
+#
+OBJ_SUFFIX=o
+LIB_SUFFIX=a
+SH_SUFFIX=so
+EXE_SUFFIX=
+#
+#	Debug flags
+#
+DEBUG=-g
+#
+#       Local deps
+#
+LCL_LIB=
+#
+#	X11 
+#
+XINC=
+XLIB=-lX11 -lXext
+#
+#	Gfx
+#
+GINC=-I../include -I../ext_libs
+GLIB=-L../ext_libs -lpup -lfgl -lgl -lsgiimg
+#
+#       UIF
+#
+UINC=-I../ext_libs
+ULIB=-L../ext_libs -luif
+#
+#       BVOX
+#
+BINC=-I../ext_libs
+BLIB=-L../ext_libs -luif -lvtrace -lvox3
+#
+#	C
+#
+CC=cc
+CFLAGS=$(DEBUG) -D$(OS) $(XINC) $(GINC) -D$(GFX)
+CLIB=-lm
+#
+#	Fortran
+#
+FC=f77
+FFLAGS=$(DEBUG) -D$(OS) $(XINC) $(GINC) -D$(GFX)
+FLIB=
+#
+#       Make
+#
+MAKE=make
+#
+#	ranlib
+#
+RANLIB=echo
+#
+#       ar
+#
+AR=ar -r
+ARP=
+#
+#######################################################################
+#
+#       Rules
+#
+.c.o:
+	${CC} -c ${CFLAGS} $*.c
+.f.o:
+	${FC} -c ${FFLAGS} $*.f
+

@@ -1,0 +1,109 @@
+tal_fft(Brainvox)                               tal_fft(Brainvox)
+
+
+
+NNAAMMEE
+       tal_fft − Performs fourier transforms on a volume.
+
+SSYYNNOOPPSSIISS
+       tal_fft [options] imagetemp realtemp imaginarytemp
+
+DDEESSCCRRIIPPTTIIOONN
+       This  program  computes  the forward and reverse (inverse)
+       fourier transform of the IMAGETEMP volume.  It outputs the
+       real  and  imaginary  parts of the transform into REALTEMP
+       and IMAGINARYTEMP respectively.  If a reverse transform is
+       specified,  the IMAGETEMP volume is output.  The algorithm
+       is not limitted to power of  two  volume  dimensions.   It
+       uses  the  split‐radix, N‐dimensional, fast‐fourier trans­
+       form by R. C. Singleton.  Note: if a dimension is a multi­
+       ple  of  large  prime  numbers,  the "fast" nature of this
+       algorithm is a misnomer.  The operation is performed  "in‐
+       place" and the user is cautioned to be wary of differences
+       in frequency sampling when all dimensions are not equal.
+
+       When the transform is being used to facilitate  volumetric
+       convolution, the wrap‐around reordering option (‐w) should
+       be used with the forward transform of the  smoothing  ker­
+       nal.  This aligns the output data properly for direct com­
+       plex multiplication.
+
+       The REALTEMP and IMAGINARYTEMP volumes are always floating
+       point (‐z4) images.
+
+       Options:
+
+       ‐x(dx) The  x  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐y(dy) The y axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐z(dz) The image depth in bytes.  The default is 1 byte.
+
+       ‐o(offset)
+              Data offset.  All image data have this offset value
+              added before the data is used as  for  the  forward
+              FFT  or  written to disk in the case of the reverse
+              FFT.  The default is 0.
+
+       ‐f(start)
+              This specifies the slice number for the first image
+              in the volume. Default:1.
+
+       ‐l(end)
+              This  specifies the slice number for the last image
+              in the volume. Default:119.
+
+       ‐i(step)
+              This specifies the increment number to go from  one
+              slice to the next. Default:1.
+
+       ‐b     This  specifies  that  16bit  images should be byte
+              swapped before using.
+
+       ‐v     This enables verbose mode. This currently serves no
+              purpose.
+
+       ‐r     This  option  selects  the  reverse transform (fre­
+              quency space to spatial domain).
+
+       ‐w     This  option  reorders  the  spatial  domain   data
+              (before  the FFT for the forward transform or after
+              the FFT for the reverse transform) from a  0  to  n
+              domain to a ‐(n/2) to (n/2) domain by shifting each
+              axis in the negative  direction  by  one  half  its
+              length.   Smoothing  kernals  should  include  this
+              reordering when being transformed into the  Fourier
+              domain.
+
+       ‐1     This  option  specifies that the program is to per­
+              form a series  (dx*dy)  of  1D  Fourier  transforms
+              along  the  Z  axis of the data.  When (‐w) is used
+              with this option, only data along  the  Z  axis  is
+              reordered.
+
+
+SSEEEE AALLSSOO
+       tal_programs, tal_math, tal_smooth
+
+NNOOTTEESS
+       The  spatial  reording (‐w) transform is slower for dimen­
+       sions of odd length.
+
+       This program can be used in conjunction with  tal_math  to
+       provide  higher  speed smoothing than the spatial convolu­
+       tion based tal_smooth.
+
+       The FFT algorithm used is from R. C.  Singleton  (Stanford
+       Research Institute, Sept. 1968) with modifications made by
+       John Beale (July 1995) and Mark Olesen (Aug. 1995) and  is
+       covered by the GNU Public License.
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                                tal_fft(Brainvox)

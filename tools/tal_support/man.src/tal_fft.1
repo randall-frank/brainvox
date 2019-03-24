@@ -1,0 +1,84 @@
+.TH tal_fft Brainvox
+.SH NAME
+tal_fft \- Performs fourier transforms on a volume.
+.SH SYNOPSIS
+tal_fft [options] imagetemp realtemp imaginarytemp
+.SH DESCRIPTION
+This program computes the forward and reverse (inverse) fourier
+transform of the IMAGETEMP volume.
+It outputs the real and imaginary parts of the transform into
+REALTEMP and IMAGINARYTEMP respectively.  If a reverse transform is
+specified, the IMAGETEMP volume is output.  The algorithm is not limitted
+to power of two volume dimensions.  It uses the split-radix, N-dimensional,
+fast-fourier transform by R. C. Singleton.  Note: if a dimension is a multiple
+of large prime numbers, the "fast" nature of this algorithm is a misnomer.
+The operation is performed "in-place" and the user is cautioned to be
+wary of differences in frequency sampling when all dimensions are not equal.
+.PP
+When the transform is being used to facilitate volumetric convolution, the
+wrap-around reordering option (-w) should be used with the forward transform
+of the smoothing kernal.  This aligns the output data properly for direct
+complex multiplication.
+.PP
+The REALTEMP and IMAGINARYTEMP volumes are always floating point (-z4) images.
+.PP
+Options:
+.TP
+-x(dx)
+The x axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-y(dy)
+The y axis size of the image in pixels.  The default is 256 pixels.
+.TP
+-z(dz)
+The image depth in bytes.  The default is 1 byte.
+.TP
+-o(offset)
+Data offset.  All image data have this offset value added before
+the data is used as for the forward FFT or written to disk in the case of
+the reverse FFT.  The default is 0.
+.TP
+-f(start)
+This specifies the slice number for the first image in the volume. Default:1.
+.TP
+-l(end)
+This specifies the slice number for the last image in the volume. Default:119.
+.TP
+-i(step)
+This specifies the increment number to go from one slice to the next. Default:1.
+.TP
+-b
+This specifies that 16bit images should be byte swapped before using.
+.TP
+-v
+This enables verbose mode. This currently serves no purpose.
+.TP
+-r
+This option selects the reverse transform (frequency space to spatial domain).
+.TP
+-w
+This option reorders the spatial domain data (before the FFT for the forward
+transform or after the FFT for the reverse transform) from a 0 to n domain to a
+-(n/2) to (n/2) domain by shifting each axis in the negative direction by one
+half its length.  Smoothing kernals should include this reordering when being
+transformed into the Fourier domain.
+.TP
+-1
+This option specifies that the program is to perform a series (dx*dy) of 1D
+Fourier transforms along the Z axis of the data.  When (-w) is used with this
+option, only data along the Z axis is reordered.
+.PP
+.SH SEE ALSO
+tal_programs, tal_math, tal_smooth
+.SH NOTES
+The spatial reording (-w) transform is slower for dimensions of odd length.
+.PP
+This program can be used in conjunction with tal_math to provide higher speed
+smoothing than the spatial convolution based tal_smooth.
+.PP
+The FFT algorithm used is from R. C. Singleton (Stanford Research Institute,
+Sept. 1968) with modifications made by John Beale (July 1995) and Mark Olesen
+(Aug. 1995) and is covered by the GNU Public License.
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

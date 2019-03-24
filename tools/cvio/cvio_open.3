@@ -1,0 +1,51 @@
+.TH cvio_open 3
+.SH NAME
+cvio_open, cvio_close
+.SH SYNOPSIS
+.HP
+.B
+#include "cvio_lib.h"
+.HP
+.B
+int32 cvio_open(char *filename, uint32 access, uint32 *stream);
+.HP
+.B
+int32 cvio_close(uint32 stream);
+.PP
+IDL API:
+.HP
+.B
+err = CVIO_OPEN(filename,access,stream_)
+.HP
+.B
+err=CVIO_CLOSE(stream)
+.SH DESCRIPTION
+The cvio_open function opens an existing cvio file for reading
+or appending.  There is no cvio API for truncating a file and
+overwriting its contents.  Use cvio_delete and cvio_open to
+rewrite a file.  Cvio_open requires a the cvio filename.
+Access to the file is controlled by the access parameter.  Valid
+access modes are:
+.PP
+CVIO_ACCESS_READ - read only access
+.PP
+CVIO_ACCESS_APPEND - append access
+.PP
+CVIO_ACCESS_SEQUENTIAL - hint the library that the file
+will be only accessed sequentially.  This flag can be
+combined with READ and APPEND.
+.PP
+A stream identifier is returned to the caller, if the file
+can be opened and the function returns CVIO_ERR_OK.
+.PP
+The cvio_close function is used to close a previously opened
+stream identifer.
+.PP
+The return values of the functions are cvio error codes.  See
+cvio_get_error_message(3).
+.SH SEE ALSO
+cvio_lib(3), cvio_create(3), cvio_delete(3), cvio_get_error_message(3)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

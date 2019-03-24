@@ -1,0 +1,21 @@
+.TH cvio_cat 1
+.SH NAME
+cvio_cat - output CVIO file content to stdout
+.SH SYNOPSIS
+cvio_cat [options] file
+.SH DESCRIPTION
+THis program reads a CVIO file and dumps the file contents to stdout
+as ASCII text.  This output is consistent with cvio_build.  Each sample
+is output as a timestamp (integer) followed by the actual sample data.
+.PP
+Options:
+.TP
+-v
+Selects verbose mode
+.PP
+.SH SEE ALSO
+cvio_intro(1), cvio_build(1)
+.SH NOTES
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

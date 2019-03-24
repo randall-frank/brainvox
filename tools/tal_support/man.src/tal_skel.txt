@@ -1,0 +1,95 @@
+tal_skel(Brainvox)                             tal_skel(Brainvox)
+
+
+
+NNAAMMEE
+       tal_skel − Computes the skeleton of an input volume.
+
+SSYYNNOOPPSSIISS
+       tal_skel [options] inputtemp outputtemp
+
+DDEESSCCRRIIPPTTIIOONN
+       This  program  performs  a  skeletonization  operation  on
+       objects in the input volume.   The  operation  reduces  an
+       object  to its underlying skeleton by selectively removing
+       voxels from the object until a single voxel thick skeleton
+       remains.  The output volume pixel values are the number of
+       voxels in the neighborhood of  a  voxel.   The  value  one
+       occurs  for an isolated voxel.  Two occurs at the terminus
+       of a skeleton.  Three occurs throughout the length of  the
+       skeleton  (the voxel itself plus one incoming and one out­
+       going voxel).  Output voxels with values of four  or  more
+       occur  at  branching  points.  The objects within a volume
+       are selected by simple thresholding.  Voxels greater  than
+       the  threshold  are  considered to be part of the objects.
+       The operation can be performed in 3D, or as a series of 2D
+       planar operations.
+
+       INPUTTEMP is the input volume template.  OUTPUTTEMP is the
+       output volume template.  The output volume is an 8bit vol­
+       ume.
+
+       Options:
+
+       ‐x(dx) The  x  axis  size  of  the  image  in pixels.  The
+              default is 256 pixels.
+
+       ‐y(dy) The y axis  size  of  the  image  in  pixels.   The
+              default is 256 pixels.
+
+       ‐z(dz) The  image  depth in bytes.  The default is 2 bytes
+              (unsigned shorts).
+
+       ‐o(offset)
+              16 bit data offset.  All pixels  have  this  offset
+              value added before they is used.  The default is 0.
+
+       ‐f(start)
+              This specifies the slice number for the first image
+              in the volume.  Default:1.
+
+       ‐l(end)
+              This  specifies the slice number for the last image
+              in the volume.  Default:119.
+
+       ‐i(step)
+              This specifies the increment number to go from  one
+              slice to the next.  Default:1.
+
+       ‐b     This  specifies  that  16bit  images should be byte
+              swapped before using.
+
+       ‐t(thres)
+              This specifies a  threshold  value.   Voxels  above
+              this value are considered to be part of the object.
+              If the threshold value is  negative,  voxels  which
+              are  below the negative of the threshold value will
+              be considered part  of  the  object  (allowing  for
+              inverse thresholding). The default value:100
+
+       ‐2d    This  option  specifies that the program is to per­
+              form plane by plane a 2d version of the  operation.
+              The default:full 3d operation.
+
+       ‐h(histfile)
+              This  option  specifies  that  a  histogram  of the
+              skeleton volume is to be written to  the  specified
+              file.  By default, histograms are not saved.
+
+SSEEEE AALLSSOO
+       tal_programs
+
+NNOOTTEESS
+       This  program  is  based on the local Euler characteristic
+       method described in the paper:Lobregt S, Verbeek PW, Groen
+       FCA;   Three‐Dimensional  Skeletonization:  Principle  and
+       Algorithm.  IEEE Trans on  Pattern  Analysis  and  Machine
+       Intelligence, PAMI‐2(1):75‐77 (Jan 1980).
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                               tal_skel(Brainvox)

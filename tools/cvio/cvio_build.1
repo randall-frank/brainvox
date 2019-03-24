@@ -1,0 +1,42 @@
+.TH cvio_build 1
+.SH NAME
+cvio_build - create a CVIO file from a text file
+.SH SYNOPSIS
+cvio_build [options] textfile cviofile
+.SH DESCRIPTION
+This program is designed to create a CVIO file from an ASCII text file.
+The ASCII file consists of a timestamp integer followed by the number of
+values specified by the -z, -n and -d options.
+.PP
+Options:
+.TP
+-v
+Selects verbose mode
+.TP
+-z(dz)
+Select the sample datatype.  1=string, 2=byte, 3=signed short, 4=float,
+5=unsigned short.
+Default: 1.
+.TP
+-n(ndims)
+Select the number of dimensions of the sample.  The default: 1.
+.TP
+-d(d0:d1:d2)
+Select the dimensionality of the sample.  The default is a scalar: 1:1:1.
+.TP
+-l(num)
+Set the maximum number of samples for the file.  This is critical for
+shared memory files.  The default: 100000.
+.TP
+-c
+Select that the output file be saved in compressed form.
+.SH SEE ALSO
+cvio_intro(1), cvio_mk(1)
+.SH NOTES
+The definition of the '-z' option is inconsistent with other
+applications.  Also, the algorithm is not very efficient, double
+buffering all data and if there is insufficient data in the input
+file, the program can hang.  This program needs a major revision.
+.SH ORIGIN
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of Neurology,
+University of Iowa

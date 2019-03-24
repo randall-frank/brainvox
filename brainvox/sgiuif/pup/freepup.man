@@ -1,0 +1,20 @@
+.TH FREEPUP 3G OCLSC
+.SH NAME
+.B freepup
+\- deallocates a menu
+.SH "C SPECIFICATION"
+.B
+void freepup(pup)
+.br
+long pup;
+.SH PARAMETERS
+.TP
+.B pup
+expects the menu identifier of the pop-up menu that you wantto deallocate.
+.SH DESCRIPTION
+.B freepup
+deallocates a pop-up menu,freeing the memory reserved for its data structures.
+.SH "SEE ALSO"
+defpup, addtopup, changepup, dopup, newpup, setpup
+.SH NOTE
+This routine is available only in immediate mode.

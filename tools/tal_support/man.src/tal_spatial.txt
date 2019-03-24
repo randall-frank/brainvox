@@ -1,0 +1,49 @@
+tal_spatial(Brainvox)                       tal_spatial(Brainvox)
+
+
+
+NNAAMMEE
+       tal_spatial  −  Filter  program  for  the  significance of
+       tal_cluster output.
+
+SSYYNNOOPPSSIISS
+       tal_spatial size FWHM dimension
+
+DDEESSCCRRIIPPTTIIOONN
+       This  program reads on standard input a list  of  clusters
+       in   the   output  format  of  tal_cluster  (IE  x,y,z,avg
+       value,size,serial number,threshold).  For each input clus­
+       ter it computes the significance of the cluster taking its
+       spatial extent into account.  The output of  this  program
+       is a new tab deliminated list with an eighth column added.
+       This new column is the probability the cluster appeared by
+       chance.   It is assumed that the volume that was clustered
+       was a Z map (SPM{z}).
+
+       SIZE is the size of the search volume in voxels.
+
+       FWHM is the smoothness of the search volume.
+
+       DIMENSION   is   the   order   of   the   search    volume
+       (1=1D,2=2D,3=3D).
+
+
+SSEEEE AALLSSOO
+       tal_cluster tal_programs
+
+NNOOTTEESS
+       This  program  is  based  on  information in the following
+       paper:
+
+       Friston KJ, Worsley  KJ,  Frackowiak  RSJ,  Mazziotta  JC,
+       Evans  AC; Assessing the Significance of Focal Activations
+       Using Their Spatial Extent. Human Brain Mapping  1:210‐220
+       (1994).
+
+OORRIIGGIINN
+       Brainvox, Human Neuroanatomy and Neuroimaging Lab, Depart­
+       ment of Neurology, University of Iowa
+
+
+
+                                            tal_spatial(Brainvox)

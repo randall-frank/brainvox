@@ -1,0 +1,82 @@
+#
+#	Configuration file for Linux 
+#
+OS=WIN32
+GFX=GFX_OGL
+#
+#	Various file extensions
+#
+OBJ_SUFFIX=obj
+LIB_SUFFIX=lib
+SH_SUFFIX=dll
+EXE_SUFFIX=.exe
+#
+#	Debug flags
+#
+CDEBUG=/Zi /QIfist
+FDEBUG=-g
+#
+#       Local deps
+#
+LCL_LIB=../ext_libs/libIrisGL.lib
+#
+#	X11 
+#
+XINC=
+XLIB=kernel32.lib user32.lib
+#
+#	Gfx
+#
+GINC=/I../include /I../ext_libs
+GLIB=libIrisGL.lib libsgiimg.lib opengl32.lib gdi32.lib
+#
+#       UIF
+#
+UINC=/I../ext_libs
+ULIB=libuif.lib
+#
+#       BVOX
+#
+BINC=/I../ext_libs
+BLIB=libuif.lib libvtrace.lib libvox3.lib
+#
+#	C
+#
+CC=cl
+CFLAGS=$(CDEBUG) -D$(OS) $(XINC) $(GINC) -D$(GFX) -DWIN32 /LINK /LIBPATH:../ext_libs
+CLIB=
+#
+#	Fortran
+#
+FC=f77
+FFLAGS=$(FDEBUG) -D$(OS) -f -W -N15  $(GINC) -D$(GFX) -DWIN32 -L../ext_libs
+FLIB=unix.lib
+#
+#       Make
+#
+MAKE=make
+#
+#	ranlib
+#
+RANLIB=echo
+#
+#       ar
+#
+AR=lib /nologo
+ARP=/OUT:
+#
+#######################################################################
+#
+#       Rules
+#
+.SUFFIXES: .obj .c
+#
+.c.o:
+	${CC} -c ${CFLAGS} $*.c
+.f.o:
+	${FC} -c ${FFLAGS} $*.f
+.c.obj:
+	${CC} /c ${CFLAGS} /Fo$*.obj $*.c
+.f.obj:
+	${FC} -c ${FFLAGS} $*.f
+

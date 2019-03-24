@@ -1,0 +1,5 @@
+;!@Install@!UTF-8!
+Title="Brainvox 3.11 for Windows"
+BeginPrompt="Do you want to install Brainvox 3.11?"
+RunProgram="Setup.exe"
+;!@InstallEnd@!
