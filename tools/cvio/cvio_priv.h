@@ -86,6 +86,8 @@
 /* use "SOCKET" because of WIN32 issues */
 #ifndef WIN32
 #define SOCKET	int
+#else
+#define key_t   int
 #endif
 
 /* internal structure definitions */

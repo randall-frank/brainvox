@@ -46,13 +46,15 @@
 
 /* this is the library of cvio functions */
 
+#ifndef WIN32
 #include <sys/errno.h>
+#include <pthread.h>
+#endif
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
-#include <pthread.h>
 #include "zlib.h"
 #include "cvio_priv.h"
 #include <math.h>

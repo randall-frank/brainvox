@@ -1,0 +1,101 @@
+==========
+tal_mcubes
+==========
+
+
+NAME
+====
+
+tal_mcubes - Performs volumetric isosurface detection.
+
+SYNOPSIS
+========
+
+tal_mcubes [options] inputtemp outputfile
+
+DESCRIPTION
+===========
+
+This program reads a volume specified by the filename template INPUTTEMP
+and an optional mask volume. The isosurface through the volume at the
+specified threshold is detected using a variant of the marching cubes
+algorithm. The resulting polygon mesh is output. Vertex normals are
+computed by averaging the normals of the triangles which use the vertex.
+OUTPUTFILE (or '-' for stdout) is in Wavefront OBJ format and consists
+of a single triangle mesh. Output coordinates are in voxel indicies by
+default. The interpixel and interslice spacings (as well as the origin)
+may be specified to place the output mesh into a scaled and translated
+space. Note: the interpixel and interslice spacings are applied before
+the origin is subtracted.
+
+Options:
+
+-x(dx)
+   The x axis size of the image in pixels. The default is 256 pixels.
+
+-y(dy)
+   The y axis size of the image in pixels. The default is 256 pixels.
+
+-z(dz)
+   The image depth in bytes. The default is 1 byte.
+
+-f(start)
+   This specifies the slice number for the first image in the volume.
+   Default:1.
+
+-l(end)
+   This specifies the slice number for the last image in the volume.
+   Default:119.
+
+-i(step)
+   This specifies the increment number to go from one slice to the next.
+   Default:1.
+
+-b
+   This specifies that 16bit images should be byte swapped before using.
+
+-g
+   Write the output file in Geomview NOFF file format.
+
+-v
+   This option enables verbose mode (currently useless).
+
+-p(interpixel)
+   This option specifies the interpixel spacing of the original volume.
+   The default is 1.0.
+
+-s(interslice)
+   This option specifies the interslice spacing of the original volume.
+   The default is 1.0.
+
+-o(x:y:z)
+   Theis option specifies that the coordinate (x,y,z) is to be
+   subtracted from the verticies after they are scaled. The
+   default:0,0,0.
+
+-m(masktemp)
+   This option specifies a volume which is used as a mask to reduce the
+   search area. This must be an 8bit volume. Default:all voxels tested
+
+-t(thres)
+   This specifies the isocontour threshold to use. The default is 128.0.
+
+SEE ALSO
+========
+
+tal_programs, geomview, tal_surface, tal_thinmesh
+
+NOTES
+=====
+
+This program is similar to the Lorenson and Cline "marching cubes"
+algorithm:
+
+Lorensen WE, Cline H; Marching Cubes: A High Resolution 3D Surface
+Construction Algorithm. Computer Graphics 21:3,163-169 (1987)
+
+ORIGIN
+======
+
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of
+Neurology, University of Iowa

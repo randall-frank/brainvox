@@ -152,14 +152,14 @@ int main(int argc,char **argv)
 	}
 	
 	for(i=0;i<23;i++) {
-		printf("Working on %ld of %ld...\n",i,23L);
+		fprintf(stderr, "Working on %ld of %ld...\n",i,23L);
 		get_val(known[i],vec);
 		for(x=0;x<4;x++) {
 		for(y=0;y<4;y++) {
 		for(z=0;z<4;z++) {
 			put_val(vec,&j);
 			if ((j < 0 ) || (j> 255)) {
-				printf("Invalid index detected %ld\n",j);
+				fprintf(stderr, "Invalid index detected %ld\n",j);
 				exit(0);
 			}
 			if (tbl[j] == 0) {
@@ -178,22 +178,19 @@ int main(int argc,char **argv)
 		if (tbl[i] == 0) {
 			j = i;
 			get_val(j,vec);
-			printf("Unknown: %ld -> %d %d %d %d %d %d %d %d\n",j,vec[7],
+			fprintf(stderr, "Unknown: %ld -> %d %d %d %d %d %d %d %d\n",j,vec[7],
 				vec[6],vec[5],vec[4],vec[3],vec[2],vec[1],vec[0]);
 		}
 	}
-	fp = fopen("skel3d_etable.h","w");
-	if (fp == 0L) exit(0);
-	fprintf(fp,"static short etable[256] = {\n");
+	printf("static short etable[256] = {\n");
 	for(i=0;i<256;i+=16) {
-		fprintf(fp,"\t");
+		printf("\t");
 		for(j=0;j<16;j++) {
-			fprintf(fp,"% hd,",tblv[i+j]);
+			printf("% hd,",tblv[i+j]);
 		}
-		fprintf(fp,"\n");
+		printf("\n");
 	}
-	fprintf(fp,"\t};\n");
-	fclose(fp);
+	printf("\t};\n");
 	
 	exit(0);
 }

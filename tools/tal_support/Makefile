@@ -530,10 +530,10 @@ skeleton3d.$(OBJ_SUFFIX) : skel3d_etable.h   skeleton3d.c
 skel3d_etable.h : build_3dskel.c
 	$(CC) $(CFLAGS) build_3dskel.c
 ifeq ($(OSTYPE),WIN32)
-	./build_3dskel.exe
+	./build_3dskel.exe > skel3d_etable.h
 	rm -f build_3dskel.exe
 else
-	./a.out
+	./a.out > skel3d_etable.h
 	rm -f a.out
 endif
 

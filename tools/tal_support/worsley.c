@@ -252,7 +252,7 @@ int main(int argc,char **argv)
 		pvar = atof(argv[4]);
 		n = atof(argv[5]);
 		if (argc == 8) {
-			for(;t<=atof(argv[6]);t+=atof(argv[7])) {
+			for(;s<=atof(argv[6]);s+=atof(argv[7])) {
 				printf("%f\t%g\n",s,psv(r,s,pvar,n));
 			}
 		} else {

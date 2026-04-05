@@ -57,7 +57,7 @@ int pclose(FILE *f);
 #endif
 #include <limits.h>
 
-#include <GL/glut.h>
+#include "GL/glut.h"
 #include <GL/gl.h>
 
 #include "proto.h"

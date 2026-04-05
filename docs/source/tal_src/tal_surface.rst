@@ -1,0 +1,108 @@
+===========
+tal_surface
+===========
+
+
+NAME
+====
+
+tal_surface - Compute volume and surface areas for binary volumes.
+
+SYNOPSIS
+========
+
+tal_surface [options] inputtemp
+
+DESCRIPTION
+===========
+
+This program computes the volume and surface are of a binary
+(thresholded) volume. The volume is read and thresholded to a used
+specified value. A gaussian smoothing kernal (of user specified size) is
+used to remove some of the digital artifacts. A variation on the
+marching cubes algorithm is then applied to the resulting volume
+(cube-wise polygon definition based on voxel centered corners) to
+compute surface area. Volume is determined by counting the voxels which
+after thresholding and smoothing retain one half the threshold
+saturation value. Interpixel and Interslice spacings may be specified on
+the command line for "real world" statistics and for dealing with
+non-isotropic volumes. Two lines of tab deliminated ASCII text are
+output to stdout at the end of the computation. They report the volume
+and surface area.
+
+The program allows the user to specify a mask volume as well. When a
+mask is specified, only those pixels within the mask (or within the
+smoothing radius of the mask and not inside the "object") may contribute
+to the volume and surface area measurements. This allows for regional
+surface area and volume.
+
+Options:
+
+-x(dx)
+   The x axis size of the image in pixels. The default is 256 pixels.
+
+-y(dy)
+   The y axis size of the image in pixels. The default is 256 pixels.
+
+-z(dz)
+   The image depth in bytes. The default is 1 byte.
+
+-f(start)
+   This specifies the slice number for the first image in the volume.
+   Default:1.
+
+-l(end)
+   This specifies the slice number for the last image in the volume.
+   Default:124.
+
+-i(step)
+   This specifies the increment number to go from one slice to the next.
+   Default:1.
+
+-b
+   This specifies that 16bit images should be byte swapped before using.
+
+-r(max)
+   This option allows the user to specify the radius for the smoothing
+   operation. The default is:1
+
+-t(thres)
+   This option allows the user to specify the value in the input images
+   above which pixels are considered inside the object. This converts a
+   multi-valued input volume into a binary volume. The default:128.
+
+-m(masktemp)
+   This option allows the user to specify a mask volume for the
+   computations. Only the contributions to volume and surface are for
+   voxels within the mask volume are included in the output. The
+   default: all voxels can contribute. TP -p(interpixel) This specifies
+   the interpixel spacing in mm. The default:1.0.
+
+-s(interslice)
+   This specifies the interslice spacing in mm. The default:1.0.
+
+SEE ALSO
+========
+
+tal_programs, tal_math, tal_cutting
+
+NOTES
+=====
+
+This program is similar to the Lorenson and Cline "marching cubes"
+algorithm applied on a smoothed binary volume. Lorensen WE, Cline H;
+Marching Cubes: A High Resolution 3D Surface Construction Algorithm.
+Computer Graphics 21:3,163-169 (1987)
+
+Internal thresholded boundaries add to the surface area as well as
+external boundaries.
+
+The default smoothing radius should not generally be changed. It was
+chosen to minimize the effects of "voxelation" on an object (especially
+digital surface area) while remaining an unbiased estimator.
+
+ORIGIN
+======
+
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of
+Neurology, University of Iowa

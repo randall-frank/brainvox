@@ -1,7 +1,6 @@
 /*
  * Copyright (c), 1990-2006 Randall Frank and Thomas Grabowski, M.D.
  *
- * $Id: copying.txt 1790 2006-06-03 21:53:19Z rjfrank $
  *                University of Iowa, Department of Neurology,
  *                Human Neuroanatomy and Neuroimaging Lab
  *                University of Iowa, Image Analysis Facility

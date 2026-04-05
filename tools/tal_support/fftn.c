@@ -209,7 +209,7 @@ fft_free (void)
 # define FFTNS		"fftnf"		/* name for error message */
 # define FFTRADIX	fftradixf	/* trailing 'f' for float */
 # define FFTRADIXS	"fftradixf"	/* name for error message */
-# include __FILE__			/* include this file again */
+# include "fftn.c"			/* include this file again */
 #endif
 
 #undef REAL

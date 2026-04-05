@@ -1,0 +1,79 @@
+============
+tal_centroid
+============
+
+
+NAME
+====
+
+tal_centroid - Computes the weighted centroid of a volume.
+
+SYNOPSIS
+========
+
+tal_centroid [options] inputtemp masktemp
+
+DESCRIPTION
+===========
+
+This program computes the weighted mean of the X and Y locations of
+voxels in the volume which meet criteria. Voxel criteria can be set by
+specifying a voxel threshold or by specifying that the threshold be
+taken as a fraction of the mean voxel value in the volume. A mask volume
+may also be specified to further limit the volume.
+
+INPUTTEMP is the input volume template. MASKTEMP is the mask volume
+template.
+
+Options:
+
+-x(dx)
+   The x axis size of the image in pixels. The default is 256 pixels.
+
+-y(dy)
+   The y axis size of the image in pixels. The default is 256 pixels.
+
+-z(dz)
+   The image depth in bytes. The default is 2 bytes (unsigned shorts).
+
+-o(offset)
+   16 bit data offset. All 16 bit data have this offset value added
+   before the data is used. The default is -256.
+
+-f(start)
+   This specifies the slice number for the first image in the volume.
+   Default:1.
+
+-l(end)
+   This specifies the slice number for the last image in the volume.
+   Default:15.
+
+-i(step)
+   This specifies the increment number to go from one slice to the next.
+   Default:1.
+
+-b
+   This specifies that 16bit images should be byte swapped before using.
+
+-e(frac)
+   This allows the user to specify the fraction of the mean voxel value
+   to be used as the threshold value. Default:0.75.
+
+-v(value)
+   This overrides the -e option and directly specifies a threshold value
+   instead of using a fraction of the mean value. Default:use a fraction
+   of the mean.
+
+SEE ALSO
+========
+
+tal_programs
+
+NOTES
+=====
+
+ORIGIN
+======
+
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of
+Neurology, University of Iowa

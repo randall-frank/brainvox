@@ -1,0 +1,40 @@
+=========
+tal_rmshm
+=========
+
+
+NAME
+====
+
+tal_rmshm - removes a shared memory volume created using tal_mkshm.
+
+SYNOPSIS
+========
+
+tal_rmshm shmtemplate
+
+DESCRIPTION
+===========
+
+This program is used to remove a shared memory volume created using
+tal_mkshm. SHMTEMPLATE is a template in the form ':XX\_%%%' (or any
+filename in the series) which corresponds to a given shared memory
+volume. The template name can come from tal_mkshm or tal_ls.
+
+Options:
+
+None
+
+SEE ALSO
+========
+
+tal_mkshm, tal_ls, tal_programs
+
+NOTES
+=====
+
+ORIGIN
+======
+
+Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of
+Neurology, University of Iowa

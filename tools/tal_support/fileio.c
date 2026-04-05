@@ -553,7 +553,7 @@ FILE *OpenFileW(char *file,long int *pop,long int bin)
 {
 	FILE		*fp;
 	char		zcmd[1024];
-	char		how[3];
+	char		how[5];
 	struct stat	myfbuf;
 
 	if (bin == 1) {

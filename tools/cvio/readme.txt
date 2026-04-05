@@ -9,7 +9,7 @@ These file are, in general, Copyright (c), 1999-2005 Randall Frank
 Introduction:
 
 	This archive contains the source to the University of Iowa, 
-Hospitals and Clincs, Department of Neurology, CVIO library.  This
+Hospitals and Clinics, Department of Neurology, CVIO library.  This
 library is designed to allow for dynamic I/O operations on up to
 3D data samples.  The API is inherently time aware and allows for
 controlled access to the time varying data.  An IDL wrapper is

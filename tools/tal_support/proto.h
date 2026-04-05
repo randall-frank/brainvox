@@ -44,7 +44,7 @@
  *
  */
 
-#define TAL_VERSION "1.53"
+#include "tal_version.h"
 
 /* proto.h */
 
