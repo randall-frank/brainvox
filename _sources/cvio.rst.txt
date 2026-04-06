@@ -8,8 +8,8 @@ by Randall Frank and other contributors.  The following packages are
 included:
 
 
-CVIO
-----
+`CVIO <https://github.com/randall-frank/brainvox/tree/master/tools/cvio>`_
+--------------------------------------------------------------------------
 
 This archive contains the source to the University of Iowa, 
 Hospitals and Clinics, Department of Neurology, CVIO library.  This
@@ -20,8 +20,8 @@ provided to allow a user to call the entire CVIO library from IDL.
 Note: the shared memory interface is not supported under Windows.
 
 
-idl_tools
----------
+`idl_tools <https://github.com/randall-frank/brainvox/tree/master/tools/idl_tools>`_
+------------------------------------------------------------------------------------
 
 A collection of IDL add-on tools (DLM) to expand the
 functionality of IDL.
@@ -35,8 +35,8 @@ functionality of IDL.
 - gzip interface
 
 
-Regression
-----------
+`Regression <https://github.com/randall-frank/brainvox/tree/master/tools/regression>`_
+--------------------------------------------------------------------------------------
 
 IDL DLM implementing an incremental regression
 system with support for various test statistics.  The algorithms used

@@ -3,23 +3,25 @@ tal_programs
 ============
 
 
-NAME
-====
+tal_programs are a collection of command line tools that perform a 
+number of general volume processing tasks.  The tools share common
+CLI argument and I/O options and are designed to be used as an 
+sequence of filters to realize more complex volume processing 
+workflows.
 
-tal_programs - perform a number of general volume processing tasks.
 
-SYNOPSIS
-========
-
-See individual applications.
-
-DESCRIPTION
-===========
+Overview
+--------
 
 The programs described here constitute a suite of volumetric image
 processing tools. They were developed in conjunction with the volume
 rendering package Brainvox, as support tools for PET and non-standard
-image transformations.
+image transformations.  Full source code for the tools may be found
+`here <https://github.com/randall-frank/brainvox/tree/master/tools/tal_support>`_.
+
+
+Common data CLI options
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Volumes are considered to be raw binary headerless data files containing
 pixel values in 8bit,16bit or floating point format. There is one slice
@@ -55,6 +57,10 @@ volume dimensions and depths. Standard command line options include:
 
 -b
    This specifies that 16bit images should be byte swapped before using.
+
+
+Data access details
+^^^^^^^^^^^^^^^^^^^
 
 All programs use the concept of a filename template to specify volumes.
 A filename template is an example of how a filename should be
@@ -165,10 +171,16 @@ volumes with vector values.
 These are ignored on writing as the programs can only write a single 3D
 volume into a NIFTI file.
 
+Talairach space
+^^^^^^^^^^^^^^^
+
 Many of the programs assume the volume is in Talairach space. This
 assumes that the input volume is a 256x256 119 slice volume which
 corresponds to the Brainvox Talairach specifications. Coordinates
 reported for volumes not this size will not be reported correctly.
+
+Volume masks
+^^^^^^^^^^^^
 
 Most of the programs support the concept of a volume mask. A volume mask
 restricts the application's operation to a subset of the voxels. Mask
@@ -178,6 +190,10 @@ Regions of Interest (ROIs) as masks. An ROI is a polygon data file
 describing a closed contour on a single slice. Brainvox is generally
 assumed to be the source of ROIs (the ROIs are scaled down by 2 and
 flipped over their X axis before use by default).
+
+
+Specific applications
+---------------------
 
 The individual applications are listed here:
 
@@ -314,20 +330,16 @@ tal_vbin [options] binfile [xsize ysize [palettefile]]
 tal_warp [options] intemp outtemp dxtemp dytemp dytemp
    Performs vector volume resampling.
 
-SEE ALSO
-========
 
-Brainvox Program Reference Guide
-
-NOTES
-=====
+Notes
+-----
 
 All programs in the suite were written by Randall Frank with a great
 deal of input from Thomas Grabowski, Hanna Damasio, Carl Kice Brown and
 many others.
 
-ORIGIN
-======
+Origin
+------
 
 Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of
 Neurology, University of Iowa
