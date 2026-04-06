@@ -1,0 +1,665 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>tal_regress &#8212; Brainvox</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=3304f9e4"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tal_src/tal_regress';</script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="tal_remask" href="tal_remask.html" />
+    <link rel="prev" title="tal_probe" href="tal_probe.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="4.0.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Brainvox</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../brainvox.html">
+    Brainvox
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../tal_programs.html">
+    tal_programs
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cvio.html">
+    CVIO & others
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../brainvox.html">
+    Brainvox
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../tal_programs.html">
+    tal_programs
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cvio.html">
+    CVIO & others
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tal_cda.html">tal_CDA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_centroid.html">tal_centroid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_cluster.html">tal_cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_cutting.html">tal_cutting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_edm.html">tal_edm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_euler.html">tal_euler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_fft.html">tal_fft</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_gwcsf.html">tal_gwcsf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_label.html">tal_skel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_ls.html">tal_ls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_math.html">tal_math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_mcubes.html">tal_mcubes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_median.html">tal_median</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_merge.html">tal_merge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_mkshm.html">tal_mkshm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_mrinorm.html">tal_mrinorm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_nifti.html">tal_ls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_normalize.html">tal_normalize</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_optimal.html">tal_optimal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_ortho.html">tal_ortho</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_pca.html">tal_pca</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_probe.html">tal_probe</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">tal_regress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_remask.html">tal_remask</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_rename.html">tal_rename</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_rerandom.html">tal_rerandom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_resample.html">tal_resample</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_resize.html">tal_resize</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_rmshm.html">tal_rmshm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_roi2mesh.html">tal_roi2mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_roi_samp.html">tal_roi_sample</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_skel.html">tal_skel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_smooth.html">tal_smooth</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_spatial.html">tal_spatial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_sphere.html">tal_sphere</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_standard.html">tal_standardize</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_stat.html">tal_stat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_surface.html">tal_surface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_thinmesh.html">tal_thinmesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_trace.html">tal_trace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_vbin.html">tal_vbin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_warp.html">tal_warp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../tal_programs.html" class="nav-link">tal_programs</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">tal_regress</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="tal-regress">
+<h1>tal_regress<a class="headerlink" href="#tal-regress" title="Link to this heading">#</a></h1>
+<section id="name">
+<h2>NAME<a class="headerlink" href="#name" title="Link to this heading">#</a></h2>
+<p>tal_regress - Performs linear regression pixelwise or pooled across many
+input volumes.</p>
+</section>
+<section id="synopsis">
+<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Link to this heading">#</a></h2>
+<p>tal_regress [options] datafile</p>
+</section>
+<section id="description">
+<h2>DESCRIPTION<a class="headerlink" href="#description" title="Link to this heading">#</a></h2>
+<p>This program reads an ASCII format DATAFILE containing a description of
+a multiple regression operation in the language syntax described below.
+The program performs the requested regression at each pixel in the input
+data volumes. Each input data volume provides a single pixel value for
+each regression (unless the SINGLE_FIT option is used, in which case
+individual pixel observations are collapsed into a single regression). A
+number of output regression statistics can be selected and these are
+output as floating point volumes. The program supports continuous and
+discrete valued data. Discrete valued data (CLASS data) is handled
+though the use of dummy variables which are not visible to the user.
+Tal_regress uses enough memory to hold a single slice of every input
+volume for all observations and every output volume specified at the
+natural volume pixel depth plus memory for a single regression (one
+vector and a matrix).</p>
+<p>The datafile regression description consists of three sections. Each
+section is begun by a keyword.</p>
+<p>The first section is the VOLPARAMS section. This section allows the user
+to specify the types and sizes of the input volumes as well as an
+optional 8bit mask volume. Parameters regarding the computation of
+ANCOVA adjusted output values and an optional input log transform are
+also set in this section. The SINGLE_FIT parameter can be set to select
+a single regression over all pixels (each pixel is a single observation)
+instead of performing many regressions, one at each pixel. The _PREFIX
+parameters allow for a base directory specification for both input and
+output files (which is not used with the ‘=’, ‘-’ and shared memory
+filespecs).</p>
+<p>The second section is the MODEL section which describes the data model
+to be used in the regressions. Regressions are specified in the form:
+Y=A0+A1X1+A2X2… The first line in this section must describe the Y
+value for the regression. The Y values can have either be provided by a
+volume, specified by a name and the depth of the volume in bytes or a
+single value for each observation. In this latter case the Y_CONST form
+is used which does not require a volume depth. If a constant is to be
+allowed in the regression, the next line should contain the CONST
+keyword. The remainder of this section may be filled with X variables.
+These come in four flavors. The first is a COVARIABLE_VOL, which is a
+volume containing a separate value for this variable for each pixel in
+the volume (this variable requires a name, a mean value for ANCOVA
+adjusted Y value output and the volume depth in bytes). The second is a
+COVARIABLE_CONST, which is a single value for this variable for all
+pixels in the volume (this variable requires a name and a mean value for
+ANCOVA adjusted Y value output). The third variable type is a CLASS
+variable. This variable is level valued (MALE,FEMALE or HIGH,MEDIUM,LOW)
+such as a classical ANOVA (only the name of this class needs to be
+specified in this section). The fourth variable type is LABELCLASS. This
+variable is NOT included in the regression, rather it is a level valued
+variable (like the CLASS variable) which can be used to enhance output
+volume selection. Since it is not used in the regression, no SS_VARIABLE
+or P_SS_VARIABLE can be output for a LABELCLASS variable.
+ADJ_Y_CLASS_MEAN (adjusted for the other regression variables) can be
+output for a LABELCLASS variable.</p>
+<p>The third section is the OUTPUT section which describes which
+statistical volumes are to be written out with the results of the
+regressions. Various values from each regression can be saved into
+floating point output volumes. Most output volumes are selected by a
+keyword and a volume template name. SS_ERROR saves the sum of squares
+(SS) remaining after the regression. SS_VARIABLE requires the name of a
+X variable of any type and saves the sequential SS attributed to that
+variable. P_SS_VARIABLE requires the name of a X variable of any type
+and saves the partial SS attributed to that variable in the presence of
+all other variables in the model. SS_TOTAL saves the total SS for each
+regression. SS_MODEL saves SS_TOTAL - SS_ERROR. ADJ_Y_MEAN adjusts each
+Y value by normalizing each X variable (to the mean value specified in
+the MODEL section or to the first level of each CLASS variable). The
+adjusted Y values are saved. ADJ_Y_CLASS_MEAN outputs the mean adjusted
+Y value for a specific classname and classlevel. COVARIABLE_SLOPE saves
+the regression coefficient for any X covariable specified by name.
+COVARIABLE_STD_ERROR saves the coefficient standard error for any X
+covariable specified by name. R2_MODEL outputs the R squared value for
+the regression (1-SSE/SST). R2_ADJ_MODEL outputs the adjusted R squared
+value (1-(SSE/(n-p))/(SST/(n-1))). SS_PRESS outputs the prediction sum
+of squares error (PRESS). R2_PRED_MODEL outputs the prediction R squared
+value (1-PRESS/SST). Currently, outputs which require the computation of
+the HAT matrix diagonal (such as PRESS_MODEL and R2_PRED_MODEL) can not
+be computed if the SINGLE_FIT option is specified unless the size of the
+data volumes is one voxel. Note, if the SINGLE_FIT parameter is
+specified, no output files will be written (the output templates are
+ignored), instead, the requested results will be sent in tab form to
+stdout as there will only be a single value for each requested result
+(only one regression is performed).</p>
+<p>The fourth section is the OBSERVATIONS section which describes the
+actual input observation. There is one line in the file for each line in
+the MODEL description for each observation. The lines are different for
+each variable type and do not contain any keywords. For a Y variable,
+only a volume template is needed. For a Y_CONST a single value is
+specified. For CONST, the value 1.0 should be specified. For
+COVARIABLE_VOL, a volume template is specified. For COVARIABLE_CONST, a
+single value is specified. For a CLASS or LABELCLASS variable, the name
+of the level for this observation is specified.</p>
+<p>The regression definition datafile is terminated by the END keyword.</p>
+<p>Options:</p>
+<dl class="simple">
+<dt>-v[v[v[v]]]</dt><dd><p>This option selects the verbosity level. Each additional character
+adds to the verbosity level. Levels above 3 are useful only for
+debugging.</p>
+</dd>
+</dl>
+<p>The datafile regression description language syntax (keywords are in
+CAPS, parameters in lowercase and comments in parenthesis):</p>
+<p>VOLPARAMS</p>
+<p>DX value (image x dimensions default=256)</p>
+<p>DY value (image y dimensions default=256)</p>
+<p>FIRST value (first slice number default=1)</p>
+<p>LAST value (last slice number default=119)</p>
+<p>STEP value (slice number increment default=1)</p>
+<p>OFFSET value (data offset value for 16bit volumes default=0)</p>
+<p>MASK template (8bit mask volume template default=full volume)</p>
+<p>SWAP (enables byte swapping for 16 bit volumes default=no byte swapping)</p>
+<p>ADJ_ALL_VARS (adj Y by covariates and class variables)</p>
+<p>ADJ_COV_ONLY (adj Y by covariates only, this is the default)</p>
+<p>LOG_TRANSFORM (Apply a log10 transform to all input data)</p>
+<p>SINGLE_FIT (Perform a single regression default=voxelwise)</p>
+<p>Y_BOOLEAN (Y value is boolean 0 or 1, use weighted regression)</p>
+<p>INPUT_PREFIX dirname (prepended to input files default=none)</p>
+<p>OUTPUT_PREFIX dirname (prepended to output files default=none)</p>
+<p>MODEL</p>
+<p>Y name dz</p>
+<p>Y_CONST name</p>
+<p>CONST</p>
+<p>COVARIABLE_VOL name mean dz</p>
+<p>COVARIABLE_CONST name mean</p>
+<p>CLASS classname</p>
+<p>LABELCLASS classname</p>
+<p>OUTPUT</p>
+<p>SS_ERROR template (SS error remaining)</p>
+<p>SS_VARIABLE varname template</p>
+<p>P_SS_VARIABLE varname template</p>
+<p>SS_TOTAL template</p>
+<p>SS_MODEL template</p>
+<p>SS_PRESS template</p>
+<p>R2_MODEL template</p>
+<p>R2_ADJ_MODEL template</p>
+<p>R2_PRED_MODEL template</p>
+<p>ADJ_Y_MEAN template</p>
+<p>ADJ_Y_CLASS_MEAN classname classlevel template</p>
+<p>COVARIABLE_SLOPE covname template</p>
+<p>OBSERVATIONS</p>
+<p>For Y: template [weight]</p>
+<p>For Y_CONST: value [weight]</p>
+<p>For CONST: value (generally it should be 1.0)</p>
+<p>For COVARIABLE_VOL: template</p>
+<p>For COVARIABLE_CONST: value</p>
+<p>For CLASS: level</p>
+<p>For LABELCLASS: level</p>
+<p>END</p>
+</section>
+<section id="see-also">
+<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<p>tal_programs, tal_math, tal_stat</p>
+</section>
+<section id="notes">
+<h2>NOTES<a class="headerlink" href="#notes" title="Link to this heading">#</a></h2>
+<p>This program is based on information in the SAS programming manual and
+the following paper:</p>
+<p>Friston KJ, Frith CD, Liddle PF, Dolan RJ, Lammersma AA,Frackowiak RSJ;
+The Relationship Between Global and Local Changes in PET Scans. J. Cereb
+Blood Flow Metab 10:458-466 (1990).</p>
+<p>The program also makes use of Applied Statistics algorithm 274 (AS274)
+for the actual regression. This is an extension of Morven Gentleman’s
+AS75 routines by Alan Miller (Applied Statistics 41/1992).</p>
+</section>
+<section id="origin">
+<h2>ORIGIN<a class="headerlink" href="#origin" title="Link to this heading">#</a></h2>
+<p>Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of
+Neurology, University of Iowa</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="tal_probe.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">tal_probe</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="tal_remask.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">tal_remask</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#name">NAME</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#synopsis">SYNOPSIS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#description">DESCRIPTION</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">SEE ALSO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notes">NOTES</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#origin">ORIGIN</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Randall Frank.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

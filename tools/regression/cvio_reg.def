@@ -1,3 +1,0 @@
-LIBRARY			cvio_reg
-DESCRIPTION		'CVIO Regression DLM'
-EXPORTS			IDL_Load		@1

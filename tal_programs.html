@@ -1,0 +1,754 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>tal_programs &#8212; Brainvox</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=3304f9e4"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tal_programs';</script>
+    <link rel="icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="tal_CDA" href="tal_src/tal_cda.html" />
+    <link rel="prev" title="Brainvox" href="brainvox.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="4.0.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Brainvox</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="brainvox.html">
+    Brainvox
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    tal_programs
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cvio.html">
+    CVIO & others
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="brainvox.html">
+    Brainvox
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    tal_programs
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cvio.html">
+    CVIO & others
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_cda.html">tal_CDA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_centroid.html">tal_centroid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_cluster.html">tal_cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_cutting.html">tal_cutting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_edm.html">tal_edm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_euler.html">tal_euler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_fft.html">tal_fft</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_gwcsf.html">tal_gwcsf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_label.html">tal_skel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_ls.html">tal_ls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_math.html">tal_math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_mcubes.html">tal_mcubes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_median.html">tal_median</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_merge.html">tal_merge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_mkshm.html">tal_mkshm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_mrinorm.html">tal_mrinorm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_nifti.html">tal_ls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_normalize.html">tal_normalize</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_optimal.html">tal_optimal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_ortho.html">tal_ortho</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_pca.html">tal_pca</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_probe.html">tal_probe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_regress.html">tal_regress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_remask.html">tal_remask</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_rename.html">tal_rename</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_rerandom.html">tal_rerandom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_resample.html">tal_resample</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_resize.html">tal_resize</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_rmshm.html">tal_rmshm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_roi2mesh.html">tal_roi2mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_roi_samp.html">tal_roi_sample</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_skel.html">tal_skel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_smooth.html">tal_smooth</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_spatial.html">tal_spatial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_sphere.html">tal_sphere</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_standard.html">tal_standardize</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_stat.html">tal_stat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_surface.html">tal_surface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_thinmesh.html">tal_thinmesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_trace.html">tal_trace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_vbin.html">tal_vbin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tal_src/tal_warp.html">tal_warp</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">tal_programs</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="tal-programs">
+<h1>tal_programs<a class="headerlink" href="#tal-programs" title="Link to this heading">#</a></h1>
+<section id="name">
+<h2>NAME<a class="headerlink" href="#name" title="Link to this heading">#</a></h2>
+<p>tal_programs - perform a number of general volume processing tasks.</p>
+</section>
+<section id="synopsis">
+<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Link to this heading">#</a></h2>
+<p>See individual applications.</p>
+</section>
+<section id="description">
+<h2>DESCRIPTION<a class="headerlink" href="#description" title="Link to this heading">#</a></h2>
+<p>The programs described here constitute a suite of volumetric image
+processing tools. They were developed in conjunction with the volume
+rendering package Brainvox, as support tools for PET and non-standard
+image transformations.</p>
+<p>Volumes are considered to be raw binary headerless data files containing
+pixel values in 8bit,16bit or floating point format. There is one slice
+of the volume in each file. Commandline options are used to specify the
+volume dimensions and depths. Standard command line options include:</p>
+<dl class="simple">
+<dt>-x(dx)</dt><dd><p>The x axis size of the image in pixels. The default is 256 pixels.</p>
+</dd>
+<dt>-y(dy)</dt><dd><p>The y axis size of the image in pixels. The default is 256 pixels.</p>
+</dd>
+<dt>-z(dz)</dt><dd><p>The image depth in bytes. The default is generally 2 bytes (unsigned
+shorts), but 1=1byte/pixel and 4=floating point data are supported in
+most cases.</p>
+</dd>
+<dt>-o(offset)</dt><dd><p>16 bit data offset. All 16 bit data have this offset value added
+before the data is used. The default is -256.</p>
+</dd>
+<dt>-f(start)</dt><dd><p>This specifies the slice number for the first image in the volume.
+Default:1.</p>
+</dd>
+<dt>-l(end)</dt><dd><p>This specifies the slice number for the last image in the volume.
+Default:varies.</p>
+</dd>
+<dt>-i(step)</dt><dd><p>This specifies the increment number to go from one slice to the next.
+Default:1.</p>
+</dd>
+</dl>
+<dl class="option-list">
+<dt><kbd><span class="option">-b</span></kbd></dt>
+<dd><p>This specifies that 16bit images should be byte swapped before using.</p>
+</dd>
+</dl>
+<p>All programs use the concept of a filename template to specify volumes.
+A filename template is an example of how a filename should be
+constructed for a given slice number. A template consists of a text
+string with embedded number fields. A number field can be a single
+asterisk (*) or a run or percent signs (%%%) of any length. When the
+software needs to generate the filename for a given slice of the volume,
+the number fields are replaced by a representation of the slice number.
+A asterisk is replaced by a varying width slice number. Percent signs
+are replaced by a fixed width slice number which is zero prefixed to
+fill the field of percent signs. The software support the UNIX compress
+utility directly with image files. If an image filename ends with .Z,
+the file is assumed to be compressed and is read through the UNIX
+compress filter. If an output image filename ends with .Z, the file is
+written through the UNIX compress filter. The .gz extension is also
+recognized and files will be read/written through the gzip program as
+with the compress support. A gain in data throughput and reductions in
+disk space utilization make the compressed formats very useful.</p>
+<p>There are some additional filename template extensions. A filename
+template of “-” specifies a volume within which all voxels are
+considered to have the value 0. A filename template of the form “=XXX”
+specifies a volume with all voxel values are XXX. A filename template
+with no slice number fields specifies a single file to be read
+repeatedly for all slices. All volumes may also be stored as ASCII text
+files (one number per pixel). Adding the suffix “=t” to a filename
+template causes the files specified by that template to be read and
+written in ASCII form. For example, the template “junk_%%%.pic.Z=t”
+will result in compressed text files using the base template
+“junk_%%%.pic”. Note: this option should not be used with the network
+volume options described below.</p>
+<p>A filename template in the form: XXXX:0_%%% will read/write data into
+the file named “XXXX” where all slices are packed contiguously into the
+file. The full form of such a template is:
+“XXXX:0_%%%{_aaa{_bbb}}{_f}” where ‘aaa’ is the size of the volume
+header in bytes (number of bytes to skip before the first image) and
+‘bbb’ is the number of bytes to skip between subsequent images. The
+volume header must be specified if a slice header is to be used. If the
+template contains the string “_f”, the images are flipped vertically
+after being read and before being written. This is the same as the
+flipping options in other programs.</p>
+<p>The programs can also access volumes in running programs as sources and
+destinations. Currently, Brainvox and voxnet based servers (Voxblast)
+can be accessed. Special forms of filename templates are used to specify
+slices in a running program. For Brainvox, the form
+“:X_Y_%%%{_options}” is used. Where X and Y are single digits
+representing the index number of the copy of Brainvox you wish to access
+and the volume type respectively. Brainvox index numbers begin at 0 and
+increment only when two or more copies of Brainvox are running on the
+same machine. Valid volume type numbers are 0=image volume and 1=texture
+volume. Two options exist which allow the user to control how
+interpolations are handled when slices are “written” to a Brainvox
+program. The “r” option specifies that slice replication should be used
+instead of linear intrepolation. The “d” option specifies that the
+interpolations should be deferred until the tal_ program is finished.
+In normal use, the template “:0_0_%%%” would be used to access the
+image volume and “:0_1_%%%” would be used for the texture volume.
+Similarly for voxnet based servers, the template is
+“::Y_%%%{_host{_port{_options}}}”. Y is the volume to be accessed
+(0-2 for R,G,B). Optional hostnames, port numbers and options my be
+included as well. Only the “r” option described above is supportted for
+voxnet servers. Note: with all access to data in running programs, the
+image sizes must be specified on the command line to match the loaded
+volumes. The program “tal_ls” can help in determining those sizes. The
+programs also support the use of shared memory volumes created and
+destroyed using the tal_mkshm and tal_rmshm programs respectively. The
+templates for these volumes have the form ‘:XX_%%%’ where XX is
+replaced by the volume number. Shared memory volumes can also be
+examined using tal_ls. Shared memory volumes have no intrinsic format
+and can be accessed in any method which does not exceed the size of the
+volume.</p>
+<p>Tal_programs can also read and write the NIFTI-1/Analyze file format.
+This format requires the use of a special filename template. The
+template takes the form:
+‘{headername.hdr|headername.nii}%%%[&#64;opt=num[&#64;opt=num]…]’. The
+programs assume that header files ending in .hdr will have an
+uncompressed .img file with the same basename. They can also read and
+write the single file .nii format. The field of %%% is required and is
+used to pass slice numbers to the IO layer, they will not show up in
+filenames.</p>
+<p>After the %%% field, there can be some optional parameters, each one has
+the form &#64;{opt}=value. The <a class="reference external" href="mailto:'&#37;&#52;&#48;nz=value">‘<span>&#64;</span>nz=value</a>’ parameter is used for write
+operations, it defines the number of slices in the volume to be created.
+It defaults to 1. The <a class="reference external" href="mailto:'&#37;&#52;&#48;nt=value">‘<span>&#64;</span>nt=value</a>’ parameter is used for write
+operations, it defines the number of timesteps in the volume to be
+created. It defaults to 1. The <a class="reference external" href="mailto:'&#37;&#52;&#48;nc=value">‘<span>&#64;</span>nc=value</a>’ parameter is used for write
+operations, it defines the number of components in the volume to be
+created (e.g. &#64;nc=3 specifies a 3D vector). It defaults to 1. The
+<a class="reference external" href="mailto:'&#37;&#52;&#48;ip=value">‘<span>&#64;</span>ip=value</a>’ parameter is used for write operations, it defines the
+interpixel spacing for the volume to be created. It defaults to 1. The
+<a class="reference external" href="mailto:'&#37;&#52;&#48;is=value">‘<span>&#64;</span>is=value</a>’ parameter is used for write operations, it defines the
+interslice spacing for the volume to be created. It defaults to 1. The
+<a class="reference external" href="mailto:'&#37;&#52;&#48;it=value">‘<span>&#64;</span>it=value</a>’ parameter is used for write operations, it defines the
+spacing between timesteps for the volume to be created. It defaults to
+1.</p>
+<p>Note that tal_programs will overwrite the entire .img file with zeros
+before writing any slices into it.</p>
+<p>During reading, the <a class="reference external" href="mailto:'&#37;&#52;&#48;t=value">‘<span>&#64;</span>t=value</a>’ parameter selects the timestep for files
+with multiple timesteps. The <a class="reference external" href="mailto:'&#37;&#52;&#48;c=value">‘<span>&#64;</span>c=value</a>’ selects a specific component for
+volumes with vector values.</p>
+<p>These are ignored on writing as the programs can only write a single 3D
+volume into a NIFTI file.</p>
+<p>Many of the programs assume the volume is in Talairach space. This
+assumes that the input volume is a 256x256 119 slice volume which
+corresponds to the Brainvox Talairach specifications. Coordinates
+reported for volumes not this size will not be reported correctly.</p>
+<p>Most of the programs support the concept of a volume mask. A volume mask
+restricts the application’s operation to a subset of the voxels. Mask
+volumes are generally 8bit volumes where any non-zero value is
+considered to be “inside” the volume mask. Several support the use of
+Regions of Interest (ROIs) as masks. An ROI is a polygon data file
+describing a closed contour on a single slice. Brainvox is generally
+assumed to be the source of ROIs (the ROIs are scaled down by 2 and
+flipped over their X axis before use by default).</p>
+<p>The individual applications are listed here:</p>
+<dl class="simple">
+<dt>tal_CDA [options] inputtemp outputfile</dt><dd><p>Performs change-distribution analysis on a volume.</p>
+</dd>
+<dt>tal_centroid [options] inputtemp masktemp</dt><dd><p>Computes the weighted centroid of a volume.</p>
+</dd>
+<dt>tal_cluster [options] inputtemp</dt><dd><p>Performs cluster detection functions (flood filling) on volumes.</p>
+</dd>
+<dt>tal_cutting [options] roitemp inputtemp outputtemp</dt><dd><p>Paints voxels with respect to a set of ROIs.</p>
+</dd>
+<dt>tal_edm [options] inputvol outputvol</dt><dd><p>Computes volume or planar Euclidean distance maps.</p>
+</dd>
+<dt>tal_euler [options] inputtemp tstart tend tstep</dt><dd><p>Computes the Euler characteristic of a volume.</p>
+</dd>
+<dt>tal_fft [options] imagevol freq_real_vol freq_imag_vol</dt><dd><p>Computes the forward and reverse fourier transform of a volume.</p>
+</dd>
+<dt>tal_gwcsf [options] intemp masktemp Gout Wout Cout Fout</dt><dd><p>Estimates Gray White and CSF tissue partitions from an MRI volume.</p>
+</dd>
+<dt>tal_label [options] inputvol outputvol</dt><dd><p>Performs 2d and 3d connected components labeling.</p>
+</dd>
+<dt>tal_ls [options]</dt><dd><p>Lists status of network volume servers.</p>
+</dd>
+<dt>tal_math [options] expr outvol inputA inputB inputC inputD</dt><dd><p>Performs general purpose volumetric math operations with up to 4
+input volumes.</p>
+</dd>
+<dt>tal_mcubes [options] intemp outfile</dt><dd><p>Performs volume isosurface detection.</p>
+</dd>
+<dt>tal_median [options] intemp outtemp</dt><dd><p>Applies an adjustable median smooth filter to a volume.</p>
+</dd>
+<dt>tal_merge [options] inputtemp inputtemp2 outputtemp</dt><dd><p>Performs simple linear volume math between two volumes.</p>
+</dd>
+<dt>tal_mkshm nslices</dt><dd><p>Creates a shared memory volume which can be destroyed by tal_mkshm.</p>
+</dd>
+<dt>tal_mrinorm [options] input output</dt><dd><p>Performs slicewise normalization using a polynomial fitting
+technique.</p>
+</dd>
+<dt>tal_nifti [options] inputhdrfile</dt><dd><p>Queries the information in an Analyze/NIFTI header file.</p>
+</dd>
+<dt>tal_normalize [options] inputtemp masktemp outputtemp</dt><dd><p>Normalizes a volume with respect to its globals mean.</p>
+</dd>
+<dt>tal_optimal [options] inputtemp outputtemp</dt><dd><p>computes optimal surfaces through 3D cost functions.</p>
+</dd>
+<dt>tal_ortho [options] inputtemp outputtemp</dt><dd><p>Allows for orthogonal planes resampling of datasets.</p>
+</dd>
+<dt>tal_pca [options] ncomponents [-|volume …]</dt><dd><p>Computes the principle components of a series of volumes.</p>
+</dd>
+<dt>tal_probe [options] inputtemp</dt><dd><p>Probes a volume for local values around a location in the volume.</p>
+</dd>
+<dt>tal_regress [options] datafile</dt><dd><p>Used to perform multiple volume linear regression.</p>
+</dd>
+<dt>tal_remask [options] inputtemp outputtemp</dt><dd><p>Computes a connected bounding mask.</p>
+</dd>
+<dt>tal_rerandom [options] n_subjects [-|vol1temp …]</dt><dd><p>Computes non-parametric t-statistics for a series of volumes.</p>
+</dd>
+<dt>tal_resample [options] inputtemp outputtemp</dt><dd><p>Resamples a Brainvox calibrated volume into Talairach space.</p>
+</dd>
+<dt>tal_resize [options] inputtemp outputtemp</dt><dd><p>Performs volumetric cropping and rescaling/resampling.</p>
+</dd>
+<dt>tal_rename [options] inputtemp outputtemp</dt><dd><p>Performs batch image file renaming operations.</p>
+</dd>
+<dt>tal_rmshm shmtemplate</dt><dd><p>Destroys a shared memory volume created by tal_mkshm.</p>
+</dd>
+<dt>tal_roi2mesh [options] outputfile</dt><dd><p>Converts a series of ROIs into a triangulated polygon mesh.</p>
+</dd>
+<dt>tal_roi_sample [options] invol roitemp outfile [pointset …]</dt><dd><p>Outputs voxel values within a region specified by a set of ROIs. The
+man page for tal_roi_sample is under tal_roi_samp.</p>
+</dd>
+<dt>tal_skel [options] inputvol outputvol</dt><dd><p>Computes volume or planar skeletonization maps.</p>
+</dd>
+<dt>tal_smooth [options] inputtemp outputtemp</dt><dd><p>Performs volumetric Gaussian smoothing.</p>
+</dd>
+<dt>tal_spatial size FWHM dimension</dt><dd><p>Filters a list of tal_cluster points for significance using spatial
+extent</p>
+</dd>
+<dt>tal_sphere [options] inputtemp</dt><dd><p>Implements the SPM sphericity computation. Performs a non-parametric
+T-test on differences volumes.</p>
+</dd>
+<dt>tal_standardize [options] inputtemp outputtemp</dt><dd><p>Performs table based and statistical pixel mapping operations. The
+man page for tal_standardize is under tal_standard.</p>
+</dd>
+<dt>tal_stat [options] [-|vol1temp …]</dt><dd><p>General purpose volumetric statistics (global and local).</p>
+</dd>
+<dt>tal_surface [options] inputtemp</dt><dd><p>Computes surface area and volume of a binary volume, possibly
+restricted to a second binary volume.</p>
+</dd>
+<dt>tal_thinmesh [options] infile outfile</dt><dd><p>Performs vertex reduction on a polygon mesh file.</p>
+</dd>
+<dt>tal_trace [options] inputtemp roibase</dt><dd><p>Performs slice-wise contour detection in a volume.</p>
+</dd>
+<dt>tal_vbin [options] binfile [xsize ysize [palettefile]]</dt><dd><p>Performs simple binary image viewing.</p>
+</dd>
+<dt>tal_warp [options] intemp outtemp dxtemp dytemp dytemp</dt><dd><p>Performs vector volume resampling.</p>
+</dd>
+</dl>
+</section>
+<section id="see-also">
+<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<p>Brainvox Program Reference Guide</p>
+</section>
+<section id="notes">
+<h2>NOTES<a class="headerlink" href="#notes" title="Link to this heading">#</a></h2>
+<p>All programs in the suite were written by Randall Frank with a great
+deal of input from Thomas Grabowski, Hanna Damasio, Carl Kice Brown and
+many others.</p>
+</section>
+<section id="origin">
+<h2>ORIGIN<a class="headerlink" href="#origin" title="Link to this heading">#</a></h2>
+<p>Brainvox, Human Neuroanatomy and Neuroimaging Lab, Department of
+Neurology, University of Iowa</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="brainvox.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Brainvox</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="tal_src/tal_cda.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">tal_CDA</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#name">NAME</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#synopsis">SYNOPSIS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#description">DESCRIPTION</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">SEE ALSO</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#notes">NOTES</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#origin">ORIGIN</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Randall Frank.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

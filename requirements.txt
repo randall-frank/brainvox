@@ -1,6 +1,0 @@
-requests
-scons
-restview
-sphinx
-pydata-sphinx-theme
-sphinxcontrib-video

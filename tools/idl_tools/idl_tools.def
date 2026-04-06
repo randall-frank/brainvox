@@ -1,4 +1,0 @@
-LIBRARY			idl_tools
-DESCRIPTION		'IDL tools DLM'
-
-EXPORTS			IDL_Load		@1
