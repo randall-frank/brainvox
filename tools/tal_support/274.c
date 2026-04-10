@@ -275,9 +275,6 @@ integer *nreq, *ier;
     /* System generated locals */
     integer i__1;
 
-    /* Builtin functions */
-    double sqrt();
-
     /* Local variables */
     static integer i__, j, nextr;
 
@@ -352,8 +349,6 @@ integer *ier;
     integer i__1, i__2;
     doublereal d__1;
 
-    /* Builtin functions */
-    double sqrt();
 
     /* Local variables */
     static integer col, pos;
@@ -437,12 +432,8 @@ integer *ier;
     integer i__1, i__2;
     doublereal d__1;
 
-    /* Builtin functions */
-    double sqrt();
-
     /* Local variables */
     static doublereal temp;
-    extern /* Subroutine */ int includ_();
     static integer np2, col, pos, row, pos2;
 
 
@@ -583,6 +574,68 @@ integer *ier;
 } /* ss_ */
 
 
+/* Subroutine */ int inv_(np, nrbar, rbar, nreq, rinv)
+integer *np, *nrbar;
+doublereal *rbar;
+integer *nreq;
+doublereal *rinv;
+{
+    /* Initialized data */
+
+    static doublereal zero = 0.;
+
+    /* System generated locals */
+    integer i__1, i__2;
+
+    /* Local variables */
+    static integer k, start, col, pos;
+    static doublereal sum;
+    static integer row, pos1, pos2;
+
+
+/*     ALGORITHM AS274.8  APPL. STATIST. (1992) VOL 41, NO.2 */
+
+/*     Invert first NREQ rows and columns of Cholesky factorization */
+/*     produced by AS75.1. */
+
+
+/*     Local variables. */
+
+
+    /* Parameter adjustments */
+    --rinv;
+    --rbar;
+
+    /* Function Body */
+
+/*     Invert RBAR ignoring row multipliers, from the bottom up. */
+
+    pos = *nreq * (*nreq - 1) / 2;
+    for (row = *nreq - 1; row >= 1; --row) {
+	start = (row - 1) * (*np + *np - row) / 2 + 1;
+	i__1 = row + 1;
+	for (col = *nreq; col >= i__1; --col) {
+	    pos1 = start;
+	    pos2 = pos;
+	    sum = zero;
+	    i__2 = col - 1;
+	    for (k = row + 1; k <= i__2; ++k) {
+		pos2 = pos2 + *nreq - k;
+		sum -= rbar[pos1] * rinv[pos2];
+		++pos1;
+/* L10: */
+	    }
+	    rinv[pos] = sum - rbar[pos1];
+	    --pos;
+/* L20: */
+	}
+/* L30: */
+    }
+
+    return 0;
+} /* inv_ */
+
+
 /* Subroutine */ int cov_(np, nrbar, d__, rbar, nreq, rinv, var, covmat, 
 	dimcov, sterr, ier)
 integer *np, *nrbar;
@@ -601,12 +654,9 @@ integer *ier;
     /* System generated locals */
     integer i__1, i__2, i__3;
 
-    /* Builtin functions */
-    double sqrt();
 
     /* Local variables */
     static integer k, start, col;
-    extern /* Subroutine */ int inv_();
     static integer pos;
     static doublereal sum;
     static integer row, pos1, pos2;
@@ -692,148 +742,6 @@ integer *ier;
 } /* cov_ */
 
 
-/* Subroutine */ int inv_(np, nrbar, rbar, nreq, rinv)
-integer *np, *nrbar;
-doublereal *rbar;
-integer *nreq;
-doublereal *rinv;
-{
-    /* Initialized data */
-
-    static doublereal zero = 0.;
-
-    /* System generated locals */
-    integer i__1, i__2;
-
-    /* Local variables */
-    static integer k, start, col, pos;
-    static doublereal sum;
-    static integer row, pos1, pos2;
-
-
-/*     ALGORITHM AS274.8  APPL. STATIST. (1992) VOL 41, NO.2 */
-
-/*     Invert first NREQ rows and columns of Cholesky factorization */
-/*     produced by AS75.1. */
-
-
-/*     Local variables. */
-
-
-    /* Parameter adjustments */
-    --rinv;
-    --rbar;
-
-    /* Function Body */
-
-/*     Invert RBAR ignoring row multipliers, from the bottom up. */
-
-    pos = *nreq * (*nreq - 1) / 2;
-    for (row = *nreq - 1; row >= 1; --row) {
-	start = (row - 1) * (*np + *np - row) / 2 + 1;
-	i__1 = row + 1;
-	for (col = *nreq; col >= i__1; --col) {
-	    pos1 = start;
-	    pos2 = pos;
-	    sum = zero;
-	    i__2 = col - 1;
-	    for (k = row + 1; k <= i__2; ++k) {
-		pos2 = pos2 + *nreq - k;
-		sum -= rbar[pos1] * rinv[pos2];
-		++pos1;
-/* L10: */
-	    }
-	    rinv[pos] = sum - rbar[pos1];
-	    --pos;
-/* L20: */
-	}
-/* L30: */
-    }
-
-    return 0;
-} /* inv_ */
-
-
-/* Subroutine */ int pcorr_(np, nrbar, d__, rbar, thetab, sserr, in, work, 
-	cormat, dimc, ycorr, ier)
-integer *np, *nrbar;
-doublereal *d__, *rbar, *thetab, *sserr;
-integer *in;
-doublereal *work, *cormat;
-integer *dimc;
-doublereal *ycorr;
-integer *ier;
-{
-    /* Initialized data */
-
-    static doublereal zero = 0.;
-
-    /* System generated locals */
-    integer i__1;
-
-    /* Local variables */
-    static integer i__, start, in1;
-    extern /* Subroutine */ int cor_();
-
-
-/*     ALGORITHM AS274.9  APPL. STATIST. (1992) VOL 41, NO.2 */
-
-/*     Calculate partial correlations after the first IN variables */
-/*     have been forced into the regression. */
-
-/*     Auxiliary routine called: COR */
-
-
-/*     Local variables. */
-
-
-    /* Parameter adjustments */
-    --work;
-    --thetab;
-    --d__;
-    --rbar;
-    --cormat;
-
-    /* Function Body */
-
-/*     Some checks. */
-
-    *ier = 0;
-    if (*np < 1) {
-	*ier = 1;
-    }
-    if (*nrbar < *np * (*np - 1) / 2) {
-	*ier += 2;
-    }
-    if (*in < 0 || *in > *np - 1) {
-	*ier += 4;
-    }
-    if (*dimc < (*np - *in) * (*np - *in - 1) / 2) {
-	*ier += 8;
-    }
-    if (*ier != 0) {
-	return 0;
-    }
-
-    start = *in * (*np + *np - *in - 1) / 2 + 1;
-    in1 = *in + 1;
-    i__1 = *np - *in;
-    cor_(&i__1, &d__[in1], &rbar[start], &thetab[in1], sserr, &work[1], &
-	    cormat[1], ycorr);
-
-/*     Check for zeroes. */
-
-    i__1 = *np - *in;
-    for (i__ = 1; i__ <= i__1; ++i__) {
-	if (work[i__] <= zero) {
-	    *ier = -i__;
-	}
-/* L10: */
-    }
-
-    return 0;
-} /* pcorr_ */
-
 
 /* Subroutine */ int cor_(np, d__, rbar, thetab, sserr, work, cormat, ycorr)
 integer *np;
@@ -846,9 +754,6 @@ doublereal *d__, *rbar, *thetab, *sserr, *work, *cormat, *ycorr;
     /* System generated locals */
     integer i__1, i__2;
     doublereal d__1;
-
-    /* Builtin functions */
-    double sqrt();
 
     /* Local variables */
     static integer diff;
@@ -962,6 +867,86 @@ L70:
 } /* cor_ */
 
 
+/* Subroutine */ int pcorr_(np, nrbar, d__, rbar, thetab, sserr, in, work, 
+	cormat, dimc, ycorr, ier)
+integer *np, *nrbar;
+doublereal *d__, *rbar, *thetab, *sserr;
+integer *in;
+doublereal *work, *cormat;
+integer *dimc;
+doublereal *ycorr;
+integer *ier;
+{
+    /* Initialized data */
+
+    static doublereal zero = 0.;
+
+    /* System generated locals */
+    integer i__1;
+
+    /* Local variables */
+    static integer i__, start, in1;
+
+
+/*     ALGORITHM AS274.9  APPL. STATIST. (1992) VOL 41, NO.2 */
+
+/*     Calculate partial correlations after the first IN variables */
+/*     have been forced into the regression. */
+
+/*     Auxiliary routine called: COR */
+
+
+/*     Local variables. */
+
+
+    /* Parameter adjustments */
+    --work;
+    --thetab;
+    --d__;
+    --rbar;
+    --cormat;
+
+    /* Function Body */
+
+/*     Some checks. */
+
+    *ier = 0;
+    if (*np < 1) {
+	*ier = 1;
+    }
+    if (*nrbar < *np * (*np - 1) / 2) {
+	*ier += 2;
+    }
+    if (*in < 0 || *in > *np - 1) {
+	*ier += 4;
+    }
+    if (*dimc < (*np - *in) * (*np - *in - 1) / 2) {
+	*ier += 8;
+    }
+    if (*ier != 0) {
+	return 0;
+    }
+
+    start = *in * (*np + *np - *in - 1) / 2 + 1;
+    in1 = *in + 1;
+    i__1 = *np - *in;
+    cor_(&i__1, &d__[in1], &rbar[start], &thetab[in1], sserr, &work[1], &
+	    cormat[1], ycorr);
+
+/*     Check for zeroes. */
+
+    i__1 = *np - *in;
+    for (i__ = 1; i__ <= i__1; ++i__) {
+	if (work[i__] <= zero) {
+	    *ier = -i__;
+	}
+/* L10: */
+    }
+
+    return 0;
+} /* pcorr_ */
+
+
 /* Subroutine */ int vmove_(np, nrbar, vorder, d__, rbar, thetab, rss, from, 
 	to, tol, ier)
 integer *np, *nrbar, *vorder;
@@ -978,9 +963,6 @@ integer *ier;
     /* System generated locals */
     integer i__1, i__2, i__3;
     doublereal d__1;
-
-    /* Builtin functions */
-    double sqrt();
 
     /* Local variables */
     static doublereal cbar, sbar;
@@ -1166,7 +1148,6 @@ integer *list, *n, *pos1, *ier;
 
     /* Local variables */
     static integer next, i__, j, l;
-    extern /* Subroutine */ int vmove_();
 
 
 /*     ALGORITHM AS274.12  APPL. STATIST. (1992) VOL 41, NO.2 */
@@ -1266,9 +1247,6 @@ integer *ifault;
     /* System generated locals */
     integer i__1, i__2;
     doublereal d__1;
-
-    /* Builtin functions */
-    double sqrt();
 
     /* Local variables */
     static integer col, pos;

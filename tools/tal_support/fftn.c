@@ -224,7 +224,7 @@ fft_free (void)
 # define FFTNS		"fftn"
 # define FFTRADIX	fftradix
 # define FFTRADIXS	"fftradix"
-# include __FILE__			/* include this file again */
+# include "fftn.c"			/* include this file again */
 #endif
 
 #if defined (FFT_NOFLOAT) && defined (FFT_NODOUBLE) && !defined (lint)

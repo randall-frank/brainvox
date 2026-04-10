@@ -18,6 +18,9 @@ if platform.system() == 'Windows':
 env = Environment(CPPPATH=include_dirs, CPPDEFINES=defines,
                   LIBS=libs, LIBPATH=lib_dirs)
 
+# Mingw toolchain
+#   tools=['mingw']
+
 # Intel compiler bits
 #    CC='icx-cl',    # Use Windows-style C compiler
 #    CXX='icx-cl',   # Use Windows-style C++ compiler
