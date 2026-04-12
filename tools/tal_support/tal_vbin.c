@@ -49,18 +49,21 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <float.h>
+
 #ifndef WIN32
 #include <unistd.h>
-#else
-FILE *popen(char *a, char *b);
-int pclose(FILE *f);
 #endif
+
 #include <limits.h>
 
 #include "GL/glut.h"
 #include <GL/gl.h>
 
 #include "proto.h"
+
+#ifdef USE_ZLIB
+#include "zlib/zlib.h"
+#endif
 
 /* TODO: menu: reset, zoom, pan */
 
@@ -455,33 +458,39 @@ int main(int argc,char **argv)
 
 /* begin task of picking up undefined args */
 
-        comp = 0;    /* assume no compression */
-        if ((ifile[strlen(ifile)-2] == '.') &&
-                                (ifile[strlen(ifile)-1] == 'Z')) comp = 1;
-        if ((ifile[strlen(ifile)-3] == '.') && (ifile[strlen(ifile)-2] == 'g')
-        		&& (ifile[strlen(ifile)-1] == 'z')) comp = 2;
+comp = 0;    /* assume no compression */
+if ((ifile[strlen(ifile)-2] == '.') &&
+						(ifile[strlen(ifile)-1] == 'Z')) comp = 1;
+if ((ifile[strlen(ifile)-3] == '.') && (ifile[strlen(ifile)-2] == 'g')
+		&& (ifile[strlen(ifile)-1] == 'z')) comp = 2;
 
 /* start by retrieving the file size in bytes */
 	if ((zsize == 0) || (xsize == 0) || (ysize == 0)) {
-	    if (comp) {
-                j = 0;
-		if (comp == 1) {
-                	sprintf(tmp,"zcat %s",ifile);
-		} else {
-                	sprintf(tmp,"gunzip -dc %s",ifile);
-		}
-                fp = popen(tmp,"r");
-                if (fp != 0) {
-                        while (fgetc(fp) != EOF) j++;
-                        pclose(fp);
-                } else {
-			ex_err("Unable to access the input file");
-		}
-                mystat.st_size = j;
+	    if (comp == 1) {
+			j = 0;
+			sprintf(tmp,"zcat %s",ifile);
+			fp = popen(tmp,"r");
+			if (fp != 0) {
+				while (fgetc(fp) != EOF) j++;
+				pclose(fp);
+			} else {
+				ex_err("Unable to access the input file");
+			}
+			mystat.st_size = j;
+		} else if (comp == 2) {
+			j = 0;
+			gzFile gfp = gzopen(ifile, "rb");
+			if (gfp != 0) {
+				while (gzgetc(gfp) != -1) j++;
+				gzclose(gfp);
+			} else {
+				ex_err("Unable to access the input file");
+			}
+			mystat.st_size = j;
 	    } else {
-		if (stat(ifile,&mystat) == -1) {
-			ex_err("Unable to access the input file");
-		}
+			if (stat(ifile,&mystat) == -1) {
+				ex_err("Unable to access the input file");
+			}
 	    }
 	}
 /* if the pixel size and image size is unknown then try to find it */

@@ -4,9 +4,10 @@
 */
 
 #include "f2c.h"
+#include "as75_base.h"
 
-
-/* Subroutine */ int confnd_(integer *np, integer *nrbar, integer *j, 
+/* Subroutine */ 
+int confnd_(integer *np, integer *nrbar, integer *j, 
 	doublereal *rbar, doublereal *contra, integer *ifault)
 {
     /* Initialized data */
@@ -90,7 +91,8 @@ L40:
 
 
 
-/* Subroutine */ int ssdcmp_(integer *np, doublereal *d__, doublereal *thetab,
+/* Subroutine */ 
+int ssdcmp_(integer *np, doublereal *d__, doublereal *thetab,
 	 doublereal *ss, integer *ifault)
 {
     /* System generated locals */
@@ -133,7 +135,8 @@ L40:
 
 
 
-/* Subroutine */ int regrss_(integer *np, integer *nrbar, doublereal *rbar, 
+/* Subroutine */ 
+int regrss_(integer *np, integer *nrbar, doublereal *rbar, 
 	doublereal *thetab, doublereal *beta, integer *ifault)
 {
     /* System generated locals */

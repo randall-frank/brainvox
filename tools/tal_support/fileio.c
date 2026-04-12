@@ -51,12 +51,9 @@
 #ifndef WIN32
 #include <unistd.h>
 #else
-FILE *popen(char *a, char *b) {
-	return((FILE *)NULL);
-}
-int pclose(FILE *f) {
-	return(-1);
-}
+
+#define popen fake_popen
+#define pclose fake_pclose
 #endif
 
 #include "proto.h"
@@ -108,6 +105,13 @@ static	double roi_zoom = 0.5;
 static	long int roi_flip = 1;
 
 /* routines to read/write images and datasets */
+
+FILE *fake_popen(char *a, char *b) {
+	return((FILE *)NULL);
+}
+int fake_pclose(FILE *f) {
+	return(-1);
+}
 
 void tal_read(char *file,double ip,tal_conv *tal)
 {
@@ -246,8 +250,8 @@ long int bin_io(char *file,char type,void *data,long int dx,long int dy,
 	long int	flip = inflip;
 
 /* try Analyze I/O */
-        i = NIFTI_io(file,type,data,dx,dy,dz,flip);
-        if (i != -1) return(i);
+    i = NIFTI_io(file,type,data,dx,dy,dz,flip);
+    if (i != -1) return(i);
 
 /* try ASCII I/O */
 	i = ASCII_io(file,type,data,dx,dy,dz,flip);

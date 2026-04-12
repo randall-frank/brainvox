@@ -4,13 +4,20 @@
 */
 
 #include "f2c.h"
+#include "as274.h"
 
 /* ----------------------------------------------------------------------- */
-/* Subroutine */ int remove_(np, nrbar, weight, xrow, yelem, d__, rbar, 
-	thetab, sserr, ier)
-integer *np, *nrbar;
-doublereal *weight, *xrow, *yelem, *d__, *rbar, *thetab, *sserr;
-integer *ier;
+/* Subroutine */ 
+int remove_(integer *np, 
+    integer *nrbar,
+    doublereal *weight,
+    doublereal *xrow,
+    doublereal *yelem, 
+    doublereal *d__, 
+    doublereal *rbar, 
+	doublereal *thetab, 
+    doublereal *sserr, 
+    integer *ier)
 {
     /* Initialized data */
 
@@ -93,11 +100,18 @@ L20:
 } /* remove_ */
 
 /* ----------------------------------------------------------------------- */
-/* Subroutine */ int includ_(np, nrbar, weight, xrow, yelem, d__, rbar, 
-	thetab, sserr, ier)
-integer *np, *nrbar;
-doublereal *weight, *xrow, *yelem, *d__, *rbar, *thetab, *sserr;
-integer *ier;
+/* Subroutine */ 
+int includ_(
+    integer *np, 
+    integer *nrbar, 
+    doublereal *weight, 
+    doublereal *xrow, 
+    doublereal *yelem, 
+    doublereal *d__, 
+    doublereal *rbar, 
+	doublereal *thetab, 
+    doublereal *sserr, 
+    integer *ier)
 {
     /* Initialized data */
 
@@ -202,10 +216,15 @@ L30:
 } /* includ_ */
 
 
-/* Subroutine */ int clear_(np, nrbar, d__, rbar, thetab, sserr, ier)
-integer *np, *nrbar;
-doublereal *d__, *rbar, *thetab, *sserr;
-integer *ier;
+/* Subroutine */ 
+int clear_(
+    integer *np, 
+    integer *nrbar, 
+    doublereal *d__, 
+    doublereal *rbar, 
+    doublereal *thetab, 
+    doublereal *sserr, 
+    integer *ier)
 {
     /* Initialized data */
 
@@ -262,11 +281,17 @@ integer *ier;
 } /* clear_ */
 
 
-/* Subroutine */ int regcf_(np, nrbar, d__, rbar, thetab, tol, beta, nreq, 
-	ier)
-integer *np, *nrbar;
-doublereal *d__, *rbar, *thetab, *tol, *beta;
-integer *nreq, *ier;
+/* Subroutine */ 
+int regcf_(
+    integer *np, 
+    integer *nrbar, 
+    doublereal *d__, 
+    doublereal *rbar, 
+    doublereal *thetab, 
+    doublereal *tol, 
+    doublereal *beta, 
+    integer *nreq, 
+	integer *ier)
 {
     /* Initialized data */
 
@@ -336,10 +361,15 @@ L20:
 } /* regcf_ */
 
 
-/* Subroutine */ int tolset_(np, nrbar, d__, rbar, tol, work, ier)
-integer *np, *nrbar;
-doublereal *d__, *rbar, *tol, *work;
-integer *ier;
+/* Subroutine */ 
+int tolset_(
+    integer *np, 
+    integer *nrbar, 
+    doublereal *d__, 
+    doublereal *rbar, 
+    doublereal *tol, 
+    doublereal *work, 
+    integer *ier)
 {
     /* Initialized data */
 
@@ -416,13 +446,18 @@ integer *ier;
 } /* tolset_ */
 
 
-/* Subroutine */ int sing_(np, nrbar, d__, rbar, thetab, sserr, tol, lindep, 
-	work, ier)
-integer *np, *nrbar;
-doublereal *d__, *rbar, *thetab, *sserr, *tol;
-logical *lindep;
-doublereal *work;
-integer *ier;
+/* Subroutine */ 
+int sing_(
+    integer *np, 
+    integer *nrbar, 
+    doublereal *d__, 
+    doublereal *rbar, 
+    doublereal *thetab, 
+    doublereal *sserr, 
+    doublereal *tol, 
+    logical *lindep, 
+	doublereal *work, 
+    integer *ier)
 {
     /* Initialized data */
 
@@ -523,10 +558,14 @@ integer *ier;
 } /* sing_ */
 
 
-/* Subroutine */ int ss_(np, d__, thetab, sserr, rss, ier)
-integer *np;
-doublereal *d__, *thetab, *sserr, *rss;
-integer *ier;
+/* Subroutine */ 
+int ss_(
+    integer *np, 
+    doublereal *d__, 
+    doublereal *thetab, 
+    doublereal *sserr, 
+    doublereal *rss, 
+    integer *ier)
 {
     /* System generated locals */
     doublereal d__1;
@@ -574,11 +613,13 @@ integer *ier;
 } /* ss_ */
 
 
-/* Subroutine */ int inv_(np, nrbar, rbar, nreq, rinv)
-integer *np, *nrbar;
-doublereal *rbar;
-integer *nreq;
-doublereal *rinv;
+/* Subroutine */ 
+int inv_(
+    integer *np, 
+    integer *nrbar, 
+    doublereal *rbar, 
+    integer *nreq, 
+    doublereal *rinv)
 {
     /* Initialized data */
 
@@ -636,15 +677,19 @@ doublereal *rinv;
 } /* inv_ */
 
 
-/* Subroutine */ int cov_(np, nrbar, d__, rbar, nreq, rinv, var, covmat, 
-	dimcov, sterr, ier)
-integer *np, *nrbar;
-doublereal *d__, *rbar;
-integer *nreq;
-doublereal *rinv, *var, *covmat;
-integer *dimcov;
-doublereal *sterr;
-integer *ier;
+/* Subroutine */ 
+int cov_(
+    integer *np, 
+    integer *nrbar, 
+    doublereal *d__, 
+    doublereal *rbar, 
+    integer *nreq, 
+    doublereal *rinv, 
+    doublereal *var, 
+    doublereal *covmat, 
+	integer *dimcov, 
+    doublereal *sterr, 
+    integer *ier)
 {
     /* Initialized data */
 
@@ -743,9 +788,16 @@ integer *ier;
 
 
 
-/* Subroutine */ int cor_(np, d__, rbar, thetab, sserr, work, cormat, ycorr)
-integer *np;
-doublereal *d__, *rbar, *thetab, *sserr, *work, *cormat, *ycorr;
+/* Subroutine */ 
+int cor_(
+    integer *np,
+    doublereal *d__,
+    doublereal *rbar,
+    doublereal *thetab, 
+    doublereal *sserr, 
+    doublereal *work, 
+    doublereal *cormat, 
+    doublereal *ycorr)
 {
     /* Initialized data */
 
@@ -762,16 +814,13 @@ doublereal *d__, *rbar, *thetab, *sserr, *work, *cormat, *ycorr;
     static doublereal sum;
     static integer row, col1, col2, pos1, pos2;
 
+    /*     ALGORITHM AS274.10  APPL. STATIST. (1992) VOL 41, NO.2 */
 
-/*     ALGORITHM AS274.10  APPL. STATIST. (1992) VOL 41, NO.2 */
+    /*     Calculate correlations from an orthogonal reduction.   This */
+    /*     routine will usually be called from PCORR, which will have */
+    /*     removed the appropriate number of rows at the start. */
 
-/*     Calculate correlations from an orthogonal reduction.   This */
-/*     routine will usually be called from PCORR, which will have */
-/*     removed the appropriate number of rows at the start. */
-
-
-/*     Local variables. */
-
+    /*     Local variables. */
 
     /* Parameter adjustments */
     --ycorr;
@@ -783,99 +832,114 @@ doublereal *d__, *rbar, *thetab, *sserr, *work, *cormat, *ycorr;
 
     /* Function Body */
 
-/*     Process by columns, including the projections of the dependent */
-/*     variable (THETAB). */
+    /*     Process by columns, including the projections of the dependent */
+    /*     variable (THETAB). */
 
     sumy = *sserr;
     i__1 = *np;
-    for (row = 1; row <= i__1; ++row) {
-/* L10: */
-/* Computing 2nd power */
-	d__1 = thetab[row];
-	sumy += d__[row] * (d__1 * d__1);
+    for (row = 1; row <= i__1; ++row)
+    {
+        /* L10: */
+        /* Computing 2nd power */
+        d__1 = thetab[row];
+        sumy += d__[row] * (d__1 * d__1);
     }
     sumy = sqrt(sumy);
     pos = *np * (*np - 1) / 2;
-    for (col1 = *np; col1 >= 1; --col1) {
+    for (col1 = *np; col1 >= 1; --col1)
+    {
 
-/*     Calculate the length of column COL1. */
+        /*     Calculate the length of column COL1. */
 
-	sum = d__[col1];
-	pos1 = col1 - 1;
-	i__1 = col1 - 1;
-	for (row = 1; row <= i__1; ++row) {
-/* Computing 2nd power */
-	    d__1 = rbar[pos1];
-	    sum += d__[row] * (d__1 * d__1);
-	    pos1 = pos1 + *np - row - 1;
-/* L20: */
-	}
-	work[col1] = sqrt(sum);
+        sum = d__[col1];
+        pos1 = col1 - 1;
+        i__1 = col1 - 1;
+        for (row = 1; row <= i__1; ++row)
+        {
+            /* Computing 2nd power */
+            d__1 = rbar[pos1];
+            sum += d__[row] * (d__1 * d__1);
+            pos1 = pos1 + *np - row - 1;
+            /* L20: */
+        }
+        work[col1] = sqrt(sum);
 
-/*     If SUM = 0, set all correlations with this variable to zero. */
+        /*     If SUM = 0, set all correlations with this variable to zero. */
 
-	if (sum == zero) {
-	    ycorr[col1] = zero;
-	    i__1 = col1 + 1;
-	    for (col2 = *np; col2 >= i__1; --col2) {
-		cormat[pos] = zero;
-		--pos;
-/* L30: */
-	    }
-	    goto L70;
-	}
+        if (sum == zero)
+        {
+            ycorr[col1] = zero;
+            i__1 = col1 + 1;
+            for (col2 = *np; col2 >= i__1; --col2)
+            {
+                cormat[pos] = zero;
+                --pos;
+                /* L30: */
+            }
+            goto L70;
+        }
 
-/*     Form cross-products, then divide by product of column lengths. */
+        /*     Form cross-products, then divide by product of column lengths. */
 
-	sum = d__[col1] * thetab[col1];
-	pos1 = col1 - 1;
-	i__1 = col1 - 1;
-	for (row = 1; row <= i__1; ++row) {
-	    sum += d__[row] * rbar[pos1] * thetab[row];
-	    pos1 = pos1 + *np - row - 1;
-/* L40: */
-	}
-	ycorr[col1] = sum / (sumy * work[col1]);
+        sum = d__[col1] * thetab[col1];
+        pos1 = col1 - 1;
+        i__1 = col1 - 1;
+        for (row = 1; row <= i__1; ++row)
+        {
+            sum += d__[row] * rbar[pos1] * thetab[row];
+            pos1 = pos1 + *np - row - 1;
+            /* L40: */
+        }
+        ycorr[col1] = sum / (sumy * work[col1]);
 
-	i__1 = col1 + 1;
-	for (col2 = *np; col2 >= i__1; --col2) {
-	    if (work[col2] > zero) {
-		pos1 = col1 - 1;
-		pos2 = col2 - 1;
-		diff = col2 - col1;
-		sum = zero;
-		i__2 = col1 - 1;
-		for (row = 1; row <= i__2; ++row) {
-		    sum += d__[row] * rbar[pos1] * rbar[pos2];
-		    pos1 = pos1 + *np - row - 1;
-		    pos2 = pos1 + diff;
-/* L50: */
-		}
-		sum += d__[col1] * rbar[pos2];
-		cormat[pos] = sum / (work[col1] * work[col2]);
-	    } else {
-		cormat[pos] = zero;
-	    }
-	    --pos;
-/* L60: */
-	}
-L70:
-	;
+        i__1 = col1 + 1;
+        for (col2 = *np; col2 >= i__1; --col2)
+        {
+            if (work[col2] > zero)
+            {
+                pos1 = col1 - 1;
+                pos2 = col2 - 1;
+                diff = col2 - col1;
+                sum = zero;
+                i__2 = col1 - 1;
+                for (row = 1; row <= i__2; ++row)
+                {
+                    sum += d__[row] * rbar[pos1] * rbar[pos2];
+                    pos1 = pos1 + *np - row - 1;
+                    pos2 = pos1 + diff;
+                    /* L50: */
+                }
+                sum += d__[col1] * rbar[pos2];
+                cormat[pos] = sum / (work[col1] * work[col2]);
+            }
+            else
+            {
+                cormat[pos] = zero;
+            }
+            --pos;
+            /* L60: */
+        }
+    L70:;
     }
 
     return 0;
 } /* cor_ */
 
 
-/* Subroutine */ int pcorr_(np, nrbar, d__, rbar, thetab, sserr, in, work, 
-	cormat, dimc, ycorr, ier)
-integer *np, *nrbar;
-doublereal *d__, *rbar, *thetab, *sserr;
-integer *in;
-doublereal *work, *cormat;
-integer *dimc;
-doublereal *ycorr;
-integer *ier;
+/* Subroutine */ 
+int pcorr_(
+    integer *np, 
+    integer *nrbar, 
+    doublereal *d__, 
+    doublereal *rbar, 
+    doublereal *thetab, 
+    doublereal *sserr, 
+    integer *in, 
+    doublereal *work, 
+	doublereal *cormat, 
+    integer *dimc, 
+    doublereal *ycorr, 
+    integer *ier)
 {
     /* Initialized data */
 
@@ -947,13 +1011,19 @@ integer *ier;
 } /* pcorr_ */
 
 
-/* Subroutine */ int vmove_(np, nrbar, vorder, d__, rbar, thetab, rss, from, 
-	to, tol, ier)
-integer *np, *nrbar, *vorder;
-doublereal *d__, *rbar, *thetab, *rss;
-integer *from, *to;
-doublereal *tol;
-integer *ier;
+/* Subroutine */ 
+int vmove_(
+    integer *np, 
+    integer *nrbar, 
+    integer *vorder, 
+    doublereal *d__, 
+    doublereal *rbar, 
+    doublereal *thetab, 
+    doublereal *rss, 
+    integer *from, 
+	integer *to, 
+    doublereal *tol, 
+    integer *ier)
 {
     /* Initialized data */
 
@@ -1137,11 +1207,20 @@ L60:
 } /* vmove_ */
 
 
-/* Subroutine */ int reordr_(np, nrbar, vorder, d__, rbar, thetab, rss, tol, 
-	list, n, pos1, ier)
-integer *np, *nrbar, *vorder;
-doublereal *d__, *rbar, *thetab, *rss, *tol;
-integer *list, *n, *pos1, *ier;
+/* Subroutine */ 
+int reordr_(
+    integer *np, 
+    integer *nrbar, 
+    integer *vorder, 
+    doublereal *d__, 
+    doublereal *rbar, 
+    doublereal *thetab, 
+    doublereal *rss, 
+    doublereal *tol, 
+	integer *list, 
+    integer *n, 
+    integer *pos1, 
+    integer *ier)
 {
     /* System generated locals */
     integer i__1;
@@ -1231,14 +1310,18 @@ L40:
 } /* reordr_ */
 
 
-/* Subroutine */ int hdiag_(xrow, np, nrbar, d__, rbar, tol, nreq, hii, wk, 
-	ifault)
-doublereal *xrow;
-integer *np, *nrbar;
-doublereal *d__, *rbar, *tol;
-integer *nreq;
-doublereal *hii, *wk;
-integer *ifault;
+/* Subroutine */ 
+int hdiag_(
+    doublereal *xrow, 
+    integer *np, 
+    integer *nrbar, 
+    doublereal *d__, 
+    doublereal *rbar, 
+    doublereal *tol, 
+    integer *nreq, 
+    doublereal *hii, 
+    doublereal *wk, 
+	integer *ifault)
 {
     /* Initialized data */
 

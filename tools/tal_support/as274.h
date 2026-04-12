@@ -1,7 +1,7 @@
 /* prototypes from the Regression code in 274.f */
 /* AS274 */
 
-void remove_(long int *np, long int *nrbar, double *weight, double *xrow, double *yelem, double *d__, double *rbar, 
+int  remove_(long int *np, long int *nrbar, double *weight, double *xrow, double *yelem, double *d__, double *rbar, 
 	double *thetab, double *sserr, long int *ier);
 
 /*
@@ -9,7 +9,7 @@ void remove_(long int *np, long int *nrbar, double *weight, double *xrow, double
       INTEGER NP, IER
       DOUBLE PRECISION D(NP), THETAB(NP), SSERR, RSS(NP)
 */
-void ss_(long int *np,double *d,double *thetab,double *sserr,double *rss,
+int ss_(long int *np,double *d,double *thetab,double *sserr,double *rss,
 	long int *ier);
 
 /*
@@ -18,7 +18,7 @@ void ss_(long int *np,double *d,double *thetab,double *sserr,double *rss,
       INTEGER NP, NRBAR, NREQ, IFAULT
       DOUBLE PRECISION XROW(NP), D(NP), RBAR(*), TOL(NP), HII, WK(NP)
 */
-void hdiag_(double *XROW,long int *NP,long int *NRBAR,double *D,double *RBAR,
+int hdiag_(double *XROW,long int *NP,long int *NRBAR,double *D,double *RBAR,
 	double *TOL,long int *NREQ, double *HII, double *WK, long int *IFAULT);
 
 /*
@@ -27,7 +27,7 @@ void hdiag_(double *XROW,long int *NP,long int *NRBAR,double *D,double *RBAR,
       INTEGER NP, NRBAR, VORDER(NP), FROM, TO, IER
       DOUBLE PRECISION D(NP), RBAR(*), THETAB(NP), RSS(NP), TOL(NP)
 */
-void vmove_(long int *NP, long int *NRBAR, long int *VORDER, double *D,
+int vmove_(long int *NP, long int *NRBAR, long int *VORDER, double *D,
 	double *RBAR, double *THETAB, double *RSS, long int *FROM,
 	long int *TO, double *TOL, long int *IER);
 
@@ -38,7 +38,7 @@ void vmove_(long int *NP, long int *NRBAR, long int *VORDER, double *D,
       DOUBLE PRECISION WEIGHT, XROW(NP), YELEM, D(NP), RBAR(*),
      +       THETAB(NP), SSERR
 */
-void includ_(long int *NP, long int *NRBAR, double *WEIGHT, double *XROW,
+int includ_(long int *NP, long int *NRBAR, double *WEIGHT, double *XROW,
 	double *YELEM, double *D, double *RBAR, double *THETAB, double *SSERR,
 	long int *IER);
 
@@ -47,7 +47,7 @@ void includ_(long int *NP, long int *NRBAR, double *WEIGHT, double *XROW,
       INTEGER NP, NRBAR, IER
       DOUBLE PRECISION D(NP), RBAR(*), TOL(NP), WORK(NP)
 */
-void tolset_(long int *NP, long int *NRBAR, double *D, double *RBAR, 
+int tolset_(long int *NP, long int *NRBAR, double *D, double *RBAR, 
 	double *TOL, double *WORK, long int *IER);
 
 /*
@@ -58,7 +58,7 @@ void tolset_(long int *NP, long int *NRBAR, double *D, double *RBAR,
      +        WORK(NP)
       LOGICAL LINDEP(NP)
 */
-void sing_(long int *NP, long int *NRBAR, double *D, double *RBAR,
+int sing_(long int *NP, long int *NRBAR, double *D, double *RBAR,
 	double *THETAB, double *SSERR, double *TOL, long int *LINDEP,
 	double *WORK, long int *IER);
 
@@ -68,7 +68,7 @@ void sing_(long int *NP, long int *NRBAR, double *D, double *RBAR,
       INTEGER NP, NRBAR, NREQ, IER
       DOUBLE PRECISION D(NP), RBAR(*), THETAB(NP), TOL(NP), BETA(NP)
 */
-void regcf_(long int *NP, long int *NRBAR, double *D, double *RBAR,
+int regcf_(long int *NP, long int *NRBAR, double *D, double *RBAR,
 	double *THETAB, double *TOL, double *BETA, long int *NREQ,
 	long int *IER);
 
@@ -77,7 +77,7 @@ void regcf_(long int *NP, long int *NRBAR, double *D, double *RBAR,
       INTEGER NP, NRBAR, IER
       DOUBLE PRECISION D(NP), RBAR(*), THETAB(NP), SSERR
 */
-void clear_(long int *NP, long int *NRBAR, double *D, double *RBAR,
+int clear_(long int *NP, long int *NRBAR, double *D, double *RBAR,
 	double *THETAB, double *SSERR, long int *IER);
 
 /*
@@ -87,7 +87,7 @@ void clear_(long int *NP, long int *NRBAR, double *D, double *RBAR,
       DOUBLE PRECISION D(NP), RBAR(*), RINV(*), VAR, COVMAT(DIMCOV),
      +       STERR(NP)
 */
-void cov_(long int *NP, long int *NRBAR, double *D, double *RBAR,
+int cov_(long int *NP, long int *NRBAR, double *D, double *RBAR,
 	long int *NREQ, double *RINV, double *VAR, double *COVMAT,
 	long int *DIMCOV, double *STERR, long int *IER);
 
@@ -96,7 +96,7 @@ void cov_(long int *NP, long int *NRBAR, double *D, double *RBAR,
       INTEGER NP, NRBAR, NREQ
       DOUBLE PRECISION RBAR(*), RINV(*)
 */
-void inv_(long int *NP, long int *NRBAR, double *RBAR, long int *NREQ,
+int inv_(long int *NP, long int *NRBAR, double *RBAR, long int *NREQ,
 	double *RINV);
 
 /*
@@ -106,7 +106,7 @@ void inv_(long int *NP, long int *NRBAR, double *RBAR, long int *NREQ,
       DOUBLE PRECISION D(NP), RBAR(*), THETAB(NP), SSERR, WORK(NP),
      +        CORMAT(*), YCORR
 */
-void pcorr_(long int *NP, long int *NRBAR, double *D, double *RBAR,
+int pcorr_(long int *NP, long int *NRBAR, double *D, double *RBAR,
 	double *THETAB, double *SSERR, long int *IN, double *WORK,
 	double *CORMAT, long int *DIMC, double *YCORR, long int *IER);
 
@@ -116,7 +116,7 @@ void pcorr_(long int *NP, long int *NRBAR, double *D, double *RBAR,
       DOUBLE PRECISION D(NP), RBAR(*), THETAB(NP), SSERR, WORK(NP),
      +      CORMAT(*), YCORR(NP)
 */
-void cor_(long int *NP, double *D, double *RBAR, double *THETAB,
+int cor_(long int *NP, double *D, double *RBAR, double *THETAB,
 	double *SSERR, double *WORK, double *CORMAT, double *YCORR);
 
 /*
@@ -125,7 +125,7 @@ void cor_(long int *NP, double *D, double *RBAR, double *THETAB,
       INTEGER NP, NRBAR, VORDER(NP), N, LIST(N), POS1, IER
       DOUBLE PRECISION D(NP), RBAR(NRBAR), THETAB(NP), RSS(NP), TOL(NP)
 */
-void reordr_(long int *NP, long int *NRBAR, long int *VORDER, double *D,
+int reordr_(long int *NP, long int *NRBAR, long int *VORDER, double *D,
 	double *RBAR, double *THETAB, double *RSS, double *TOL,
 	long int *LIST, long int *N, long int *POS1, long int *IER);
 

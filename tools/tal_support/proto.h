@@ -125,6 +125,15 @@ void get_d_xyz(double *xyz,char *str);
 void bin_roi_flip(long int xflip);
 void bin_roi_scale(double scale);
 
+/* used to stub out popen/pclose on some platforms */
+#ifdef WIN32
+#define popen fake_popen
+#define pclose fake_pclose
+#endif
+FILE *fake_popen(char *a, char *b);
+int fake_pclose(FILE *f);
+
+
 void    bswap(unsigned char *data,long int dx,long int dy,long int dz);
 void    yflip(unsigned char *data,long int dx,long int dy,long int dz);
 void    xflip(unsigned char *data,long int dx,long int dy,long int dz);
